@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOTTERY - LE VAN DO</title>
+    <!-- Chèn logo trên thanh tiêu đề -->
+    <link rel="icon" href="lottery.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        /* Thanh điều hướng */
+        .navbar {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .navbar h1 {
+            margin: 0;
+        }
+        .navbar img {
+            height: 40px;
+            margin-left: 10px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .time-display {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .button-container button {
+            width: 48%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>LE VAN DO - DEV</h1>
+        <img src="luckynumber.png" alt="Logo">
+    </div>
+
+    <div class="container">
+        <!-- Hiển thị thời gian -->
+        <div id="timeDisplay" class="time-display"></div>
+        
+        <h1>Chọn Hạng Mục</h1>
+        <div class="button-container">
+            <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
+            <button id="DanDe2ChamButton">Dàn Đề 2 Chạm Nuôi Tuần</button>
+            <button id="lottoButton">Dàn Đề XSMB</button>
+            <button id="Dan34DButton">Dàn 3-4D Ít Số</button>
+            <button id="ghepdansoButton">Ghép Dàn Số</button>
+            <button id="loxienButton">Keno</button>
+        </div>
+    </div>
+
+    <!-- Thẻ audio -->
+    <audio id="pageAudio" src="Carme.mp3" preload="auto"></audio>
+
+    <script>
+        // Chức năng phát âm thanh khi người dùng tương tác
+        function playAudioOnce() {
+            const audio = document.getElementById('pageAudio');
+            if (audio.paused) {
+                audio.play().then(() => {
+                    console.log("Âm thanh đã được phát.");
+                }).catch(err => {
+                    console.error("Lỗi phát âm thanh:", err);
+                });
+            }
+        }
+
+        // Lắng nghe sự kiện đầu tiên của người dùng
+        document.addEventListener('click', playAudioOnce, { once: true });
+        document.addEventListener('touchstart', playAudioOnce, { once: true });
+
+        // Sự kiện chuyển trang
+        document.getElementById('lottoButton').addEventListener('click', () => { 
+            window.location.href = 'dandexsmb.html';
+        });
+        document.getElementById('loxienButton').addEventListener('click', () => { 
+            window.location.href = 'LoXien.html';
+        });
+    
+        document.getElementById('DanDe2ChamButton').addEventListener('click', () => { 
+            window.location.href = 'DanDe2Cham.html';
+        });
+        document.getElementById('AIXOSOButton').addEventListener('click', () => { 
+            window.location.href = 'AIthongkexsmb.html';
+        });
+         document.getElementById('Dan34DButton').addEventListener('click', () => { 
+            window.location.href = 'Dan34D.html';
+        });
+        document.getElementById('ghepdansoButton').addEventListener('click', () => { 
+            window.location.href = 'https://giaimasohoc.net/tao-muc-so/';
+        });
+
+        // Hiển thị thời gian
+        function updateTime() {
+            const timeDisplay = document.getElementById('timeDisplay');
+            const now = new Date();
+            
+            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const dayName = days[now.getDay()];
+            
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng tính từ 0
+            const year = now.getFullYear();
+            
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Cập nhật thời gian mỗi giây
+        setInterval(updateTime, 1000);
+        updateTime(); // Chạy ngay khi tải trang
+    </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần Mềm Lấy Full Xổ Số Kiến Thiết</title>
+    <link rel="icon" href="lottery.png" type="image/png">
+    <style>
+        /* CSS định dạng giao diện */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            font-size: 16px;
+            color: #007BFF;
+        }
+
+        .result-section {
+            margin-top: 20px;
+        }
+
+        .result-section h2 {
+            margin-bottom: 10px;
+            color: #007BFF;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Phân Tích Kết Quả Xổ Số</h1>
+        <div class="input-section">
+            <label for="simulations">Số phiên chạy tần suất:</label>
+            <input type="number" id="simulations" placeholder="Nhập số phiên chạy" min="1">
+            <label for="region">Chọn miền:</label>
+            <select id="region">
+                <option value="Miền Bắc">Xổ Số Miền Bắc</option>
+                <option value="Miền Trung">Xổ Số Miền Trung</option>
+                <option value="Miền Nam">Xổ Số Miền Nam</option>
+            </select>
+            <label for="province">Chọn đài xổ số:</label>
+            <select id="province"></select>
+        </div>
+        <button class="btn" id="startSimulation">Lấy Kết Quả</button>
+        <div class="output-section" id="output">
+            <div id="loading" class="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
+            <div id="result" class="result-section"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu các đài xổ số cho từng miền
+        const provinceData = {
+            "Miền Bắc": ["Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
+            "Miền Trung": [
+                "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam",
+                "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+            ],
+            "Miền Nam": [
+                "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
+                "Bến Tre", "Vũng Tàu", "Cần Thơ", "Đồng Nai", "Sóc Trăng", "An Giang", "Bình Thuận", "Tây Ninh",
+                "Bình Dương", "Trà Vinh", "Vĩnh Long", "Bình Phước", "Hậu Giang", "Long An"
+            ]
+        };
+
+        // Hàm để cập nhật danh sách đài xổ số theo miền
+        const updateProvinceList = (region) => {
+            const provinceSelect = document.getElementById('province');
+            provinceSelect.innerHTML = ''; // Xóa tất cả các option cũ
+            const provinces = provinceData[region] || [];
+            provinces.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        };
+
+        // Hàm kiểm tra xem đài đã quay trong ngày chưa
+        const checkIfProvinceAlreadyDrawn = (province) => {
+            const today = new Date().toLocaleDateString();
+            const lastDrawnDate = localStorage.getItem(province);
+
+            // Nếu đài đã quay trong ngày, không cho phép quay lại
+            if (lastDrawnDate === today) {
+                return true;
+            }
+            return false;
+        };
+
+        // Hàm lưu trạng thái quay đài
+        const markProvinceAsDrawn = (province) => {
+            const today = new Date().toLocaleDateString();
+            localStorage.setItem(province, today);
+        };
+
+        // Hàm tạo số ngẫu nhiên
+        const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        // Mô phỏng Monte Carlo
+        const monteCarloSimulation = (iterations) => {
+            const results = {
+                dan2D: [],
+                dan3D: [],
+                dan4D: []
+            };
+
+            for (let i = 0; i < iterations; i++) {
+                // Dàn 2D
+                const dan2D = Array.from({ length: 64 }, () => generateRandomNumber(0,99).toString().padStart(2, '0'));
+                results.dan2D.push(dan2D);
+
+                // Dãy số 3D: ghép 2D với số ngẫu nhiên
+                const dan3D = dan2D.map(num => `${num}${generateRandomNumber(0,9)}`);
+                results.dan3D.push(dan3D);
+
+                // Dãy số 4D: ghép 3D với số ngẫu nhiên
+                const dan4D = dan3D.map(num => `${num}${generateRandomNumber(0,9)}`);
+                results.dan4D.push(dan4D);
+            }
+
+            return results;
+        };
+
+        // Hiển thị kết quả
+        const displayResults = (results) => {
+            const resultDiv = document.getElementById('result');
+            const dan2D = results.dan2D[0];
+            const dan3D = results.dan3D[0];
+            const dan4D = results.dan4D[0];
+
+            resultDiv.innerHTML = `
+                <h2>Kết quả mô phỏng</h2>
+                <p><strong>Dàn 2D:</strong> ${dan2D.join(', ')}</p>
+                <button class="copy-btn" onclick="copyToClipboard('${dan2D.join(', ')}')">Copy Dàn 2D</button>
+                
+                <p><strong>Dãy Số 3D Hôm Nay:</strong> ${dan3D.join(', ')}</p>
+                <button class="copy-btn" onclick="copyToClipboard('${dan3D.join(', ')}')">Copy Dãy Số 3D</button>
+                
+                <p><strong>Dãy Số 4D Hôm Nay:</strong> ${dan4D.join(', ')}</p>
+                <button class="copy-btn" onclick="copyToClipboard('${dan4D.join(', ')}')">Copy Dãy Số 4D</button>
+            `;
+        };
+
+        // Hàm copy nội dung vào clipboard
+        const copyToClipboard = (text) => {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Đã sao chép vào clipboard!");
+            }).catch(err => {
+                console.error('Lỗi khi sao chép:', err);
+            });
+        };
+
+        // Xử lý khi nhấn nút "Lấy Kết Quả"
+        document.getElementById('startSimulation').addEventListener('click', () => {
+            const province = document.getElementById('province').value;
+            const simulations = parseInt(document.getElementById('simulations').value, 10) || 1;
+
+            // Kiểm tra nếu đài đã quay trong ngày
+            if (checkIfProvinceAlreadyDrawn(province)) {
+                alert("Đài này đã quay trong ngày hôm nay. Vui lòng quay lại vào ngày mai.");
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                document.getElementById('loading').style.display = 'none';
+                displayResults(results);
+                markProvinceAsDrawn(province); // Đánh dấu đài đã quay
+            }, 1500);
+        });
+
+        // Xử lý khi chọn miền
+        document.getElementById('region').addEventListener('change', (e) => {
+            const region = e.target.value;
+            updateProvinceList(region); // Cập nhật đài xổ số theo miền
+        });
+
+        // Cập nhật danh sách đài khi load trang
+        updateProvinceList(document.getElementById('region').value);
+    </script>
+</body>
+</html>
