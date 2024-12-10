@@ -166,44 +166,21 @@
         };
 
         const displayResults = (results, province) => {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `
-        <h2>Kết quả mô phỏng - AI: ${province}</h2>
-        ${createResultSection('Ghép 4D', results.ghep4D[0])}
-        ${createResultSection('Ghép 3D', results.ghep3D[0])}
-        ${createResultSection('Dàn 2D(64S)', results.dan2D[0])}
-        ${createResultSection('Song Thủ Lô', results.songThuLo[0])}
-        ${createResultSection('Tam Thủ Lô', results.tamThuLo[0])}
-        ${createResultSection('Tứ Thủ Lô', results.tuThuLo[0])}
-        ${createResultSection('Ngũ Thủ Lô', results.nguThuLo[0])}
-        ${createResultSection('Mega 6/45', results.mega6_45[0])}
-        ${createResultSection('Power 6/55', results.power6_55[0])}
-        ${createResultSection('Dàn 4 Chạm', results.dan4Cham[0])}
-    `;
-};
-
-// Hàm tạo từng mục kết quả với nút copy riêng
-const createResultSection = (title, values) => {
-    const valueString = values.join(', ');
-    const id = title.replace(/\s+/g, '_'); // Tạo ID duy nhất cho mỗi mục
-    return `
-        <div style="margin-bottom: 10px;">
-            <p><strong>${title}:</strong> <span id="${id}">${valueString}</span></p>
-            <button onclick="copyToClipboard('${id}')">Copy</button>
-        </div>
-    `;
-};
-
-// Hàm copy giá trị vào clipboard
-const copyToClipboard = (id) => {
-    const content = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(content).then(() => {
-        alert(`Đã sao chép: ${content}`);
-    }).catch((err) => {
-        console.error('Không thể sao chép', err);
-    });
-};
-
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <h2>Kết quả mô phỏng - AI: ${province}</h2>
+                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')}</p>
+                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')}</p>
+                <p><strong>Dàn 2D(64S):</strong> ${results.dan2D[0].join(',')}</p>
+                <p><strong>Song Thủ Lô:</strong> ${results.songThuLo[0].join(',')}</p>
+                <p><strong>Tam Thủ Lô:</strong> ${results.tamThuLo[0].join(',')}</p>
+                <p><strong>Tứ Thủ Lô:</strong> ${results.tuThuLo[0].join(',')}</p>
+                <p><strong>Ngũ Thủ Lô:</strong> ${results.nguThuLo[0].join(',')}</p>
+                <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')}</p>
+                <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')}</p>
+                <p><strong>Dàn 4 Chạm:</strong> ${results.dan4Cham[0].join(',')}</p>
+            `;
+        };
 
         const provinces = {
     "Miền Bắc": ["Truyền Thống","Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
