@@ -140,8 +140,8 @@
                 power6_55: []
             };
             for (let i = 0; i < iterations; i++) {
-                results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9));
-                results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9));
+                results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
+                results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
                 const dan2D = fillWithProbability(new Set(), 64, 0, 99)
                     .map(n => n.toString().padStart(2, '0'))
                     .sort((a, b) => a - b);
@@ -159,8 +159,8 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
                 <h2>Kết quả mô phỏng - AI: ${province}</h2>
-                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].sort((a, b) => a - b).join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
-                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].sort((a, b) => a - b).join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
+                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
+                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
                 <p><strong>Dàn 2D(64S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
                 <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
                 <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
@@ -176,56 +176,47 @@
             alert('Đã sao chép!');
         };
         const provinces = {
-    "Miền Bắc": ["Truyền Thống","Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
-    "Miền Trung": [
-        "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam",
-        "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
-    ],
-    "Miền Nam": [
-        "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
-        "Bến Tre", "Vũng Tàu", "Cần Thơ", "Đồng Nai", "Sóc Trăng", "An Giang", "Bình Thuận", "Tây Ninh",
-        "Bình Dương", "Trà Vinh", "Vĩnh Long", "Bình Phước", "Hậu Giang", "Long An"
-    ]
-};
-        const regionSelect = document.getElementById('region');
-        const provinceSelect = document.getElementById('province');
-        const startSimulationButton = document.getElementById('startSimulation');
-        const spinNotice = document.getElementById('spinNotice');
-        const outputSection = document.getElementById('output');
-        const homeButton = document.getElementById('homeButton');
-        let currentRegion = regionSelect.value;
-        regionSelect.addEventListener('change', () => {
-            currentRegion = regionSelect.value;
-            updateProvinces();
-        });
-        const updateProvinces = () => {
-            const provincesInRegion = provinces[currentRegion] || [];
-            provinceSelect.innerHTML = provincesInRegion.map(p => `<option value="${p}">${p}</option>`).join('');
+            "Miền Bắc": ["Truyền Thống", "Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
+            "Miền Trung": [
+                "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam",
+                "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+            ],
+            "Miền Nam": [
+                "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
+                "Bến Tre", "Vũng Tàu", "Cần Thơ", "Đồng Nai", "Sóc Trăng", "An Giang", "Bình Thuận", "Tây Ninh",
+                "Bình Dương", "Trà Vinh", "Vĩnh Long", "Bình Phước", "Hậu Giang", "Long An"
+            ]
         };
-        updateProvinces();
-        startSimulationButton.addEventListener('click', () => {
-            const simulations = parseInt(document.getElementById('simulations').value, 10);
-            const province = provinceSelect.value;
-            if (!simulations || simulations <= 0 || !province) {
-                alert('Vui lòng nhập số phiên chạy và chọn đài xổ số.');
-                return;
-            }
-            const today = new Date().toISOString().split('T')[0];
-            const lastSpinKey = `${province}-${today}`;
-            const lastSpin = localStorage.getItem(lastSpinKey);
-            if (lastSpin) {
-                spinNotice.style.display = 'block';
-                return;
-            }
-            localStorage.setItem(lastSpinKey, today);
-            spinNotice.style.display = 'none';
-            outputSection.style.display = 'block';
-            const results = monteCarloSimulation(simulations);
-            displayResults(results, province);
+        document.getElementById("region").addEventListener("change", function () {
+            const selectedRegion = this.value;
+            const provinceSelect = document.getElementById("province");
+            provinceSelect.innerHTML = provinces[selectedRegion].map(p => `<option>${p}</option>`).join("");
         });
-        homeButton.addEventListener('click', () => {
+        document.getElementById("startSimulation").addEventListener("click", () => {
+            const simulations = document.getElementById("simulations").value;
+            if (!simulations || simulations < 1) {
+                alert("Vui lòng nhập số phiên chạy hợp lệ!");
+                return;
+            }
+            const region = document.getElementById("region").value;
+            const province = document.getElementById("province").value;
+            const loadingDiv = document.getElementById("loading");
+            const resultDiv = document.getElementById("result");
+            const outputDiv = document.getElementById("output");
+            loadingDiv.style.display = "block";
+            resultDiv.style.display = "none";
+            outputDiv.style.display = "block";
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                displayResults(results, province);
+                loadingDiv.style.display = "none";
+                resultDiv.style.display = "block";
+            }, 2000);
+        });
+        document.getElementById("homeButton").addEventListener("click", () => {
             window.location.reload();
         });
+        document.getElementById("region").dispatchEvent(new Event("change"));
     </script>
 </body>
 </html>
