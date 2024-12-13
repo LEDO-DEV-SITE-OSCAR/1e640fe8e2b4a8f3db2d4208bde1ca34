@@ -83,7 +83,6 @@
         <div class="button-container">
             <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
             <button id="DanDe2ChamButton">Dàn Đề 2 Chạm Nuôi Tuần</button>
-            <button id="lottoButton">Dàn Đề XSMB</button>
             <button id="Dan34DButton">Dàn 3-4D Ít Số</button>
             <button id="ghepdansoButton">Ghép Dàn Số</button>
             <button id="loxienButton">Keno</button>
@@ -111,9 +110,7 @@
         document.addEventListener('touchstart', playAudioOnce, { once: true });
 
         // Sự kiện chuyển trang
-        document.getElementById('lottoButton').addEventListener('click', () => { 
-            window.location.href = 'dandexsmb.html';
-        });
+        
         document.getElementById('loxienButton').addEventListener('click', () => { 
             window.location.href = 'LoXien.html';
         });
