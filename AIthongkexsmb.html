@@ -24,13 +24,6 @@
             width: 90%;
             max-width: 800px;
         }
-/*         #topImage {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 20px;
-        } */
         h1 {
             text-align: center;
             color: #333;
@@ -92,7 +85,6 @@
     </style>
 </head>
 <body>
-<!--      <img src="lichmothuong.png" alt="Lịch mở thưởng" id="topImage"> -->
     <div class="container">
         <h1>AI Xổ Số Miền Nam Trung Bắc Full Miền</h1>
         <div class="input-section">
@@ -132,13 +124,8 @@
                 ghep4D: [],
                 ghep3D: [],
                 dan2D: [],
-                songThuLo: [],
-                tamThuLo: [],
-                tuThuLo: [],
-                nguThuLo: [],
                 mega6_45: [],
-                power6_55: [],
-                dan4Cham: []
+                power6_55: []
             };
 
             for (let i = 0; i < iterations; i++) {
@@ -150,14 +137,6 @@
                     .sort((a, b) => a - b);
                 results.dan2D.push(dan2D);
 
-                const dan4Cham = fillWithProbability(new Set(), 4, 0, 9)
-                    .sort((a, b) => a - b);
-                results.dan4Cham.push(dan4Cham);
-
-                results.songThuLo.push(fillWithProbability(new Set(), 2, 0, 99).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
-                results.tamThuLo.push(fillWithProbability(new Set(), 3, 0, 99).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
-                results.tuThuLo.push(fillWithProbability(new Set(), 4, 0, 99).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
-                results.nguThuLo.push(fillWithProbability(new Set(), 5, 0, 99).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
                 results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
                 results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55).map(n => n.toString().padStart(2, '0')).sort((a, b) => a - b));
             }
@@ -167,34 +146,28 @@
 
         const displayResults = (results, province) => {
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `
+            resultDiv.innerHTML = `  
                 <h2>Kết quả mô phỏng - AI: ${province}</h2>
                 <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')}</p>
                 <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')}</p>
                 <p><strong>Dàn 2D(64S):</strong> ${results.dan2D[0].join(',')}</p>
-                <p><strong>Song Thủ Lô:</strong> ${results.songThuLo[0].join(',')}</p>
-                <p><strong>Tam Thủ Lô:</strong> ${results.tamThuLo[0].join(',')}</p>
-                <p><strong>Tứ Thủ Lô:</strong> ${results.tuThuLo[0].join(',')}</p>
-                <p><strong>Ngũ Thủ Lô:</strong> ${results.nguThuLo[0].join(',')}</p>
                 <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')}</p>
                 <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')}</p>
-                <p><strong>Dàn 4 Chạm:</strong> ${results.dan4Cham[0].join(',')}</p>
             `;
         };
 
         const provinces = {
-    "Miền Bắc": ["Truyền Thống","Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
-    "Miền Trung": [
-        "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam",
-        "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
-    ],
-    "Miền Nam": [
-        "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
-        "Bến Tre", "Vũng Tàu", "Cần Thơ", "Đồng Nai", "Sóc Trăng", "An Giang", "Bình Thuận", "Tây Ninh",
-        "Bình Dương", "Trà Vinh", "Vĩnh Long", "Bình Phước", "Hậu Giang", "Long An"
-    ]
-};
-
+            "Miền Bắc": ["Truyền Thống","Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
+            "Miền Trung": [
+                "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam",
+                "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+            ],
+            "Miền Nam": [
+                "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
+                "Bến Tre", "Vũng Tàu", "Cần Thơ", "Đồng Nai", "Sóc Trăng", "An Giang", "Bình Thuận", "Tây Ninh",
+                "Bình Dương", "Trà Vinh", "Vĩnh Long", "Bình Phước", "Hậu Giang", "Long An"
+            ]
+        };
 
         const getSpunData = (region, province) => {
             const regionSpunData = JSON.parse(localStorage.getItem('spunData')) || {};
@@ -216,55 +189,48 @@
         };
 
         const hasSpunToday = (region, province) => {
-            const lastSpinDate = getSpunData(region, province);
-            const today = new Date().toISOString().split('T')[0];
-            return lastSpinDate === today;
+            const lastSpin = getSpunData(region, province);
+            if (!lastSpin || lastSpin !== new Date().toISOString().split('T')[0]) {
+                return false;
+            }
+            return true;
         };
 
-        document.getElementById('startSimulation').addEventListener('click', () => {
+        const handleSimulation = async () => {
             const region = document.getElementById('region').value;
             const province = document.getElementById('province').value;
-
-            if (!province) {
-                alert("Vui lòng chọn đài xổ số.");
-                return;
-            }
+            const simulations = document.getElementById('simulations').value || 1;
 
             if (hasSpunToday(region, province)) {
                 document.getElementById('spinNotice').style.display = 'block';
                 return;
             }
 
-            const simulations = parseInt(document.getElementById('simulations').value);
-            if (!simulations || simulations <= 0) {
-                alert("Vui lòng nhập số phiên chạy hợp lệ.");
-                return;
-            }
+            document.getElementById('spinNotice').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
 
-            const outputDiv = document.getElementById('output');
-            const loadingDiv = document.getElementById('loading');
-            const resultDiv = document.getElementById('result');
-            outputDiv.style.display = 'block';
-            loadingDiv.style.display = 'block';
-            resultDiv.innerHTML = '';
+            setSpunData(region, province);
+
+            const results = monteCarloSimulation(parseInt(simulations));
 
             setTimeout(() => {
-                const results = monteCarloSimulation(simulations);
-                loadingDiv.style.display = 'none';
                 displayResults(results, province);
-                setSpunData(region, province); // Lưu thông tin đã quay
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('output').style.display = 'block';
             }, 1000);
-        });
+        };
+
+        document.getElementById('startSimulation').addEventListener('click', handleSimulation);
 
         document.getElementById('homeButton').addEventListener('click', () => {
             location.reload();
         });
 
-        document.getElementById('region').addEventListener('change', (e) => {
-            updateProvinces(e.target.value);
+        document.getElementById('region').addEventListener('change', (event) => {
+            updateProvinces(event.target.value);
         });
 
-        updateProvinces("Miền Bắc");
+        updateProvinces('Miền Nam');
     </script>
 </body>
 </html>
