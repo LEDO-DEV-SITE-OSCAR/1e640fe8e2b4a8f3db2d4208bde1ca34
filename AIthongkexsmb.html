@@ -126,14 +126,12 @@
 
     <script>
         const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
         const fillWithProbability = (set, count, min, max) => {
             while (set.size < count) {
                 set.add(generateRandomNumber(min, max));
             }
             return [...set];
         };
-
         const monteCarloSimulation = (iterations) => {
             const results = {
                 ghep4D: [],
@@ -142,41 +140,31 @@
                 mega6_45: [],
                 power6_55: []
             };
-
             for (let i = 0; i < iterations; i++) {
                 results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9));
                 results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9));
-
                 const dan2D = fillWithProbability(new Set(), 64, 0, 99)
                     .map(n => n.toString().padStart(2, '0'))
                     .sort((a, b) => a - b);
                 results.dan2D.push(dan2D);
-
                 results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45)
                     .map(n => n.toString().padStart(2, '0'))
                     .sort((a, b) => a - b));
-
                 results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55)
                     .map(n => n.toString().padStart(2, '0'))
                     .sort((a, b) => a - b));
             }
             return results;
         };
-
         const displayResults = (results, province) => {
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
                 <h2>Kết quả mô phỏng - AI: ${province}</h2>
-                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].sort((a, b) => a - b).join(',')} 
-                <button class="copy-btn" onclick="copyText('${results.ghep4D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
-                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].sort((a, b) => a - b).join(',')} 
-                <button class="copy-btn" onclick="copyText('${results.ghep3D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
-                <p><strong>Dàn 2D(64S):</strong> ${results.dan2D[0].join(',')} 
-                <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
-                <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} 
-                <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
-                <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} 
-                <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
+                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].sort((a, b) => a - b).join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
+                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].sort((a, b) => a - b).join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].sort((a, b) => a - b).join(',')}')">Copy</button></p>
+                <p><strong>Dàn 2D(64S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
+                <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
+                <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
             `;
         };
 
@@ -192,60 +180,65 @@
 
         const provinces = {
             "Miền Bắc": ["Truyền Thống", "Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
-            "Miền Trung": ["Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", "Ninh Thuận", "Bình Thuận"],
-            "Miền Nam": ["Hồ Chí Minh", "Cần Thơ", "Bình Dương", "Bình Phước", "Tiền Giang", "Bà Rịa-Vũng Tàu"]
+            "Miền Trung": ["Huế", "Quảng Bình", "Đà Nẵng", "Quảng Nam", "Khánh Hòa", "Ninh Thuận", "Bình Định"],
+            "Miền Nam": ["TP HCM", "Cần Thơ", "Bến Tre", "Vũng Tàu", "Đồng Nai", "Bình Dương"]
         };
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const regionSelect = document.getElementById('region');
-            const provinceSelect = document.getElementById('province');
+        const regionSelect = document.getElementById('region');
+        const provinceSelect = document.getElementById('province');
 
-            const defaultRegion = "Miền Bắc";
-            const defaultProvinces = provinces[defaultRegion];
+        const updateProvinces = () => {
+            const region = regionSelect.value;
+            const options = provinces[region];
+            provinceSelect.innerHTML = options.map(option => `<option value="${option}">${option}</option>`).join('');
+        };
 
-            defaultProvinces.forEach(province => {
-                const option = document.createElement('option');
-                option.value = province;
-                option.textContent = province;
-                provinceSelect.appendChild(option);
-            });
+        regionSelect.addEventListener('change', updateProvinces);
+        updateProvinces();
 
-            regionSelect.addEventListener('change', () => {
-                const selectedRegion = regionSelect.value;
-                const newProvinces = provinces[selectedRegion];
-                provinceSelect.innerHTML = '';
-                newProvinces.forEach(province => {
-                    const option = document.createElement('option');
-                    option.value = province;
-                    option.textContent = province;
-                    provinceSelect.appendChild(option);
-                });
-            });
-        });
+        const startSimulationButton = document.getElementById('startSimulation');
+        const spinNotice = document.getElementById('spinNotice');
+        const homeButton = document.getElementById('homeButton');
+        const outputDiv = document.getElementById('output');
+        const loadingDiv = document.getElementById('loading');
 
-        document.getElementById('startSimulation').addEventListener('click', () => {
-            const simulations = document.getElementById('simulations').value;
-            const region = document.getElementById('region').value;
-            const province = document.getElementById('province').value;
-
-            if (!simulations) {
-                alert("Vui lòng nhập số phiên chạy.");
-                return;
+        const checkIfAlreadySpinned = () => {
+            const today = new Date().toISOString().split('T')[0]; // Lấy ngày hôm nay
+            const spinnedData = localStorage.getItem('spinnedDate');
+            if (spinnedData && spinnedData === today) {
+                spinNotice.style.display = 'block';
+                return true;
             }
+            return false;
+        };
 
-            document.getElementById('output').style.display = 'block';
-            document.getElementById('loading').style.display = 'block';
+        const saveSpinDate = () => {
+            const today = new Date().toISOString().split('T')[0]; // Lưu lại ngày đã quay
+            localStorage.setItem('spinnedDate', today);
+        };
 
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                const results = monteCarloSimulation(parseInt(simulations));
+        startSimulationButton.addEventListener('click', () => {
+            if (checkIfAlreadySpinned()) return; // Nếu đã quay hôm nay, dừng lại
 
-                displayResults(results, province);
-            }, 2000); 
+            const simulations = parseInt(document.getElementById('simulations').value);
+            const province = provinceSelect.value;
+
+            if (simulations && simulations > 0) {
+                loadingDiv.style.display = 'block';
+                outputDiv.style.display = 'none';
+
+                setTimeout(() => {
+                    const results = monteCarloSimulation(simulations);
+                    displayResults(results, province);
+                    saveSpinDate(); // Lưu ngày quay
+                    loadingDiv.style.display = 'none';
+                    outputDiv.style.display = 'block';
+                }, 2000);
+            }
         });
 
-        document.getElementById('homeButton').addEventListener('click', () => {
-            location.reload();
+        homeButton.addEventListener('click', () => {
+            window.location.reload();
         });
     </script>
 </body>
