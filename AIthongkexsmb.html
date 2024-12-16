@@ -188,66 +188,74 @@
         ],
         "Miền Nam": [
             "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
-            "Bến Tre", "Vũng Tàu", "Cần Thơ", "Sóc Trăng", "An Giang", "Bình Dương",
-            "Trà Vinh", "Tây Ninh", "Bình Thuận", "Bình Phước", "Vĩnh Long", "Hậu Giang",
-            "Long An", "Đồng Nai"
+            "Bến Tre", "Vũng Tàu", "Cần Thơ", "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương",
+            "Bình Phước", "Hậu Giang", "Long An", "Đồng Nai"
         ]
     };
 
-    const spinRecords = {};
+    const spinRecords = {}; // Lưu lịch sử quay theo từng đài
 
-    document.getElementById('region').addEventListener('change', (event) => {
-        const provinceSelect = document.getElementById('province');
-        provinceSelect.innerHTML = '';
-        const selectedRegion = event.target.value;
-        provinces[selectedRegion].forEach((province) => {
-            const option = document.createElement('option');
+    const resetDailySpins = () => {
+        const now = new Date();
+        const currentDate = now.toISOString().split("T")[0];
+        if (localStorage.getItem("lastResetDate") !== currentDate) {
+            localStorage.setItem("lastResetDate", currentDate);
+            localStorage.setItem("spinRecords", JSON.stringify({}));
+        }
+    };
+
+    const updateProvinceDropdown = (region) => {
+        const provinceDropdown = document.getElementById("province");
+        provinceDropdown.innerHTML = "";
+        provinces[region].forEach(province => {
+            const option = document.createElement("option");
             option.value = province;
-            option.text = province;
-            provinceSelect.appendChild(option);
+            option.textContent = province;
+            provinceDropdown.appendChild(option);
         });
+    };
+
+    document.getElementById("region").addEventListener("change", (e) => {
+        updateProvinceDropdown(e.target.value);
     });
 
-    document.getElementById('startSimulation').addEventListener('click', () => {
-        const simulations = parseInt(document.getElementById('simulations').value, 10);
-        const region = document.getElementById('region').value;
-        const province = document.getElementById('province').value;
-        const today = new Date().toDateString();
+    document.getElementById("startSimulation").addEventListener("click", () => {
+        resetDailySpins();
+        const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
+        const region = document.getElementById("region").value;
+        const province = document.getElementById("province").value;
+        const simulations = parseInt(document.getElementById("simulations").value, 10);
 
         if (!simulations || simulations <= 0) {
-            alert('Vui lòng nhập số phiên chạy hợp lệ!');
-            return;
-        }
-        if (!province) {
-            alert('Vui lòng chọn đài xổ số!');
+            alert("Vui lòng nhập số phiên chạy hợp lệ!");
             return;
         }
 
-        spinRecords[province] = spinRecords[province] || {};
-        if (spinRecords[province][today]) {
-            document.getElementById('spinNotice').style.display = 'block';
+        if (spinData[province]) {
+            document.getElementById("spinNotice").style.display = "block";
+            document.getElementById("output").style.display = "none";
             return;
         }
 
-        document.getElementById('spinNotice').style.display = 'none';
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('result').innerHTML = '';
+        spinData[province] = true;
+        localStorage.setItem("spinRecords", JSON.stringify(spinData));
+
+        document.getElementById("spinNotice").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("output").style.display = "block";
 
         setTimeout(() => {
             const results = monteCarloSimulation(simulations);
             displayResults(results, province);
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('output').style.display = 'block';
-
-            spinRecords[province][today] = true;
-        }, 1000);
+            document.getElementById("loading").style.display = "none";
+        }, 2000);
     });
 
-    document.getElementById('homeButton').addEventListener('click', () => {
-        location.reload();
-    });
+    // Reset provinces on load
+    updateProvinceDropdown(document.getElementById("region").value);
 
-    document.getElementById('region').dispatchEvent(new Event('change'));
+    // Reset daily spins automatically
+    resetDailySpins();
 </script>
 </body>
 </html>
