@@ -39,23 +39,35 @@
             max-width: 600px;
             margin: 20px auto;
         }
+/*          */
         .time-display {
     text-align: center;
-    font-size: 18px;
+    font-size: 30px; /* Tăng kích thước chữ để dễ nhìn */
     font-weight: bold;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, #ff8c8c, #ffa07a, #fff5ba, #baffc9, #bae1ff, #d9b3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    color: transparent; /* Chữ trong suốt, lộ ra gradient */
-    animation: smoothGradientMove 5s infinite linear;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6); /* Hiệu ứng ánh sáng dịu */
+    color: #ff0000; /* Màu khởi đầu */
+    display: inline-block;
+    animation: colorShift 2s infinite ease-in-out; /* Hiệu ứng đổi màu tổng thể */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* Ánh sáng nhẹ */
+    letter-spacing: 5px; /* Tạo khoảng cách giữa các chữ */
 }
 
-@keyframes smoothGradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Định nghĩa hiệu ứng chuyển màu qua từng giai đoạn */
+@keyframes colorShift {
+    0% { color: #ff0000; }    /* Đỏ */
+    20% { color: #ffa500; }   /* Cam */
+    40% { color: #ffff00; }   /* Vàng */
+    60% { color: #00ff00; }   /* Xanh lá */
+    80% { color: #00ffff; }   /* Xanh dương nhạt */
+    100% { color: #ff00ff; }  /* Tím */
 }
+
+/* Thêm hiệu ứng từng chữ với ::after để chuyển động từng phần */
+.time-display::after {
+    content: attr(data-text); /* Lấy nội dung gốc từ chính text */
+    position: absolute;
+    top: 0;
+  }
+/*  */
         .button-container {
             margin-top: 20px;
             display: flex;
