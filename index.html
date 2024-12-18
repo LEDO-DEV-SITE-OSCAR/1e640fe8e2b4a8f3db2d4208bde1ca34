@@ -86,6 +86,7 @@
             <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
             <button id="DanDe2ChamButton">Quy Đổi Số (Chạm)</button>
             <button id="ghepdansoButton">Ghép Dàn Số</button>
+            <button id="KetQuaXoSoButton">Kết Quả Xổ Số</button>
             <button id="Keno-VietlottButton">Keno 1/80</button>
         </div>
     </div>
@@ -112,19 +113,23 @@
 
         // Sự kiện chuyển trang
         
+
+        document.getElementById('AIXOSOButton').addEventListener('click', () => { 
+            window.location.href = 'AIthongkexsmb.html';
+        });
+        document.getElementById('DanDe2ChamButton').addEventListener('click', () => { 
+            window.location.href = 'DanDe2Cham.html';
+        });
+         document.getElementById('ghepdansoButton').addEventListener('click', () => { 
+            window.location.href = 'https://giaimasohoc.net/tao-muc-so/';
+        });
+        document.getElementById('KetQuaXoSoButton').addEventListener('click', () => { 
+            window.location.href = 'https://mketqua.net/';
+        });
         document.getElementById('Keno-VietlottButton').addEventListener('click', () => { 
             window.location.href = 'Keno-Vietlott.html';
         });
     
-        document.getElementById('DanDe2ChamButton').addEventListener('click', () => { 
-            window.location.href = 'DanDe2Cham.html';
-        });
-        document.getElementById('AIXOSOButton').addEventListener('click', () => { 
-            window.location.href = 'AIthongkexsmb.html';
-        });
-        document.getElementById('ghepdansoButton').addEventListener('click', () => { 
-            window.location.href = 'https://giaimasohoc.net/tao-muc-so/';
-        });
 
         // Hiển thị thời gian
         function updateTime() {
