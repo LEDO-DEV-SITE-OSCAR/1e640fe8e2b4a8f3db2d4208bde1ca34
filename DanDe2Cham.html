@@ -48,16 +48,22 @@
         button:hover {
             background-color: #45a049;
         }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
         .home-btn {
             background-color: #008CBA;
         }
         .home-btn:hover {
             background-color: #007B9A;
+        }
+        .new-btn {
+            background-color: #FFC107;
+        }
+        .new-btn:hover {
+            background-color: #FFB300;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
         }
     </style>
 </head>
@@ -74,6 +80,13 @@
         <div class="result" id="result"></div>
         <br>
         <button class="home-btn" onclick="goHome()">Trang Chủ</button>
+        <br><br>
+        <!-- Các nút mới -->
+        <button class="new-btn" onclick="goToUrl('https://helo.com')">Cầu Đề 2 Chạm Nuôi Tuần - Chủ Nhật</button>
+        <br>
+        <button class="new-btn" onclick="goToUrl('https://helo1.com')">Cầu Lô Ver 1.0 - Quy Đổi</button>
+        <br>
+        <button class="new-btn" onclick="goToUrl('https://helo2.com')">Cầu Lô Ver 2.0 - Quy Đổi</button>
     </div>
 
     <script>
@@ -134,6 +147,11 @@
         // Hàm chuyển hướng về trang chủ
         function goHome() {
             window.location.href = "https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34";
+        }
+
+        // Hàm chuyển hướng đến URL
+        function goToUrl(url) {
+            window.location.href = url;
         }
     </script>
 </body>
