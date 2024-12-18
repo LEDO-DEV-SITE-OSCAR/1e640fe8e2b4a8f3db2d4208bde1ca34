@@ -43,18 +43,18 @@
     text-align: center;
     font-size: 18px;
     font-weight: bold;
-    color: #333; /* Màu mặc định */
     margin-bottom: 20px;
-    animation: rgbColorCycle 2s infinite; /* Tạo animation đổi màu */
+    background: linear-gradient(90deg, #ff8c8c, #ffa07a, #fff5ba, #baffc9, #bae1ff, #d9b3ff, #ffb3d9);
+    -webkit-background-clip: text;
+    color: transparent; /* Chữ trong suốt, lộ ra gradient */
+    animation: smoothGradientMove 5s infinite linear;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6); /* Hiệu ứng ánh sáng dịu */
 }
 
-/* Định nghĩa hiệu ứng đổi màu */
-@keyframes rgbColorCycle {
-    0% { color: red; }
-    25% { color: orange; }
-    50% { color: yellow; }
-    75% { color: green; }
-    100% { color: blue; }
+@keyframes smoothGradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
         .button-container {
             margin-top: 20px;
