@@ -16,7 +16,7 @@
     }
     header {
       background: #333;
-      color: green; /* Đổi màu chữ tiêu đề thành màu xanh lá cây */
+      color: #8bc34a; /* Màu xanh lá cây nhạt */
       padding: 10px 20px;
       text-align: center;
     }
@@ -29,7 +29,7 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     h1, h2, h3 {
-      color: #444;
+      color: #8bc34a; /* Màu xanh lá cây nhạt */
     }
     .form-group {
       margin-bottom: 15px;
@@ -146,13 +146,12 @@
       const chosenNumbers = generateSmartNumbers(hotNumbers, numToChoose);
 
       const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = `
-        <h3>Kết Quả Phân Tích</h3>
+      resultsDiv.innerHTML = 
+        `<h3>Kết Quả Phân Tích</h3>
         <p><strong>Tần suất các số nóng:</strong> ${hotNumbers.map(([num, freq]) => `${num}: ${freq} lần`).join(', ')}</p>
         <p><strong>Tần suất các số nguội:</strong> ${coldNumbers.map(([num, freq]) => `${num}: ${freq} lần`).join(', ')}</p>
         <p><strong>Độ lệch chuẩn:</strong> ${standardDeviation}</p>
-        <p><strong>Các số nên chọn:</strong> <span class="highlight">${chosenNumbers.join(', ')}</span></p>
-      `;
+        <p><strong>Các số nên chọn:</strong> <span class="highlight">${chosenNumbers.join(', ')}</span></p>`;
     });
   </script>
 </body>
