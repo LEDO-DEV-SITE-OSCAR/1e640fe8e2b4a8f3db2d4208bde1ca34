@@ -40,12 +40,22 @@
             margin: 20px auto;
         }
         .time-display {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333; /* Màu mặc định */
+    margin-bottom: 20px;
+    animation: rgbColorCycle 2s infinite; /* Tạo animation đổi màu */
+}
+
+/* Định nghĩa hiệu ứng đổi màu */
+@keyframes rgbColorCycle {
+    0% { color: red; }
+    25% { color: orange; }
+    50% { color: yellow; }
+    75% { color: green; }
+    100% { color: blue; }
+}
         .button-container {
             margin-top: 20px;
             display: flex;
