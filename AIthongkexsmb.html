@@ -111,6 +111,7 @@
             <option value="Miền Bắc">Xổ Số Miền Bắc - 27 Lần</option>
             <option value="Miền Trung">Xổ Số Miền Trung - 18 Lần</option>
             <option value="Miền Nam">Xổ Số Miền Nam - 18 Lần</option>
+            <option value="Live Bet">Live Bet</option> <!-- Thêm Live Bet -->
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
@@ -190,19 +191,14 @@
             "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp", "Bạc Liêu",
             "Bến Tre", "Vũng Tàu", "Cần Thơ", "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương",
             "Bình Phước", "Hậu Giang", "Long An", "Đồng Nai"
-        ]
+        ],
+        "Live Bet": ["Live Bet - A", "Live Bet - B"]
     };
 
-    const spinRecords = {}; // Lưu lịch sử quay theo từng đài
-
-    const resetDailySpins = () => {
-        const now = new Date();
-        const currentDate = now.toISOString().split("T")[0];
-        if (localStorage.getItem("lastResetDate") !== currentDate) {
-            localStorage.setItem("lastResetDate", currentDate);
-            localStorage.setItem("spinRecords", JSON.stringify({}));
-        }
-    };
+    document.getElementById("region").addEventListener("change", (e) => {
+        const region = e.target.value;
+        updateProvinceDropdown(region);
+    });
 
     const updateProvinceDropdown = (region) => {
         const provinceDropdown = document.getElementById("province");
@@ -215,13 +211,7 @@
         });
     };
 
-    document.getElementById("region").addEventListener("change", (e) => {
-        updateProvinceDropdown(e.target.value);
-    });
-
     document.getElementById("startSimulation").addEventListener("click", () => {
-        resetDailySpins();
-        const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
         const region = document.getElementById("region").value;
         const province = document.getElementById("province").value;
         const simulations = parseInt(document.getElementById("simulations").value, 10);
@@ -231,31 +221,36 @@
             return;
         }
 
-        if (spinData[province]) {
-            document.getElementById("spinNotice").style.display = "block";
-            document.getElementById("output").style.display = "none";
-            return;
+        if (region === "Live Bet") {
+            document.getElementById("spinNotice").style.display = "none";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output").style.display = "block";
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                displayResults(results, province);
+                document.getElementById("loading").style.display = "none";
+            }, 2000);
+        } else {
+            const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
+            if (spinData[province]) {
+                document.getElementById("spinNotice").style.display = "block";
+                document.getElementById("output").style.display = "none";
+                return;
+            }
+            spinData[province] = true;
+            localStorage.setItem("spinRecords", JSON.stringify(spinData));
+            document.getElementById("spinNotice").style.display = "none";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output").style.display = "block";
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                displayResults(results, province);
+                document.getElementById("loading").style.display = "none";
+            }, 2000);
         }
-
-        spinData[province] = true;
-        localStorage.setItem("spinRecords", JSON.stringify(spinData));
-
-        document.getElementById("spinNotice").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("output").style.display = "block";
-
-        setTimeout(() => {
-            const results = monteCarloSimulation(simulations);
-            displayResults(results, province);
-            document.getElementById("loading").style.display = "none";
-        }, 2000);
     });
 
-    // Reset provinces on load
     updateProvinceDropdown(document.getElementById("region").value);
-
-    // Reset daily spins automatically
-    resetDailySpins();
 </script>
 </body>
 </html>
