@@ -170,16 +170,6 @@
         `;
     };
 
-    const copyText = (text) => {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Đã sao chép!');
-    };
-
     const provinces = {
         "Miền Bắc": ["Truyền Thống", "Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
         "Miền Trung": [
