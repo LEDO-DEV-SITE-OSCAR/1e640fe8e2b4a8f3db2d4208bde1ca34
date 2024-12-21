@@ -144,7 +144,7 @@
         for (let i = 0; i < iterations; i++) {
             results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
             results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
-            const dan2D = fillWithProbability(new Set(), 50, 0, 99)
+            const dan2D = fillWithProbability(new Set(), 40, 0, 99)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b);
             results.dan2D.push(dan2D);
@@ -164,7 +164,7 @@
             <h2>Kết quả Xổ Số: ${province}</h2>
             <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
             <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
-            <p><strong>Dàn 2D(50S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
+            <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
             <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
             <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
         `;
