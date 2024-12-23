@@ -111,7 +111,7 @@
             <option value="Miền Bắc">Xổ Số Miền Bắc - 27 Lần</option>
             <option value="Miền Trung">Xổ Số Miền Trung - 18 Lần</option>
             <option value="Miền Nam">Xổ Số Miền Nam - 18 Lần</option>
-            <option value="Live Bet">Live Bet - 1 Dàn Nuôi 2 Ván Nếu Ra => Bỏ (Quay 5 Phiên)</option>
+            <option value="Live Bet">Live Bet - 1 Dàn Nuôi 2 Ván Nếu Ra => Bỏ (Quay 5 Phiên)</option> <!-- Thêm Live Bet -->
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
@@ -122,7 +122,6 @@
         <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
         <div class="result-section" id="result"></div>
     </div>
-    <button class="btn" id="resetStorage">Reset Dữ Liệu Quay</button>
     <button class="btn" id="homeButton">Trang Chủ</button>
 </div>
 <script>
@@ -159,21 +158,51 @@
         return results;
     };
 
-    const isSameDay = (date1, date2) => {
-        return date1.getFullYear() === date2.getFullYear() &&
-               date1.getMonth() === date2.getMonth() &&
-               date1.getDate() === date2.getDate();
+    const displayResults = (results, province) => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <h2>Kết quả Xổ Số: ${province}</h2>
+            <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
+            <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
+            <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
+            <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
+            <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
+        `;
+    };
+
+    const copyText = (text) => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Đã sao chép!');
     };
 
     const provinces = {
-        "Miền Bắc": ["Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", "Nam Định", "Quảng Ninh"],
-        "Miền Trung": ["Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", "Quảng Nam"],
-        "Miền Nam": ["TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", "Đồng Tháp"],
+        "Miền Bắc": ["Hà Nội", "Thái Bình", "Bắc Ninh", "Hải Phòng", 
+        "Nam Định", "Quảng Ninh"],
+        "Miền Trung": [
+            "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
+        "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
+        "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+        ],
+        "Miền Nam": [
+            "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
+        "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
+        "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
+        "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
+        ],
         "Live Bet": ["Live Bet - A", "Live Bet - B"]
     };
 
     document.getElementById("region").addEventListener("change", (e) => {
         const region = e.target.value;
+        updateProvinceDropdown(region);
+    });
+
+    const updateProvinceDropdown = (region) => {
         const provinceDropdown = document.getElementById("province");
         provinceDropdown.innerHTML = "";
         provinces[region].forEach(province => {
@@ -182,62 +211,48 @@
             option.textContent = province;
             provinceDropdown.appendChild(option);
         });
-    });
+    };
 
     document.getElementById("startSimulation").addEventListener("click", () => {
         const region = document.getElementById("region").value;
         const province = document.getElementById("province").value;
         const simulations = parseInt(document.getElementById("simulations").value, 10);
-        const today = new Date();
 
         if (!simulations || simulations <= 0) {
             alert("Vui lòng nhập số phiên chạy hợp lệ!");
             return;
         }
 
-        const spinData = JSON.parse(localStorage.getItem("lastSpinData") || "{}");
-        const lastSpinDate = spinData[province] ? new Date(spinData[province]) : null;
-
-        if (lastSpinDate && isSameDay(today, lastSpinDate)) {
-            console.log("Ngày hiện tại:", today);
-            console.log("Ngày lưu trữ lần cuối:", lastSpinDate);
-            document.getElementById("spinNotice").style.display = "block";
-            return;
-        }
-
-        document.getElementById("spinNotice").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("result").innerHTML = "";
-
-        const results = monteCarloSimulation(simulations);
-
-        spinData[province] = today.toISOString();
-        localStorage.setItem("lastSpinData", JSON.stringify(spinData));
-
-        setTimeout(() => {
-            document.getElementById("loading").style.display = "none";
-            const resultDiv = document.getElementById("result");
-
-            resultDiv.innerHTML += `<h2>Kết quả mô phỏng (${province})</h2>`;
-            resultDiv.innerHTML += `<p><strong>Dàn 2D:</strong> ${results.dan2D.map(x => x.join(", ")).join("<br>")}</p>`;
-            resultDiv.innerHTML += `<p><strong>Gép 3D:</strong> ${results.ghep3D.map(x => x.join(", ")).join("<br>")}</p>`;
-            resultDiv.innerHTML += `<p><strong>Gép 4D:</strong> ${results.ghep4D.map(x => x.join(", ")).join("<br>")}</p>`;
-            resultDiv.innerHTML += `<p><strong>Mega 6/45:</strong> ${results.mega6_45.map(x => x.join(", ")).join("<br>")}</p>`;
-            resultDiv.innerHTML += `<p><strong>Power 6/55:</strong> ${results.power6_55.map(x => x.join(", ")).join("<br>")}</p>`;
+        if (region === "Live Bet") {
+            document.getElementById("spinNotice").style.display = "none";
+            document.getElementById("loading").style.display = "block";
             document.getElementById("output").style.display = "block";
-        }, 2000);
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                displayResults(results, province);
+                document.getElementById("loading").style.display = "none";
+            }, 2000);
+        } else {
+            const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
+            if (spinData[province]) {
+                document.getElementById("spinNotice").style.display = "block";
+                document.getElementById("output").style.display = "none";
+                return;
+            }
+            spinData[province] = true;
+            localStorage.setItem("spinRecords", JSON.stringify(spinData));
+            document.getElementById("spinNotice").style.display = "none";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output").style.display = "block";
+            setTimeout(() => {
+                const results = monteCarloSimulation(simulations);
+                displayResults(results, province);
+                document.getElementById("loading").style.display = "none";
+            }, 2000);
+        }
     });
 
-    document.getElementById("resetStorage").addEventListener("click", () => {
-        localStorage.removeItem("lastSpinData");
-        alert("Đã xóa dữ liệu quay. Bạn có thể quay lại hôm nay.");
-    });
-
-    document.getElementById("homeButton").addEventListener("click", () => {
-        window.location.reload();
-    });
-
-    document.getElementById("region").dispatchEvent(new Event("change"));
+    updateProvinceDropdown(document.getElementById("region").value);
 </script>
 </body>
 </html>
