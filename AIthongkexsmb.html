@@ -111,6 +111,7 @@
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
             <option value="Miền Trung">Xổ Số Miền Trung</option>
             <option value="Miền Nam">Xổ Số Miền Nam</option>
+            <option value="Live Bet">Live Bet</option> <!-- Thêm Live Bet -->
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
@@ -133,7 +134,7 @@
     };
 
     const monteCarloSimulation = (iterations) => {
-        console.log(Chạy ${iterations} phiên mô phỏng...); // Xác nhận số phiên chạy
+        console.log(`Chạy ${iterations} phiên mô phỏng...`); // Xác nhận số phiên chạy
         const results = {
             ghep4D: [],
             ghep3D: [],
@@ -160,14 +161,14 @@
 
     const displayResults = (results, province) => {
         const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = 
+        resultDiv.innerHTML = `
             <h2>Kết quả Xổ Số: ${province}</h2>
             <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
             <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
             <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
             <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
             <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
-        ;
+        `;
     };
 
     const copyText = (text) => {
@@ -192,7 +193,8 @@
         "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
         "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
         "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
-        ]
+        ],
+        "Live Bet": ["Live Bet - A", "Live Bet - B"]
     };
 
     const updateProvinceDropdown = (region) => {
