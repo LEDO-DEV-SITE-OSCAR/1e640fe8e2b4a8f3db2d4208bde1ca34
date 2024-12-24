@@ -105,7 +105,7 @@
     <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
     <div class="input-section">
        <label for="simulations">Số phiên chạy tần suất:</label>
-<input type="number" id="simulations" value="10000" readonly>
+       <input type="number" id="simulations" value="10000" readonly>
         <label for="region">Chọn miền:</label>
         <select id="region">
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
@@ -124,6 +124,7 @@
     </div>
     <button class="btn" id="homeButton">Trang Chủ</button>
 </div>
+
 <script>
     const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const fillWithProbability = (set, count, min, max) => {
@@ -161,7 +162,7 @@
 
     const displayResults = (results, province) => {
         const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = `
+        resultDiv.innerHTML = `  
             <h2>Kết quả Xổ Số: ${province}</h2>
             <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
             <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
@@ -185,21 +186,28 @@
         "Miền Bắc": ["Hà Nội"],
         "Miền Trung": [
             "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
-        "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
-        "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+            "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
+            "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
         ],
         "Miền Nam": [
             "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
-        "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
-        "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
-        "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
+            "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vĩnh Long", "Long An", 
+            "Tây Ninh", "Bình Dương", "Bình Phước", "Sóc Trăng", "Trà Vinh", 
+            "Vũng Tàu", "An Giang"
         ],
-        "Live Bet": ["Live Bet - A", "Live Bet - B"]
+        "Live Bet": []  // Không có tỉnh/thành phố khi chọn Live Bet
     };
 
     const updateProvinceDropdown = (region) => {
         const provinceDropdown = document.getElementById("province");
         provinceDropdown.innerHTML = "";
+        
+        if (region === "Live Bet") {
+            provinceDropdown.style.display = "none";
+            return;
+        }
+        
+        provinceDropdown.style.display = "block";
         provinces[region].forEach(province => {
             const option = document.createElement("option");
             option.value = province;
@@ -208,55 +216,35 @@
         });
     };
 
-    const isNewDay = () => {
-        const today = new Date().toLocaleDateString();
-        const lastSpinDate = localStorage.getItem('lastSpinDate');
-        if (lastSpinDate !== today) {
-            localStorage.setItem('lastSpinDate', today);
-            localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
-            return true;
-        }
-        return false;
-    };
+    document.getElementById("region").addEventListener("change", (event) => {
+        const selectedRegion = event.target.value;
+        updateProvinceDropdown(selectedRegion);
+    });
 
     document.getElementById("startSimulation").addEventListener("click", () => {
-    const region = document.getElementById("region").value;
-    const province = document.getElementById("province").value;
-    const simulations = parseInt(document.getElementById("simulations").value, 10);
+        const region = document.getElementById("region").value;
+        const province = document.getElementById("province").value;
 
-    if (!simulations || simulations <= 0) {
-        alert("Vui lòng nhập số phiên chạy hợp lệ!");
-        return;
-    }
-
-    if (region !== "Live Bet") { // Chỉ kiểm tra giới hạn quay nếu không phải Live Bet
-        if (isNewDay()) {
-            console.log("Reset data for a new day.");
-        }
-
-        const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-        if (spinData[province]) {
-            document.getElementById("spinNotice").style.display = "block";
-            document.getElementById("output").style.display = "none";
+        if (region === "Live Bet") {
+            alert('Chọn khu vực "Live Bet" không yêu cầu tỉnh/thành phố');
             return;
         }
-        spinData[province] = true;
-        localStorage.setItem("spinRecords", JSON.stringify(spinData));
-    }
 
-    document.getElementById("spinNotice").style.display = "none";
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("output").style.display = "block";
+        if (!province) {
+            alert('Vui lòng chọn một tỉnh/thành phố');
+            return;
+        }
 
-    setTimeout(() => {
-        const results = monteCarloSimulation(simulations);
-        displayResults(results, province);
-        document.getElementById("loading").style.display = "none";
-    }, 2000);
-});
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('spinNotice').style.display = 'none';
 
-
-    updateProvinceDropdown(document.getElementById("region").value);
+        setTimeout(() => {
+            const results = monteCarloSimulation(10000);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('output').style.display = 'block';
+            displayResults(results, province);
+        }, 2000);
+    });
 </script>
 </body>
 </html>
