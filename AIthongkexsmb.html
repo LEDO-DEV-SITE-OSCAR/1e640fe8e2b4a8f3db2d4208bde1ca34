@@ -196,11 +196,6 @@
         "Live Bet": ["Live Bet - A", "Live Bet - B"]
     };
 
-    document.getElementById("region").addEventListener("change", (e) => {
-        const region = e.target.value;
-        updateProvinceDropdown(region);
-    });
-
     const updateProvinceDropdown = (region) => {
         const provinceDropdown = document.getElementById("province");
         provinceDropdown.innerHTML = "";
@@ -212,6 +207,22 @@
         });
     };
 
+    const isNewDay = () => {
+        const today = new Date().toLocaleDateString();
+        const lastSpinDate = localStorage.getItem('lastSpinDate');
+        if (lastSpinDate !== today) {
+            localStorage.setItem('lastSpinDate', today);
+            localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
+            return true;
+        }
+        return false;
+    };
+
+    document.getElementById("region").addEventListener("change", (e) => {
+        const region = e.target.value;
+        updateProvinceDropdown(region);
+    });
+
     document.getElementById("startSimulation").addEventListener("click", () => {
         const region = document.getElementById("region").value;
         const province = document.getElementById("province").value;
@@ -222,33 +233,26 @@
             return;
         }
 
-        if (region === "Live Bet") {
-            document.getElementById("spinNotice").style.display = "none";
-            document.getElementById("loading").style.display = "block";
-            document.getElementById("output").style.display = "block";
-            setTimeout(() => {
-                const results = monteCarloSimulation(simulations);
-                displayResults(results, province);
-                document.getElementById("loading").style.display = "none";
-            }, 2000);
-        } else {
-            const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-            if (spinData[province]) {
-                document.getElementById("spinNotice").style.display = "block";
-                document.getElementById("output").style.display = "none";
-                return;
-            }
-            spinData[province] = true;
-            localStorage.setItem("spinRecords", JSON.stringify(spinData));
-            document.getElementById("spinNotice").style.display = "none";
-            document.getElementById("loading").style.display = "block";
-            document.getElementById("output").style.display = "block";
-            setTimeout(() => {
-                const results = monteCarloSimulation(simulations);
-                displayResults(results, province);
-                document.getElementById("loading").style.display = "none";
-            }, 2000);
+        if (isNewDay()) {
+            console.log("Reset data for a new day.");
         }
+
+        const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
+        if (spinData[province]) {
+            document.getElementById("spinNotice").style.display = "block";
+            document.getElementById("output").style.display = "none";
+            return;
+        }
+        spinData[province] = true;
+        localStorage.setItem("spinRecords", JSON.stringify(spinData));
+        document.getElementById("spinNotice").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("output").style.display = "block";
+        setTimeout(() => {
+            const results = monteCarloSimulation(simulations);
+            displayResults(results, province);
+            document.getElementById("loading").style.display = "none";
+        }, 2000);
     });
 
     updateProvinceDropdown(document.getElementById("region").value);
