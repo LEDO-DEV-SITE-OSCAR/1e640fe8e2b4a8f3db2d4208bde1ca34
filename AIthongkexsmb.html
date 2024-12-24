@@ -219,21 +219,17 @@
         return false;
     };
 
-    document.getElementById("region").addEventListener("change", (e) => {
-        const region = e.target.value;
-        updateProvinceDropdown(region);
-    });
-
     document.getElementById("startSimulation").addEventListener("click", () => {
-        const region = document.getElementById("region").value;
-        const province = document.getElementById("province").value;
-        const simulations = parseInt(document.getElementById("simulations").value, 10);
+    const region = document.getElementById("region").value;
+    const province = document.getElementById("province").value;
+    const simulations = parseInt(document.getElementById("simulations").value, 10);
 
-        if (!simulations || simulations <= 0) {
-            alert("Vui lòng nhập số phiên chạy hợp lệ!");
-            return;
-        }
+    if (!simulations || simulations <= 0) {
+        alert("Vui lòng nhập số phiên chạy hợp lệ!");
+        return;
+    }
 
+    if (region !== "Live Bet") { // Chỉ kiểm tra giới hạn quay nếu không phải Live Bet
         if (isNewDay()) {
             console.log("Reset data for a new day.");
         }
@@ -246,15 +242,19 @@
         }
         spinData[province] = true;
         localStorage.setItem("spinRecords", JSON.stringify(spinData));
-        document.getElementById("spinNotice").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("output").style.display = "block";
-        setTimeout(() => {
-            const results = monteCarloSimulation(simulations);
-            displayResults(results, province);
-            document.getElementById("loading").style.display = "none";
-        }, 2000);
-    });
+    }
+
+    document.getElementById("spinNotice").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("output").style.display = "block";
+
+    setTimeout(() => {
+        const results = monteCarloSimulation(simulations);
+        displayResults(results, province);
+        document.getElementById("loading").style.display = "none";
+    }, 2000);
+});
+
 
     updateProvinceDropdown(document.getElementById("region").value);
 </script>
