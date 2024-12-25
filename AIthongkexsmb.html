@@ -104,19 +104,20 @@
 <div class="container">
     <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
     <div class="input-section">
-       <label for="simulations">Số phiên chạy tần suất:</label>
-<input type="number" id="simulations" value="10000" readonly>
+        <label for="simulations">Số phiên chạy tần suất:</label>
+        <input type="number" id="simulations" value="10000" readonly>
         <label for="region">Chọn miền:</label>
         <select id="region">
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
             <option value="Miền Trung">Xổ Số Miền Trung</option>
             <option value="Miền Nam">Xổ Số Miền Nam</option>
-            <option value="Live Bet">Live Bet</option> <!-- Thêm Live Bet -->
+            <option value="Live Bet">Live Bet</option>
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
     </div>
     <button class="btn" id="startSimulation">Lấy Kết Quả</button>
+    <button class="btn" id="resetButton" style="display: none;">Reset Quay</button>
     <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
     <div class="output-section" id="output">
         <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
@@ -134,7 +135,6 @@
     };
 
     const monteCarloSimulation = (iterations) => {
-        console.log(`Chạy ${iterations} phiên mô phỏng...`); // Xác nhận số phiên chạy
         const results = {
             ghep4D: [],
             ghep3D: [],
@@ -183,17 +183,8 @@
 
     const provinces = {
         "Miền Bắc": ["Hà Nội"],
-        "Miền Trung": [
-            "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
-        "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
-        "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
-        ],
-        "Miền Nam": [
-            "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
-        "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
-        "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
-        "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
-        ],
+        "Miền Trung": ["Kon Tum", "Khánh Hòa", "Phú Yên"],
+        "Miền Nam": ["TP.HCM", "Kiên Giang", "Lâm Đồng"],
         "Live Bet": ["Live Bet - A", "Live Bet - B"]
     };
 
@@ -206,6 +197,9 @@
             option.textContent = province;
             provinceDropdown.appendChild(option);
         });
+        // Hiển thị nút Reset nếu chọn Live Bet
+        const resetButton = document.getElementById("resetButton");
+        resetButton.style.display = region === "Live Bet" ? "block" : "none";
     };
 
     const isNewDay = () => {
@@ -256,7 +250,13 @@
         }, 2000);
     });
 
+    document.getElementById("resetButton").addEventListener("click", () => {
+        localStorage.removeItem("spinRecords");
+        alert("Đã reset trạng thái quay cho Live Bet!");
+    });
+
     updateProvinceDropdown(document.getElementById("region").value);
 </script>
+
 </body>
 </html>
