@@ -173,15 +173,36 @@
         `;
     };
 
+    //đã sao chép
     const copyText = (text) => {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Đã sao chép!');
-    };
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    // Tạo thông báo tùy chỉnh
+    const notification = document.createElement('div');
+    notification.innerText = 'Đã sao chép!';
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.padding = '10px 20px';
+    notification.style.backgroundColor = '#4caf50';
+    notification.style.color = '#fff';
+    notification.style.borderRadius = '5px';
+    notification.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    notification.style.zIndex = '1000';
+    notification.style.fontSize = '16px';
+    document.body.appendChild(notification);
+
+    // Tự động xóa thông báo sau 1 giây
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 1000);
+};
+//kết thúc code thông báo
 
     const provinces = {
     "Miền Bắc": ["Hà Nội"],
