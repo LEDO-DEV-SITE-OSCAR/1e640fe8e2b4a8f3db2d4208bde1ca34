@@ -111,7 +111,7 @@
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
             <option value="Miền Trung">Xổ Số Miền Trung</option>
             <option value="Miền Nam">Xổ Số Miền Nam</option>
-            <option value="Live Bet">Live Bet</option> 
+            <option value="Lotto Ku">Lotto Ku</option> 
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
@@ -212,14 +212,14 @@ const updateProvinceDropdown = (region) => {
         provinceDropdown.appendChild(option);
     });
 
-    // Hiển thị nút "Reset Quay" chỉ khi chọn Live Bet
+    // Hiển thị nút "Reset Quay" chỉ khi chọn Lotto Ku
     const resetButton = document.getElementById("resetSpin");
-    resetButton.style.display = (region === "Live Bet") ? "block" : "none";
+    resetButton.style.display = (region === "Lotto Ku") ? "block" : "none";
 
-    // Hiển thị bộ đếm chỉ khi chọn Live Bet
+    // Hiển thị bộ đếm chỉ khi chọn Lotto Ku
     const countDisplay = document.getElementById("spinCount");
-    countDisplay.style.display = (region === "Live Bet") ? "block" : "none";
-    if (region === "Live Bet") {
+    countDisplay.style.display = (region === "Lotto Ku") ? "block" : "none";
+    if (region === "Lotto Ku") {
         countDisplay.textContent = `Số lần quay: ${spinCount}`;
     }
 };
@@ -255,7 +255,7 @@ document.getElementById("startSimulation").addEventListener("click", () => {
     }
 
     const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-    if (spinData[province] && region !== "Live Bet") {
+    if (spinData[province] && region !== "Lotto Ku") {
         document.getElementById("spinNotice").style.display = "block";
         document.getElementById("output").style.display = "none";
         return;
@@ -271,8 +271,8 @@ document.getElementById("startSimulation").addEventListener("click", () => {
         document.getElementById("loading").style.display = "none";
     }, 2000);
 
-    // Nếu là Live Bet, tăng bộ đếm lên 1
-    if (region === "Live Bet") {
+    // Nếu là Lotto Ku, tăng bộ đếm lên 1
+    if (region === "Lotto Ku") {
         spinCount++;
         const countDisplay = document.getElementById("spinCount");
         countDisplay.textContent = `Số lần quay: ${spinCount}`;
@@ -282,12 +282,12 @@ document.getElementById("startSimulation").addEventListener("click", () => {
 // Thêm sự kiện cho nút "Reset Quay"
 document.getElementById("resetSpin").addEventListener("click", () => {
     const region = document.getElementById("region").value;
-    if (region === "Live Bet") {
+    if (region === "Lotto Ku") {
         localStorage.removeItem("spinRecords");
         spinCount = 0;  // Reset bộ đếm về 0
         const countDisplay = document.getElementById("spinCount");
         countDisplay.textContent = `Số lần quay: ${spinCount}`;
-        alert("Đã reset quay cho Live Bet!");
+        alert("Đã reset quay cho Lotto Ku!");
     }
 });
 
