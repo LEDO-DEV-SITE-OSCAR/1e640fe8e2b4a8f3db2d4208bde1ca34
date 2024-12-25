@@ -117,6 +117,7 @@
         <select id="province"></select>
     </div>
     <button class="btn" id="startSimulation">Lấy Kết Quả</button>
+    <button id="resetSpin" style="display: none;">Reset Quay</button>
     <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
     <div class="output-section" id="output">
         <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
@@ -182,79 +183,93 @@
     };
 
     const provinces = {
-        "Miền Bắc": ["Hà Nội"],
-        "Miền Trung": [
-            "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
+    "Miền Bắc": ["Hà Nội"],
+    "Miền Trung": [
+        "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
         "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
         "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
-        ],
-        "Miền Nam": [
-            "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
+    ],
+    "Miền Nam": [
+        "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
         "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
         "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
         "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
-        ],
-        "Live Bet": ["Live Bet - A", "Live Bet - B"]
-    };
+    ],
+    "Live Bet": ["Live Bet - A", "Live Bet - B"]
+};
 
-    const updateProvinceDropdown = (region) => {
-        const provinceDropdown = document.getElementById("province");
-        provinceDropdown.innerHTML = "";
-        provinces[region].forEach(province => {
-            const option = document.createElement("option");
-            option.value = province;
-            option.textContent = province;
-            provinceDropdown.appendChild(option);
-        });
-    };
-
-    const isNewDay = () => {
-        const today = new Date().toLocaleDateString();
-        const lastSpinDate = localStorage.getItem('lastSpinDate');
-        if (lastSpinDate !== today) {
-            localStorage.setItem('lastSpinDate', today);
-            localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
-            return true;
-        }
-        return false;
-    };
-
-    document.getElementById("region").addEventListener("change", (e) => {
-        const region = e.target.value;
-        updateProvinceDropdown(region);
+const updateProvinceDropdown = (region) => {
+    const provinceDropdown = document.getElementById("province");
+    provinceDropdown.innerHTML = "";
+    provinces[region].forEach(province => {
+        const option = document.createElement("option");
+        option.value = province;
+        option.textContent = province;
+        provinceDropdown.appendChild(option);
     });
 
-    document.getElementById("startSimulation").addEventListener("click", () => {
-        const region = document.getElementById("region").value;
-        const province = document.getElementById("province").value;
-        const simulations = parseInt(document.getElementById("simulations").value, 10);
+    // Hiển thị nút "Reset Quay" chỉ khi chọn Live Bet
+    const resetButton = document.getElementById("resetSpin");
+    resetButton.style.display = (region === "Live Bet") ? "block" : "none";
+};
 
-        if (!simulations || simulations <= 0) {
-            alert("Vui lòng nhập số phiên chạy hợp lệ!");
-            return;
-        }
+const isNewDay = () => {
+    const today = new Date().toLocaleDateString();
+    const lastSpinDate = localStorage.getItem('lastSpinDate');
+    if (lastSpinDate !== today) {
+        localStorage.setItem('lastSpinDate', today);
+        localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
+        return true;
+    }
+    return false;
+};
 
-        if (isNewDay()) {
-            console.log("Reset data for a new day.");
-        }
+document.getElementById("region").addEventListener("change", (e) => {
+    const region = e.target.value;
+    updateProvinceDropdown(region);
+});
 
-        const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-        if (spinData[province]) {
-            document.getElementById("spinNotice").style.display = "block";
-            document.getElementById("output").style.display = "none";
-            return;
-        }
-        spinData[province] = true;
-        localStorage.setItem("spinRecords", JSON.stringify(spinData));
-        document.getElementById("spinNotice").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("output").style.display = "block";
-        setTimeout(() => {
-            const results = monteCarloSimulation(simulations);
-            displayResults(results, province);
-            document.getElementById("loading").style.display = "none";
-        }, 2000);
-    });
+document.getElementById("startSimulation").addEventListener("click", () => {
+    const region = document.getElementById("region").value;
+    const province = document.getElementById("province").value;
+    const simulations = parseInt(document.getElementById("simulations").value, 10);
+
+    if (!simulations || simulations <= 0) {
+        alert("Vui lòng nhập số phiên chạy hợp lệ!");
+        return;
+    }
+
+    if (isNewDay()) {
+        console.log("Reset data for a new day.");
+    }
+
+    const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
+    if (spinData[province] && region !== "Live Bet") {
+        document.getElementById("spinNotice").style.display = "block";
+        document.getElementById("output").style.display = "none";
+        return;
+    }
+    spinData[province] = true;
+    localStorage.setItem("spinRecords", JSON.stringify(spinData));
+    document.getElementById("spinNotice").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("output").style.display = "block";
+    setTimeout(() => {
+        const results = monteCarloSimulation(simulations);
+        displayResults(results, province);
+        document.getElementById("loading").style.display = "none";
+    }, 2000);
+});
+
+// Thêm sự kiện cho nút "Reset Quay"
+document.getElementById("resetSpin").addEventListener("click", () => {
+    const region = document.getElementById("region").value;
+    if (region === "Live Bet") {
+        localStorage.removeItem("spinRecords");
+        alert("Đã reset quay cho Live Bet!");
+    }
+});
+
 
     updateProvinceDropdown(document.getElementById("region").value);
 </script>
