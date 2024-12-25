@@ -171,7 +171,7 @@
             results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
 
             // Sử dụng Weighted Random Sampling cho dàn số 2D
-            const dan2D = fillWithProbabilityWeighted(new Set(), 40, weights2D, 0, 99)
+            const dan2D = fillWithProbabilityWeighted(new Set(), 50, weights2D, 0, 99)
                 .map(n => n.toString().padStart(2, '0')) // Đảm bảo định dạng 2 chữ số
                 .sort((a, b) => a - b);
 
