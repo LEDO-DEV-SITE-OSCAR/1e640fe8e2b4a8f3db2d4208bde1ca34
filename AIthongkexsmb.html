@@ -127,32 +127,14 @@
     <button class="btn" id="homeButton">Trang Chủ</button>
 </div>
 <script>
-    // Hàm tạo số ngẫu nhiên trong khoảng [min, max]
     const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-    // Hàm tạo trọng số ngẫu nhiên cho từng số từ 00 đến 99 (cân bằng)
-    const weightedRandom = (weights) => {
-        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-        let random = Math.random() * totalWeight;
-        for (let i = 0; i < weights.length; i++) {
-            if (random < weights[i]) {
-                return i;
-            }
-            random -= weights[i];
-        }
-        return weights.length - 1; // Trường hợp lỗi an toàn
-    };
-
-    // Hàm tạo dàn số 2D sử dụng Weighted Random Sampling
-    const fillWithProbabilityWeighted = (set, count, weights, min, max) => {
+    const fillWithProbability = (set, count, min, max) => {
         while (set.size < count) {
-            const index = weightedRandom(weights); // Chọn số dựa trên trọng số
-            set.add(index); // Thêm số vào tập hợp
+            set.add(generateRandomNumber(min, max));
         }
         return [...set];
     };
 
-    // Hàm mô phỏng xổ số
     const monteCarloSimulation = (iterations) => {
         console.log(`Chạy ${iterations} phiên mô phỏng...`); // Xác nhận số phiên chạy
         const results = {
@@ -162,25 +144,16 @@
             mega6_45: [],
             power6_55: []
         };
-
-        // Xây dựng map trọng số cho các số từ 00 đến 99 (đảm bảo cân bằng)
-        const weights2D = Array(100).fill(1); // Trọng số bằng nhau cho tất cả các số (từ 0 đến 99)
-
         for (let i = 0; i < iterations; i++) {
             results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
             results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
-
-            // Sử dụng Weighted Random Sampling cho dàn số 2D
-            const dan2D = fillWithProbabilityWeighted(new Set(), 50, weights2D, 0, 99)
-                .map(n => n.toString().padStart(2, '0')) // Đảm bảo định dạng 2 chữ số
+            const dan2D = fillWithProbability(new Set(), 50, 0, 99)
+                .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b);
-
             results.dan2D.push(dan2D);
-
             results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b));
-
             results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b));
@@ -188,7 +161,6 @@
         return results;
     };
 
-    // Hàm hiển thị kết quả
     const displayResults = (results, province) => {
         const resultDiv = document.getElementById('result');
         resultDiv.innerHTML = `
@@ -200,25 +172,6 @@
             <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
         `;
     };
-
-    // Hàm sao chép kết quả
-    const copyText = (text) => {
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Sao chép thành công: " + text);
-        }).catch(err => {
-            alert("Sao chép thất bại: " + err);
-        });
-    };
-
-    // Hàm chạy mô phỏng
-    const runSimulation = () => {
-        const iterations = parseInt(document.getElementById('iterations').value, 10);
-        const province = document.getElementById('province').value || "Hà Nội";
-        const results = monteCarloSimulation(iterations);
-        displayResults(results, province);
-    };
-</script>
-
 
     //đã sao chép
     const copyText = (text) => {
