@@ -127,16 +127,36 @@
     <button class="btn" id="homeButton">Trang Chủ</button>
 </div>
 <script>
+    // Hàm tạo số ngẫu nhiên trong khoảng [min, max]
     const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const fillWithProbability = (set, count, min, max) => {
+
+    // Hàm tạo trọng số ngẫu nhiên
+    const weightedRandom = (weights) => {
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        let random = Math.random() * totalWeight;
+        for (let i = 0; i < weights.length; i++) {
+            if (random < weights[i]) {
+                return i;
+            }
+            random -= weights[i];
+        }
+        return weights.length - 1; // Trường hợp lỗi an toàn
+    };
+
+    // Hàm tạo tập hợp số ngẫu nhiên dựa trên trọng số
+    const fillWithProbabilityWeighted = (set, count, weights, min, max) => {
         while (set.size < count) {
-            set.add(generateRandomNumber(min, max));
+            const number = generateRandomNumber(min, max);
+            if (weightedRandom(weights) > 0) {
+                set.add(number);
+            }
         }
         return [...set];
     };
 
+    // Hàm mô phỏng xổ số
     const monteCarloSimulation = (iterations) => {
-        console.log(`Chạy ${iterations} phiên mô phỏng...`); // Xác nhận số phiên chạy
+        console.log(`Chạy ${iterations} phiên mô phỏng...`);
         const results = {
             ghep4D: [],
             ghep3D: [],
@@ -144,16 +164,24 @@
             mega6_45: [],
             power6_55: []
         };
+
+        // Trọng số mẫu - có thể tùy chỉnh
+        const weights2D = Array.from({ length: 100 }, () => generateRandomNumber(1, 10)); // Trọng số cho 2D
+
         for (let i = 0; i < iterations; i++) {
             results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
             results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
-            const dan2D = fillWithProbability(new Set(), 40, 0, 99)
+
+            const dan2D = fillWithProbabilityWeighted(new Set(), 50, weights2D, 0, 99)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b);
+
             results.dan2D.push(dan2D);
+
             results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b));
+
             results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55)
                 .map(n => n.toString().padStart(2, '0'))
                 .sort((a, b) => a - b));
@@ -161,17 +189,37 @@
         return results;
     };
 
+    // Hàm hiển thị kết quả
     const displayResults = (results, province) => {
         const resultDiv = document.getElementById('result');
         resultDiv.innerHTML = `
             <h2>Kết quả Xổ Số: ${province}</h2>
-            <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
-            <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
-            <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
+            <p><strong>Dàn 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
+            <p><strong>Dàn 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
+            <p><strong>Dàn 2D:</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
             <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
             <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
         `;
     };
+
+    // Hàm sao chép kết quả
+    const copyText = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Sao chép thành công: " + text);
+        }).catch(err => {
+            alert("Sao chép thất bại: " + err);
+        });
+    };
+
+    // Hàm chạy mô phỏng
+    const runSimulation = () => {
+        const iterations = parseInt(document.getElementById('iterations').value, 10);
+        const province = document.getElementById('province').value || "Hà Nội";
+        const results = monteCarloSimulation(iterations);
+        displayResults(results, province);
+    };
+</script>
+
 
     //đã sao chép
     const copyText = (text) => {
