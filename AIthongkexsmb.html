@@ -118,6 +118,7 @@
     </div>
     <button class="btn" id="startSimulation">Lấy Kết Quả</button>
     <button id="resetSpin" style="display: none;">Reset</button>
+    <div id="spinCount" style="display: none;">Số lần quay: 0</div>
     <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
     <div class="output-section" id="output">
         <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
@@ -195,8 +196,11 @@
         "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
         "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
     ],
-    "Live Bet": ["Live Bet - A"]
+    "Live Bet": ["Live Bet - A", "Live Bet - B"]
 };
+
+// Bộ đếm cho số lần bấm quay
+let spinCount = 0;
 
 const updateProvinceDropdown = (region) => {
     const provinceDropdown = document.getElementById("province");
@@ -211,6 +215,13 @@ const updateProvinceDropdown = (region) => {
     // Hiển thị nút "Reset Quay" chỉ khi chọn Live Bet
     const resetButton = document.getElementById("resetSpin");
     resetButton.style.display = (region === "Live Bet") ? "block" : "none";
+
+    // Hiển thị bộ đếm chỉ khi chọn Live Bet
+    const countDisplay = document.getElementById("spinCount");
+    countDisplay.style.display = (region === "Live Bet") ? "block" : "none";
+    if (region === "Live Bet") {
+        countDisplay.textContent = `Số lần quay: ${spinCount}`;
+    }
 };
 
 const isNewDay = () => {
@@ -259,6 +270,13 @@ document.getElementById("startSimulation").addEventListener("click", () => {
         displayResults(results, province);
         document.getElementById("loading").style.display = "none";
     }, 2000);
+
+    // Nếu là Live Bet, tăng bộ đếm lên 1
+    if (region === "Live Bet") {
+        spinCount++;
+        const countDisplay = document.getElementById("spinCount");
+        countDisplay.textContent = `Số lần quay: ${spinCount}`;
+    }
 });
 
 // Thêm sự kiện cho nút "Reset Quay"
@@ -266,9 +284,13 @@ document.getElementById("resetSpin").addEventListener("click", () => {
     const region = document.getElementById("region").value;
     if (region === "Live Bet") {
         localStorage.removeItem("spinRecords");
+        spinCount = 0;  // Reset bộ đếm về 0
+        const countDisplay = document.getElementById("spinCount");
+        countDisplay.textContent = `Số lần quay: ${spinCount}`;
         alert("Đã reset quay cho Live Bet!");
     }
 });
+
 
 
     updateProvinceDropdown(document.getElementById("region").value);
