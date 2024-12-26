@@ -115,21 +115,21 @@
         </select>
         <label for="province">Chọn đài xổ số:</label>
         <select id="province"></select>
-    </div>
-    <button id="resetSpin" style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease;">Reset</button>
-    <button class="btn" id="startSimulation">Lấy Kết Quả</button>
-
+    <div>
+    <button id="resetSpin" style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; margin-bottom: 10px;">Reset</button>
+    <button class="btn" id="startSimulation" style="margin-bottom: 10px;">Lấy Kết Quả</button>
     <div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">
-    Đã reset quay tất cả...!
-</div>
+        Đã reset quay tất cả...!
+    </div>
     <div id="spinCount" style="display: none;">Số lần quay: 0</div>
     <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
     <div class="output-section" id="output">
         <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
         <div class="result-section" id="result"></div>
     </div>
-    <button class="btn" id="homeButton">Trang Chủ</button>
+    <button class="btn" id="homeButton" style="margin-bottom: 10px;">Trang Chủ</button>
 </div>
+
 <script>
     // Tạo số ngẫu nhiên
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
