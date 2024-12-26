@@ -127,51 +127,102 @@
     <button class="btn" id="homeButton">Trang Chủ</button>
 </div>
 <script>
-    const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const fillWithProbability = (set, count, min, max) => {
-        while (set.size < count) {
-            set.add(generateRandomNumber(min, max));
-        }
-        return [...set];
-    };
+    // Tạo số ngẫu nhiên
+const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    const monteCarloSimulation = (iterations) => {
-        console.log(`Chạy ${iterations} phiên mô phỏng...`); // Xác nhận số phiên chạy
-        const results = {
-            ghep4D: [],
-            ghep3D: [],
-            dan2D: [],
-            mega6_45: [],
-            power6_55: []
-        };
-        for (let i = 0; i < iterations; i++) {
-            results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
-            results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9).sort((a, b) => a - b));
-            const dan2D = fillWithProbability(new Set(), 50, 0, 99)
-                .map(n => n.toString().padStart(2, '0'))
-                .sort((a, b) => a - b);
-            results.dan2D.push(dan2D);
-            results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45)
-                .map(n => n.toString().padStart(2, '0'))
-                .sort((a, b) => a - b));
-            results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55)
-                .map(n => n.toString().padStart(2, '0'))
-                .sort((a, b) => a - b));
-        }
-        return results;
-    };
+// Hàm tính tần suất xuất hiện của các số
+const calculateFrequency = (results) => {
+    const frequencyMap = {};
+    results.forEach(result => {
+        result.forEach(num => {
+            frequencyMap[num] = (frequencyMap[num] || 0) + 1;
+        });
+    });
+    return frequencyMap;
+};
 
-    const displayResults = (results, province) => {
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = `
-            <h2>Kết quả Xổ Số: ${province}</h2>
-            <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
-            <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
-            <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
-            <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
-            <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
-        `;
+// Hàm lấy các số với xác suất theo tần suất
+const getNumberWithFrequency = (min, max, frequencyMap) => {
+    const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+    // Sắp xếp dãy số theo tần suất giảm dần (số xuất hiện nhiều hơn sẽ có cơ hội cao hơn)
+    range.sort((a, b) => (frequencyMap[b] || 0) - (frequencyMap[a] || 0));
+    return range[0]; // Trả về số có tần suất cao nhất
+};
+
+// Hàm điền vào bộ số với xác suất (theo tần suất xuất hiện)
+const fillWithProbability = (set, count, min, max, frequencyMap) => {
+    while (set.size < count) {
+        const number = getNumberWithFrequency(min, max, frequencyMap);
+        set.add(number);
+    }
+    return [...set];
+};
+
+// Mô phỏng Monte Carlo với tần suất
+const monteCarloSimulation = (iterations) => {
+    console.log(`Chạy ${iterations} phiên mô phỏng...`);
+    const results = {
+        ghep4D: [],
+        ghep3D: [],
+        dan2D: [],
+        mega6_45: [],
+        power6_55: []
     };
+    
+    // Tạo đối tượng để lưu trữ tần suất
+    const frequencyMap = {};
+
+    for (let i = 0; i < iterations; i++) {
+        // Ghép 4D và 3D
+        results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
+        results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
+        
+        // Dàn 2D
+        const dan2D = fillWithProbability(new Set(), 50, 0, 99, frequencyMap)
+            .map(n => n.toString().padStart(2, '0'))
+            .sort((a, b) => a - b);
+        results.dan2D.push(dan2D);
+        
+        // Mega 6/45
+        results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45, frequencyMap)
+            .map(n => n.toString().padStart(2, '0'))
+            .sort((a, b) => a - b));
+        
+        // Power 6/55
+        results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55, frequencyMap)
+            .map(n => n.toString().padStart(2, '0'))
+            .sort((a, b) => a - b));
+    }
+    
+    // Cập nhật tần suất sau khi mô phỏng
+    const updatedFrequency = calculateFrequency([
+        ...results.ghep4D,
+        ...results.ghep3D,
+        ...results.dan2D,
+        ...results.mega6_45,
+        ...results.power6_55
+    ]);
+
+    // Kết hợp tần suất mới vào frequencyMap
+    Object.keys(updatedFrequency).forEach(num => {
+        frequencyMap[num] = (frequencyMap[num] || 0) + updatedFrequency[num];
+    });
+
+    return results;
+};
+
+const displayResults = (results, province) => {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `
+        <h2>Kết quả Xổ Số: ${province}</h2>
+        <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
+        <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
+        <p><strong>Dàn 2D(40S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
+        <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
+        <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
+    `;
+};
+
 
     //đã sao chép
     const copyText = (text) => {
