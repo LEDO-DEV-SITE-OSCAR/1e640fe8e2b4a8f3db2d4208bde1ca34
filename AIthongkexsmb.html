@@ -130,23 +130,28 @@
     // Tạo số ngẫu nhiên
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Hàm tính tần suất xuất hiện của các số
-const calculateFrequency = (results) => {
-    const frequencyMap = {};
-    results.forEach(result => {
-        result.forEach(num => {
-            frequencyMap[num] = (frequencyMap[num] || 0) + 1;
-        });
-    });
-    return frequencyMap;
-};
-
-// Hàm lấy các số với xác suất theo tần suất
+// Hàm lấy các số với xác suất theo tần suất (không sắp xếp lại mảng mỗi lần)
 const getNumberWithFrequency = (min, max, frequencyMap) => {
     const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-    // Sắp xếp dãy số theo tần suất giảm dần (số xuất hiện nhiều hơn sẽ có cơ hội cao hơn)
-    range.sort((a, b) => (frequencyMap[b] || 0) - (frequencyMap[a] || 0));
-    return range[0]; // Trả về số có tần suất cao nhất
+    
+    // Tính xác suất dựa trên tần suất
+    const totalFrequency = range.reduce((sum, num) => sum + (frequencyMap[num] || 0), 0);
+    
+    // Nếu tổng tần suất là 0 (chưa có số nào xuất hiện), chọn ngẫu nhiên
+    if (totalFrequency === 0) {
+        return range[Math.floor(Math.random() * range.length)];
+    }
+
+    // Nếu tổng tần suất > 0, chọn số với xác suất theo tần suất
+    const random = Math.random() * totalFrequency;
+    let cumulativeFrequency = 0;
+
+    for (let num of range) {
+        cumulativeFrequency += frequencyMap[num] || 0;
+        if (random <= cumulativeFrequency) {
+            return num;
+        }
+    }
 };
 
 // Hàm điền vào bộ số với xác suất (theo tần suất xuất hiện)
@@ -172,6 +177,7 @@ const monteCarloSimulation = (iterations) => {
     // Tạo đối tượng để lưu trữ tần suất
     const frequencyMap = {};
 
+    // Mô phỏng
     for (let i = 0; i < iterations; i++) {
         // Ghép 4D và 3D
         results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
@@ -193,24 +199,11 @@ const monteCarloSimulation = (iterations) => {
             .map(n => n.toString().padStart(2, '0'))
             .sort((a, b) => a - b));
     }
-    
-    // Cập nhật tần suất sau khi mô phỏng
-    const updatedFrequency = calculateFrequency([
-        ...results.ghep4D,
-        ...results.ghep3D,
-        ...results.dan2D,
-        ...results.mega6_45,
-        ...results.power6_55
-    ]);
-
-    // Kết hợp tần suất mới vào frequencyMap
-    Object.keys(updatedFrequency).forEach(num => {
-        frequencyMap[num] = (frequencyMap[num] || 0) + updatedFrequency[num];
-    });
 
     return results;
 };
 
+// Hiển thị kết quả
 const displayResults = (results, province) => {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `
@@ -222,6 +215,7 @@ const displayResults = (results, province) => {
         <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
     `;
 };
+
 
 
     //đã sao chép
