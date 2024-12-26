@@ -118,6 +118,9 @@
     </div>
     <button class="btn" id="startSimulation">Lấy Kết Quả</button>
     <button id="resetSpin" style="display: none;">Reset</button>
+    <div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">
+    Đã reset quay cho Lotto Ku!
+</div>
     <div id="spinCount" style="display: none;">Số lần quay: 0</div>
     <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
     <div class="output-section" id="output">
@@ -280,7 +283,7 @@ const updateProvinceDropdown = (region) => {
 
     // Hiển thị nút "Reset Quay" chỉ khi chọn Lotto Ku
     const resetButton = document.getElementById("resetSpin");
-    resetButton.style.display = (region === "Lotto Ku") ? "block" : "none";
+    resetButton.style.display = (region === "Miền Bắc") ? "block" : "none";
 
     // Hiển thị bộ đếm chỉ khi chọn Lotto Ku
     const countDisplay = document.getElementById("spinCount");
@@ -348,14 +351,23 @@ document.getElementById("startSimulation").addEventListener("click", () => {
 // Thêm sự kiện cho nút "Reset Quay"
 document.getElementById("resetSpin").addEventListener("click", () => {
     const region = document.getElementById("region").value;
-    if (region === "Lotto Ku") {
+    if (region === "Miền Bắc") {
         localStorage.removeItem("spinRecords");
         spinCount = 0;  // Reset bộ đếm về 0
         const countDisplay = document.getElementById("spinCount");
         countDisplay.textContent = `Số lần quay: ${spinCount}`;
-        alert("Đã reset quay cho Lotto Ku!");
+
+        // Hiển thị thông báo
+        const notification = document.getElementById("notification");
+        notification.style.display = "block";  // Hiển thị thông báo
+
+        // Ẩn thông báo sau 1 giây
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 1000);  // 1000ms = 1 giây
     }
 });
+
 
 
 
