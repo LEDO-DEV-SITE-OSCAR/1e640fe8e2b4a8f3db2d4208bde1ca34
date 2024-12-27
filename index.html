@@ -85,6 +85,22 @@
             color: #730038;
             margin-bottom: 15px;
         }
+
+        .hour-block {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .good-time {
+            color: green;
+        }
+
+        .bad-time {
+            color: red;
+        }
+
     </style>
     <script language="javascript" src="//www.minhngoc.net.vn/jquery/jquery-1.7.2.js"></script>
     <link rel="stylesheet" type="text/css" href="//www.minhngoc.net.vn/style/bangketqua_mini.css"/>
@@ -106,6 +122,18 @@
             <button id="ghepdansoButton">Ghép Dàn Số</button>
             <button id="KetQuaXoSoButton">Kết Quả Xổ Số</button>
         </div>
+
+        <h2>Khung Giờ Hợp Mệnh và Không Hợp Mệnh</h2>
+        <div class="hour-block" id="hour1">Giờ Tý (23h - 1h): Hành Thủy, Thủy sinh Mộc</div>
+        <div class="hour-block" id="hour2">Giờ Dần (3h - 5h): Hành Mộc, hợp với Mộc</div>
+        <div class="hour-block" id="hour3">Giờ Mão (5h - 7h): Hành Mộc, hợp với Mộc</div>
+        <div class="hour-block" id="hour4">Giờ Ngọ (11h - 13h): Hành Hỏa, Hỏa sinh Mộc</div>
+        <div class="hour-block" id="hour5">Giờ Mùi (13h - 15h): Hành Mộc, hợp với Mộc</div>
+        <div class="hour-block" id="hour6">Giờ Tuất (19h - 21h): Hành Thổ, Thổ sinh Mộc</div>
+        <div class="hour-block" id="hour7">Giờ Sửu (1h - 3h): Hành Thổ, Thổ khắc Mộc</div>
+        <div class="hour-block" id="hour8">Giờ Thìn (7h - 9h): Hành Thổ, Thổ khắc Mộc</div>
+        <div class="hour-block" id="hour9">Giờ Tỵ (9h - 11h): Hành Hỏa, có thể gây cạnh tranh</div>
+        <div class="hour-block" id="hour10">Giờ Hợi (21h - 23h): Hành Thủy, không tốt cho Mộc</div>
     </div>
 
     <!-- Kết quả xổ số Minh Ngọc -->
@@ -167,11 +195,47 @@
             const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng tính từ 0
             const year = now.getFullYear();
             
-            const hours = now.getHours().toString().padStart(2, '0');
+            const hours = now.getHours();
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
 
             timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+            updateHourColors(hours);
+        }
+
+        function updateHourColors(currentHour) {
+            // Các khung giờ hợp mệnh (Xanh Lá Cây)
+            const goodTimes = [23, 3, 5, 11, 13, 19];
+            // Các khung giờ không hợp mệnh (Đỏ)
+            const badTimes = [1, 7, 9, 21];
+
+            // Kiểm tra các giờ hợp mệnh và không hợp mệnh
+            const allHours = [
+                { id: "hour1", hour: 23, text: "Giờ Tý (23h - 1h): Hành Thủy, Thủy sinh Mộc" },
+                { id: "hour2", hour: 3, text: "Giờ Dần (3h - 5h): Hành Mộc, hợp với Mộc" },
+                { id: "hour3", hour: 5, text: "Giờ Mão (5h - 7h): Hành Mộc, hợp với Mộc" },
+                { id: "hour4", hour: 11, text: "Giờ Ngọ (11h - 13h): Hành Hỏa, Hỏa sinh Mộc" },
+                { id: "hour5", hour: 13, text: "Giờ Mùi (13h - 15h): Hành Mộc, hợp với Mộc" },
+                { id: "hour6", hour: 19, text: "Giờ Tuất (19h - 21h): Hành Thổ, Thổ sinh Mộc" },
+                { id: "hour7", hour: 1, text: "Giờ Sửu (1h - 3h): Hành Thổ, Thổ khắc Mộc" },
+                { id: "hour8", hour: 7, text: "Giờ Thìn (7h - 9h): Hành Thổ, Thổ khắc Mộc" },
+                { id: "hour9", hour: 9, text: "Giờ Tỵ (9h - 11h): Hành Hỏa, có thể gây cạnh tranh" },
+                { id: "hour10", hour: 21, text: "Giờ Hợi (21h - 23h): Hành Thủy, không tốt cho Mộc" },
+            ];
+
+            allHours.forEach(hour => {
+                const hourElement = document.getElementById(hour.id);
+                if (goodTimes.includes(hour.hour) && currentHour === hour.hour) {
+                    hourElement.classList.add('good-time');
+                    hourElement.classList.remove('bad-time');
+                } else if (badTimes.includes(hour.hour) && currentHour === hour.hour) {
+                    hourElement.classList.add('bad-time');
+                    hourElement.classList.remove('good-time');
+                } else {
+                    hourElement.classList.remove('good-time', 'bad-time');
+                }
+                hourElement.innerText = hour.text;
+            });
         }
 
         // Cập nhật thời gian mỗi giây
