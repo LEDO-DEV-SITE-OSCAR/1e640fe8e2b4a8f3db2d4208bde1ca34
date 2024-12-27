@@ -106,9 +106,6 @@
     <div class="input-section">
        <label for="simulations">Số phiên chạy tần suất:</label>
 <input type="number" id="simulations" value="50000" readonly>
-        <label for="previousResults">Nhập kết quả kỳ trước (các số đã ra, cách nhau bằng dấu phẩy):</label>
-<input type="text" id="previousResults" placeholder="Ví dụ: 01,02,03,...">
-
         <label for="region">Chọn miền:</label>
         <select id="region">
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
@@ -140,26 +137,23 @@
     // Tạo số ngẫu nhiên
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Lấy các số với xác suất theo tần suất, loại bỏ những số đã có trong kết quả quá khứ
-const getNumberWithFrequency = (min, max, frequencyMap, previousNumbers) => {
+// Hàm lấy các số với xác suất theo tần suất (không sắp xếp lại mảng mỗi lần)
+const getNumberWithFrequency = (min, max, frequencyMap) => {
     const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
     
-    // Lọc bỏ các số đã có trong kết quả quá khứ
-    const validRange = range.filter(num => !previousNumbers.has(num));
-
     // Tính xác suất dựa trên tần suất
-    const totalFrequency = validRange.reduce((sum, num) => sum + (frequencyMap[num] || 0), 0);
+    const totalFrequency = range.reduce((sum, num) => sum + (frequencyMap[num] || 0), 0);
     
     // Nếu tổng tần suất là 0 (chưa có số nào xuất hiện), chọn ngẫu nhiên
     if (totalFrequency === 0) {
-        return validRange[Math.floor(Math.random() * validRange.length)];
+        return range[Math.floor(Math.random() * range.length)];
     }
 
     // Nếu tổng tần suất > 0, chọn số với xác suất theo tần suất
     const random = Math.random() * totalFrequency;
     let cumulativeFrequency = 0;
 
-    for (let num of validRange) {
+    for (let num of range) {
         cumulativeFrequency += frequencyMap[num] || 0;
         if (random <= cumulativeFrequency) {
             return num;
@@ -167,17 +161,17 @@ const getNumberWithFrequency = (min, max, frequencyMap, previousNumbers) => {
     }
 };
 
-// Thêm tham số previousNumbers vào trong hàm fillWithProbability
-const fillWithProbability = (set, count, min, max, frequencyMap, previousNumbers) => {
+// Hàm điền vào bộ số với xác suất (theo tần suất xuất hiện)
+const fillWithProbability = (set, count, min, max, frequencyMap) => {
     while (set.size < count) {
-        const number = getNumberWithFrequency(min, max, frequencyMap, previousNumbers);
+        const number = getNumberWithFrequency(min, max, frequencyMap);
         set.add(number);
     }
     return [...set];
 };
 
-
-const monteCarloSimulation = (iterations, previousNumbers) => {
+// Mô phỏng Monte Carlo với tần suất
+const monteCarloSimulation = (iterations) => {
     console.log(`Chạy ${iterations} phiên mô phỏng...`);
     const results = {
         ghep4D: [],
@@ -187,28 +181,34 @@ const monteCarloSimulation = (iterations, previousNumbers) => {
         power6_55: []
     };
     
+    // Tạo đối tượng để lưu trữ tần suất
     const frequencyMap = {};
 
+    // Mô phỏng
     for (let i = 0; i < iterations; i++) {
-        results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap, previousNumbers).sort((a, b) => a - b));
-        results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap, previousNumbers).sort((a, b) => a - b));
-        const dan2D = fillWithProbability(new Set(), 39, 0, 99, frequencyMap, previousNumbers)
+        // Ghép 4D và 3D
+        results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
+        results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
+        
+        // Dàn 2D
+        const dan2D = fillWithProbability(new Set(), 39, 0, 99, frequencyMap)
             .map(n => n.toString().padStart(2, '0'))
             .sort((a, b) => a - b);
         results.dan2D.push(dan2D);
-
-        results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45, frequencyMap, previousNumbers)
+        
+        // Mega 6/45
+        results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45, frequencyMap)
             .map(n => n.toString().padStart(2, '0'))
             .sort((a, b) => a - b));
-
-        results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55, frequencyMap, previousNumbers)
+        
+        // Power 6/55
+        results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55, frequencyMap)
             .map(n => n.toString().padStart(2, '0'))
             .sort((a, b) => a - b));
     }
 
     return results;
 };
-
 
 // Hiển thị kết quả
 const displayResults = (results, province) => {
@@ -317,10 +317,6 @@ document.getElementById("startSimulation").addEventListener("click", () => {
     const region = document.getElementById("region").value;
     const province = document.getElementById("province").value;
     const simulations = parseInt(document.getElementById("simulations").value, 10);
-    const previousResultsInput = document.getElementById("previousResults").value;
-
-    // Chuyển kết quả quá khứ thành một tập hợp các số
-    const previousNumbers = new Set(previousResultsInput.split(',').map(num => parseInt(num.trim())));
 
     if (!simulations || simulations <= 0) {
         alert("Vui lòng nhập số phiên chạy hợp lệ!");
@@ -342,14 +338,11 @@ document.getElementById("startSimulation").addEventListener("click", () => {
     document.getElementById("spinNotice").style.display = "none";
     document.getElementById("loading").style.display = "block";
     document.getElementById("output").style.display = "block";
-
     setTimeout(() => {
-        const results = monteCarloSimulation(simulations, previousNumbers); // Truyền previousNumbers vào hàm mô phỏng
+        const results = monteCarloSimulation(simulations);
         displayResults(results, province);
         document.getElementById("loading").style.display = "none";
     }, 2000);
-});
-
 
     // Nếu là Lotto Ku, tăng bộ đếm lên 1
     if (region === "Lotto Ku") {
