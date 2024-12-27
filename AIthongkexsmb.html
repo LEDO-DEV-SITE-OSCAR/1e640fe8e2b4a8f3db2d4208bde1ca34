@@ -284,6 +284,15 @@ const saveResultsToLocalStorage = (province, results) => {
 };
 
 // Hàm hiển thị kết quả đã quay
+// Lưu kết quả vào localStorage
+const saveResultsToLocalStorage = (province, results) => {
+    const savedResults = JSON.parse(localStorage.getItem('dailyResults') || '{}');
+    savedResults[province] = results;
+    localStorage.setItem('dailyResults', JSON.stringify(savedResults));
+    console.log("Results saved:", savedResults);  // Kiểm tra kết quả đã được lưu
+};
+
+// Hàm hiển thị kết quả đã quay
 const displaySavedResults = () => {
     const savedResults = JSON.parse(localStorage.getItem('dailyResults') || '{}');
     const resultDiv = document.getElementById('result');
@@ -415,6 +424,7 @@ document.getElementById("resetSpin").addEventListener("click", () => {
 document.getElementById("showResultsButton").addEventListener("click", () => {
     displaySavedResults();
 });
+
 
     updateProvinceDropdown(document.getElementById("region").value);
 </script>
