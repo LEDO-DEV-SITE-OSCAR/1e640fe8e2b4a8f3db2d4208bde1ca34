@@ -185,58 +185,60 @@
 
         // Hiển thị thời gian
         function updateTime() {
-            const timeDisplay = document.getElementById('timeDisplay');
-            const now = new Date();
-            
-            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-            const dayName = days[now.getDay()];
-            
-            const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng tính từ 0
-            const year = now.getFullYear();
-            
-            const hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const now = new Date();
+    
+    const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const dayName = days[now.getDay()];
+    
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const year = now.getFullYear();
+    
+    const hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
 
-            timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
-            updateHourColors(hours);
-        }
+    timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+    updateHourColors(hours);
+}
+
 
         function updateHourColors(currentHour) {
-            // Các khung giờ hợp mệnh (Xanh Lá Cây)
-            const goodTimes = [23, 3, 5, 11, 13, 19];
-            // Các khung giờ không hợp mệnh (Đỏ)
-            const badTimes = [1, 7, 9, 21];
+    console.log("Giờ hiện tại:", currentHour);  // Debugging: kiểm tra giá trị giờ
+    const goodTimes = [23, 3, 5, 11, 13, 19];
+    const badTimes = [1, 7, 9, 21];
 
-            // Kiểm tra các giờ hợp mệnh và không hợp mệnh
-            const allHours = [
-                { id: "hour1", hour: 23, text: "Giờ Tý (23h - 1h): Hành Thủy, Thủy sinh Mộc" },
-                { id: "hour2", hour: 3, text: "Giờ Dần (3h - 5h): Hành Mộc, hợp với Mộc" },
-                { id: "hour3", hour: 5, text: "Giờ Mão (5h - 7h): Hành Mộc, hợp với Mộc" },
-                { id: "hour4", hour: 11, text: "Giờ Ngọ (11h - 13h): Hành Hỏa, Hỏa sinh Mộc" },
-                { id: "hour5", hour: 13, text: "Giờ Mùi (13h - 15h): Hành Mộc, hợp với Mộc" },
-                { id: "hour6", hour: 19, text: "Giờ Tuất (19h - 21h): Hành Thổ, Thổ sinh Mộc" },
-                { id: "hour7", hour: 1, text: "Giờ Sửu (1h - 3h): Hành Thổ, Thổ khắc Mộc" },
-                { id: "hour8", hour: 7, text: "Giờ Thìn (7h - 9h): Hành Thổ, Thổ khắc Mộc" },
-                { id: "hour9", hour: 9, text: "Giờ Tỵ (9h - 11h): Hành Hỏa, có thể gây cạnh tranh" },
-                { id: "hour10", hour: 21, text: "Giờ Hợi (21h - 23h): Hành Thủy, không tốt cho Mộc" },
-            ];
+    const allHours = [
+        { id: "hour1", hour: 23, text: "Giờ Tý (23h - 1h): Hành Thủy, Thủy sinh Mộc" },
+        { id: "hour2", hour: 3, text: "Giờ Dần (3h - 5h): Hành Mộc, hợp với Mộc" },
+        { id: "hour3", hour: 5, text: "Giờ Mão (5h - 7h): Hành Mộc, hợp với Mộc" },
+        { id: "hour4", hour: 11, text: "Giờ Ngọ (11h - 13h): Hành Hỏa, Hỏa sinh Mộc" },
+        { id: "hour5", hour: 13, text: "Giờ Mùi (13h - 15h): Hành Mộc, hợp với Mộc" },
+        { id: "hour6", hour: 19, text: "Giờ Tuất (19h - 21h): Hành Thổ, Thổ sinh Mộc" },
+        { id: "hour7", hour: 1, text: "Giờ Sửu (1h - 3h): Hành Thổ, Thổ khắc Mộc" },
+        { id: "hour8", hour: 7, text: "Giờ Thìn (7h - 9h): Hành Thổ, Thổ khắc Mộc" },
+        { id: "hour9", hour: 9, text: "Giờ Tỵ (9h - 11h): Hành Hỏa, có thể gây cạnh tranh" },
+        { id: "hour10", hour: 21, text: "Giờ Hợi (21h - 23h): Hành Thủy, không tốt cho Mộc" },
+    ];
 
-            allHours.forEach(hour => {
-                const hourElement = document.getElementById(hour.id);
-                if (goodTimes.includes(hour.hour) && currentHour === hour.hour) {
-                    hourElement.classList.add('good-time');
-                    hourElement.classList.remove('bad-time');
-                } else if (badTimes.includes(hour.hour) && currentHour === hour.hour) {
-                    hourElement.classList.add('bad-time');
-                    hourElement.classList.remove('good-time');
-                } else {
-                    hourElement.classList.remove('good-time', 'bad-time');
-                }
-                hourElement.innerText = hour.text;
-            });
+    allHours.forEach(hour => {
+        const hourElement = document.getElementById(hour.id);
+        console.log("Phần tử giờ:", hourElement); // Kiểm tra phần tử đã được chọn chưa
+        if (hourElement) {  // Kiểm tra nếu phần tử tồn tại
+            if (goodTimes.includes(hour.hour) && currentHour === hour.hour) {
+                hourElement.classList.add('good-time');
+                hourElement.classList.remove('bad-time');
+            } else if (badTimes.includes(hour.hour) && currentHour === hour.hour) {
+                hourElement.classList.add('bad-time');
+                hourElement.classList.remove('good-time');
+            } else {
+                hourElement.classList.remove('good-time', 'bad-time');
+            }
+            hourElement.innerText = hour.text;
         }
+    });
+}
 
         // Cập nhật thời gian mỗi giây
         setInterval(updateTime, 1000);
