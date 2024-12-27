@@ -40,7 +40,7 @@
             margin: 20px auto;
         }
         
-.time-display {
+        .time-display {
             text-align: center;
             font-size: 18px;
             font-weight: bold;
@@ -69,7 +69,25 @@
         .button-container button:hover {
             background-color: #45a049;
         }
+
+        /* Kết quả xổ số Minh Ngọc */
+        #box_kqxs_minhngoc {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .kq-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #730038;
+            margin-bottom: 15px;
+        }
     </style>
+    <script language="javascript" src="//www.minhngoc.net.vn/jquery/jquery-1.7.2.js"></script>
+    <link rel="stylesheet" type="text/css" href="//www.minhngoc.net.vn/style/bangketqua_mini.css"/>
 </head>
 <body>
     <div class="navbar">
@@ -87,8 +105,20 @@
             <button id="DanDe2ChamButton">Quy Đổi Số (Chạm)</button>
             <button id="ghepdansoButton">Ghép Dàn Số</button>
             <button id="KetQuaXoSoButton">Kết Quả Xổ Số</button>
-<!--             <button id="Keno-VietlottButton">Keno 1/80</button> -->
         </div>
+    </div>
+
+    <!-- Kết quả xổ số Minh Ngọc -->
+    <div id="box_kqxs_minhngoc">
+        <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
+        <script language="javascript">  
+            bgcolor="#bfbfbf"; 
+            titlecolor="#730038"; 
+            dbcolor="#000000"; 
+            fsize="12px"; 
+            kqwidth="300px"; 
+        </script>
+        <script language="javascript" src="//www.minhngoc.net.vn/getkqxs/mien-bac.js"></script>
     </div>
 
     <!-- Thẻ audio -->
@@ -112,24 +142,18 @@
         document.addEventListener('touchstart', playAudioOnce, { once: true });
 
         // Sự kiện chuyển trang
-        
-
         document.getElementById('AIXOSOButton').addEventListener('click', () => { 
             window.location.href = 'AIthongkexsmb.html';
         });
         document.getElementById('DanDe2ChamButton').addEventListener('click', () => { 
             window.location.href = 'DanDe2Cham.html';
         });
-         document.getElementById('ghepdansoButton').addEventListener('click', () => { 
+        document.getElementById('ghepdansoButton').addEventListener('click', () => { 
             window.location.href = 'https://giaimasohoc.net/tao-muc-so/';
         });
         document.getElementById('KetQuaXoSoButton').addEventListener('click', () => { 
             window.location.href = 'https://mketqua.net/';
         });
-        // document.getElementById('Keno-VietlottButton').addEventListener('click', () => { 
-        //     window.location.href = 'Keno-Vietlott.html';
-        // });
-    
 
         // Hiển thị thời gian
         function updateTime() {
