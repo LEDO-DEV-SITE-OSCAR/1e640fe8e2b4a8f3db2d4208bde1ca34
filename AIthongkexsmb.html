@@ -118,7 +118,6 @@
     <div>
     <button id="resetSpin" style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; margin-bottom: 10px;">Reset</button>
     <button class="btn" id="startSimulation" style="margin-bottom: 10px;">Lấy Kết Quả</button>
-    <button class="btn" id="showResultsButton" style="margin-bottom: 10px;">Hiển Thị Kết Quả Đã Quay</button>
     <div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">
         Đã reset quay tất cả...!
     </div>
@@ -276,61 +275,6 @@ const displayResults = (results, province) => {
 // Bộ đếm cho số lần bấm quay
 let spinCount = 0;
 
-// Hàm lưu kết quả vào localStorage
-const saveResultsToLocalStorage = (province, results) => {
-    const savedResults = JSON.parse(localStorage.getItem('dailyResults') || '{}');
-    savedResults[province] = results;
-    localStorage.setItem('dailyResults', JSON.stringify(savedResults));
-};
-
-// Hàm hiển thị kết quả đã quay
-// Lưu kết quả vào localStorage
-const saveResultsToLocalStorage = (province, results) => {
-    const savedResults = JSON.parse(localStorage.getItem('dailyResults') || '{}');
-    savedResults[province] = results;
-    localStorage.setItem('dailyResults', JSON.stringify(savedResults));
-    console.log("Results saved:", savedResults);  // Kiểm tra kết quả đã được lưu
-};
-
-// Hàm hiển thị kết quả đã quay
-const displaySavedResults = () => {
-    const savedResults = JSON.parse(localStorage.getItem('dailyResults') || '{}');
-    const resultDiv = document.getElementById('result');
-    
-    resultDiv.innerHTML = '';
-
-    // Kiểm tra nếu có kết quả đã quay
-    if (Object.keys(savedResults).length === 0) {
-        resultDiv.innerHTML = `<p>Chưa có kết quả quay nào trong ngày hôm nay.</p>`;
-    } else {
-        for (const province in savedResults) {
-            const results = savedResults[province];
-            resultDiv.innerHTML += `
-                <h2>Kết quả đã quay: ${province}</h2>
-                <p><strong>Ghép 4D:</strong> ${results.ghep4D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[0].join(',')}')">Copy</button></p>
-                <p><strong>Ghép 3D:</strong> ${results.ghep3D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[0].join(',')}')">Copy</button></p>
-                <p><strong>Dàn 2D(39S):</strong> ${results.dan2D[0].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[0].join(',')}')">Copy</button></p>
-                <p><strong>Mega 6/45:</strong> ${results.mega6_45[0].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[0].join(',')}')">Copy</button></p>
-                <p><strong>Power 6/55:</strong> ${results.power6_55[0].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[0].join(',')}')">Copy</button></p>
-            `;
-        }
-    }
-};
-
-// Hàm kiểm tra xem có phải ngày mới không
-const isNewDay = () => {
-    const today = new Date().toLocaleDateString();
-    const lastSpinDate = localStorage.getItem('lastSpinDate');
-    if (lastSpinDate !== today) {
-        localStorage.setItem('lastSpinDate', today);
-        localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
-        localStorage.removeItem('dailyResults'); // Xóa kết quả quay cũ
-        return true;
-    }
-    return false;
-};
-
-// Cập nhật tỉnh thành khi chọn khu vực
 const updateProvinceDropdown = (region) => {
     const provinceDropdown = document.getElementById("province");
     provinceDropdown.innerHTML = "";
@@ -353,13 +297,22 @@ const updateProvinceDropdown = (region) => {
     }
 };
 
-// Lắng nghe sự kiện khi thay đổi khu vực
+const isNewDay = () => {
+    const today = new Date().toLocaleDateString();
+    const lastSpinDate = localStorage.getItem('lastSpinDate');
+    if (lastSpinDate !== today) {
+        localStorage.setItem('lastSpinDate', today);
+        localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
+        return true;
+    }
+    return false;
+};
+
 document.getElementById("region").addEventListener("change", (e) => {
     const region = e.target.value;
     updateProvinceDropdown(region);
 });
 
-// Lắng nghe sự kiện khi bắt đầu mô phỏng
 document.getElementById("startSimulation").addEventListener("click", () => {
     const region = document.getElementById("region").value;
     const province = document.getElementById("province").value;
@@ -388,7 +341,6 @@ document.getElementById("startSimulation").addEventListener("click", () => {
     setTimeout(() => {
         const results = monteCarloSimulation(simulations);
         displayResults(results, province);
-        saveResultsToLocalStorage(province, results);  // Lưu kết quả vào localStorage
         document.getElementById("loading").style.display = "none";
     }, 2000);
 
@@ -420,10 +372,7 @@ document.getElementById("resetSpin").addEventListener("click", () => {
     }
 });
 
-// Cập nhật phần mã trong startSimulation để lưu kết quả vào localStorage sau khi chạy mô phỏng
-document.getElementById("showResultsButton").addEventListener("click", () => {
-    displaySavedResults();
-});
+
 
 
     updateProvinceDropdown(document.getElementById("region").value);
