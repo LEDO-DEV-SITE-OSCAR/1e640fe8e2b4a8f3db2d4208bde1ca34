@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phân tích xổ số miền Bắc</title>
+    <title>Phân tích Xổ Số Miền Bắc</title>
+    <link rel="icon" href="lottery.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,14 +94,14 @@
 <body>
 
 <div class="container">
-    <h1>Phân tích xổ số miền Bắc</h1>
+    <h1>Phân tích Xổ Số Miền Bắc</h1>
     <label for="daysAgo">Nhập số ngày quá khứ bạn muốn phân tích (ví dụ: 1618 ngày):</label>
     <input type="number" id="daysAgo" placeholder="Nhập số ngày quá khứ" min="1" required />
     <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
     <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required />
-    <label for="numberOf3D">Số lượng 3D bạn muốn lấy (từ vị trí 3 trở đi):</label>
+    <label for="numberOf3D">Số lượng 3D bạn muốn lấy:</label>
     <input type="number" id="numberOf3D" placeholder="Nhập số lượng 3D" min="1" required />
-    <label for="numberOf4D">Số lượng 4D bạn muốn lấy (từ vị trí 4 trở đi):</label>
+    <label for="numberOf4D">Số lượng 4D bạn muốn lấy:</label>
     <input type="number" id="numberOf4D" placeholder="Nhập số lượng 4D" min="1" required />
     <button onclick="processData()">Xử lý</button>
     <div id="result"></div>
@@ -180,8 +181,8 @@
         // Hiển thị kết quả
         const resultText = `
             Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')} <br>
-            3D Numbers: ${threeDNumbers.join(', ')} <br>
-            4D Numbers: ${fourDNumbers.join(', ')}
+            3 Càng: ${threeDNumbers.join(', ')} <br>
+            4 Càng: ${fourDNumbers.join(', ')}
         `;
         document.getElementById('result').innerHTML = resultText;
     } catch (error) {
