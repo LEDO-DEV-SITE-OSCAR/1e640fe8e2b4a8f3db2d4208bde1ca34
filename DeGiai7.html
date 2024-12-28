@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân tích xổ số</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Phân tích xổ số miền Bắc</h1>
+    <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
+    <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required />
+    <button onclick="processData()">Xử lý</button>
+
+    <div id="result"></div>
+
+    <script>
+        // Hàm đọc dữ liệu từ URL và xử lý
+        async function processDataFromUrl(url, numberOfResults) {
+            try {
+                const response = await fetch(url);
+                const data = await response.text();
+
+                // Tách dữ liệu thành các dòng
+                const lines = data.split('\n').filter(line => line.trim() !== '');
+
+                let allNumbers = [];
+
+                lines.forEach((line, index) => {
+                    // Bỏ qua dòng tiêu đề (dòng đầu tiên)
+                    if (index === 0) return;
+
+                    // Tách từng dòng thành các cột
+                    const columns = line.split(',');
+
+                    // Lấy số đầu tiên trong cột đầu tiên và lấy 2 số cuối
+                    const firstNumber = columns[1].trim();  // Lấy số đầu tiên từ cột đầu tiên (cột 1)
+                    const lastTwoDigits = firstNumber.slice(-2);  // Lấy 2 số cuối từ số đầu tiên
+                    allNumbers.push(lastTwoDigits);  // Thêm số cuối vào mảng allNumbers
+                });
+
+                // Chuẩn hóa các số để đảm bảo định dạng 2 chữ số
+                allNumbers = allNumbers.map(num => num.padStart(2, '0'));
+
+                // Đếm tần suất xuất hiện của từng số
+                const frequencyMap = {};
+                allNumbers.forEach(num => {
+                    if (!frequencyMap[num]) {
+                        frequencyMap[num] = 0;
+                    }
+                    frequencyMap[num]++;
+                });
+
+                // Sắp xếp các số theo tần suất giảm dần
+                const sortedNumbers = Object.keys(frequencyMap)
+                    .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
+
+                // Lấy số lượng kết quả mong muốn
+                const result = sortedNumbers.slice(0, numberOfResults);
+
+                // Sắp xếp kết quả cuối cùng theo thứ tự từ bé đến lớn
+                const sortedResult = result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+                // Hiển thị kết quả
+                document.getElementById('result').innerHTML = `Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')}`;
+            } catch (error) {
+                console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+                document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
+            }
+        }
+
+        // Hàm xử lý dữ liệu từ giao diện người dùng
+        function processData() {
+            const numberOfResults = parseInt(document.getElementById('numberOfResults').value, 10);
+            if (isNaN(numberOfResults) || numberOfResults <= 0) {
+                alert('Vui lòng nhập một số nguyên dương.');
+                return;
+            }
+
+            const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
+            processDataFromUrl(url, numberOfResults);
+        }
+    </script>
+</body>
+</html>
