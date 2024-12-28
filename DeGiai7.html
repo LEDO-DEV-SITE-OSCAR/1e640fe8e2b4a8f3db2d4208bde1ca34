@@ -7,22 +7,115 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
 
         #result {
             margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+
+        #copyButton {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+
+        #copyButton:hover {
+            background-color: #007bb5;
+        }
+
+        #copyMessage {
+            display: none;
+            color: green;
+            font-size: 1rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>Phân tích xổ số miền Bắc</h1>
-    <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
-    <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required />
-    <button onclick="processData()">Xử lý</button>
+    <div class="container">
+        <h1>Phân tích xổ số miền Bắc</h1>
 
-    <div id="result"></div>
+        <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
+        <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required />
+        
+        <button onclick="processData()">Xử lý</button>
+
+        <div id="result"></div>
+
+        <button id="copyButton" onclick="copyToClipboard()">Sao chép kết quả</button>
+        <div id="copyMessage">Đã Copy!</div>
+    </div>
 
     <script>
         // Hàm đọc dữ liệu từ URL và xử lý
@@ -90,6 +183,30 @@
             const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
             processDataFromUrl(url, numberOfResults);
         }
+
+        // Hàm sao chép kết quả
+        function copyToClipboard() {
+            const resultText = document.getElementById('result').innerText;
+            if (!resultText) {
+                alert('Không có kết quả để sao chép!');
+                return;
+            }
+
+            navigator.clipboard.writeText(resultText)
+                .then(() => {
+                    const copyMessage = document.getElementById('copyMessage');
+                    copyMessage.style.display = 'block';
+
+                    // Tắt thông báo sau 2 giây
+                    setTimeout(() => {
+                        copyMessage.style.display = 'none';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Lỗi sao chép: ', err);
+                });
+        }
     </script>
+
 </body>
 </html>
