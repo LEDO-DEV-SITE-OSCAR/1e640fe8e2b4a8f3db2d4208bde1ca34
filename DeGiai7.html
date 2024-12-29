@@ -131,8 +131,36 @@
         totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
     }
 
-    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70) {
+    // Biến toàn cục lưu trữ kết quả cố định
+let fixedResult = null;
+
+function seededRandom(seed) {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
+    const uniqueNumbers = Array.from(new Set(allNumbers));
+    const randomResults = [];
+    const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+
+    for (let i = 0; i < availableCount; i++) {
+        const randomIndex = Math.floor(seededRandom(seed + i) * uniqueNumbers.length);
+        randomResults.push(uniqueNumbers[randomIndex]);
+        uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn để tránh trùng lặp
+    }
+
+    return randomResults;
+}
+
+async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 60, seed = 1) {
     try {
+        if (fixedResult !== null) {
+            // Nếu đã có kết quả cố định, sử dụng lại
+            document.getElementById('result').innerHTML = fixedResult;
+            return;
+        }
+
         const response = await fetch(url);
         const data = await response.text();
         const lines = data.split('\n').filter(line => line.trim() !== '');
@@ -199,8 +227,8 @@
         // Lấy các số có tần suất cao
         let result = sortedNumbers.slice(0, highFreqCount);
 
-        // Trộn số ngẫu nhiên
-        const randomNumbers = getRandomNumbers(allNumbers, randomCount, sortedNumbers.length);
+        // Trộn số ngẫu nhiên sử dụng seed
+        const randomNumbers = getSeededRandomNumbers(allNumbers, randomCount, seed);
         result = result.concat(randomNumbers);
 
         // Lọc số trùng lặp và giới hạn số lượng kết quả
@@ -213,13 +241,13 @@
         threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
         fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
 
-        // Hiển thị kết quả
-        const resultText = `
+        // Lưu trữ kết quả cố định
+        fixedResult = `
             Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
             3 Càng: ${threeDNumbers.join(', ')} <br>
             4 Càng: ${fourDNumbers.join(', ')}
         `;
-        document.getElementById('result').innerHTML = resultText;
+        document.getElementById('result').innerHTML = fixedResult;
     } catch (error) {
         console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
         document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
