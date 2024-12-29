@@ -193,7 +193,8 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
         const startDate = new Date(currentDate);
         startDate.setDate(currentDate.getDate() - daysAgo);
 
-        lines.forEach((line, index) => {
+        // Duyệt qua các dòng dữ liệu
+lines.forEach((line, index) => {
     if (index === 0) return; // Bỏ qua dòng tiêu đề
 
     const columns = line.split(',');
@@ -272,9 +273,31 @@ result = [...new Set(result)].slice(0, numberOfResults);
 // Sắp xếp lại các số kết quả từ bé đến lớn
 result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
-// Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
-threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
-fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
+// Sắp xếp lại các số 3D và 4D theo thứ tự tần suất
+// Đếm tần suất của các số 3D và 4D
+const threeDFrequencyMap = {};
+threeDNumbers.forEach(num => {
+    if (!threeDFrequencyMap[num]) {
+        threeDFrequencyMap[num] = 0;
+    }
+    threeDFrequencyMap[num]++;
+});
+const sorted3DNumbers = Object.keys(threeDFrequencyMap)
+    .sort((a, b) => threeDFrequencyMap[b] - threeDFrequencyMap[a]);
+
+const fourDFrequencyMap = {};
+fourDNumbers.forEach(num => {
+    if (!fourDFrequencyMap[num]) {
+        fourDFrequencyMap[num] = 0;
+    }
+    fourDFrequencyMap[num]++;
+});
+const sorted4DNumbers = Object.keys(fourDFrequencyMap)
+    .sort((a, b) => fourDFrequencyMap[b] - fourDFrequencyMap[a]);
+
+// Lọc số 3 càng và 4 càng theo tần suất cao nhất (7 số)
+threeDNumbers = sorted3DNumbers.slice(0, 7);
+fourDNumbers = sorted4DNumbers.slice(0, 7);
 
 // Lưu trữ kết quả cố định
 fixedResult = `
@@ -283,6 +306,7 @@ fixedResult = `
     4 Càng: ${fourDNumbers.join(', ')}
 `;
 document.getElementById('result').innerHTML = fixedResult;
+
 
 
 
