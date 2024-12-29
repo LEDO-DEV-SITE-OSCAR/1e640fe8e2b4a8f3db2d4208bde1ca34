@@ -155,10 +155,9 @@ function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
 
 async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 75, seed = 1) {
     try {
+        // Xóa kết quả cố định nếu thay đổi số ngày
         if (fixedResult !== null) {
-            // Nếu đã có kết quả cố định, sử dụng lại
-            document.getElementById('result').innerHTML = fixedResult;
-            return;
+            fixedResult = null;
         }
 
         const response = await fetch(url);
@@ -253,6 +252,13 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
         document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
     }
 }
+
+// Gọi lại hàm mỗi khi có sự thay đổi (ví dụ: nhập ngày mới)
+function updateResultsOnChange() {
+    const daysAgo = parseInt(document.getElementById('daysAgoInput').value, 10); // Nhận số ngày nhập vào
+    processDataFromUrl("your-url-here", 10, daysAgo, 3, 4); // Ví dụ số kết quả, số 3D và 4D
+}
+
 
 
 function getRandomNumbers(allNumbers, numberOfResults, limit) {
@@ -349,9 +355,6 @@ function getMostFrequentNumbers(numbers, numberOfResults) {
     // Khởi tạo khi tải trang
     initializeTotalDays();
 </script>
-
-
-
 
 </body>
 </html>
