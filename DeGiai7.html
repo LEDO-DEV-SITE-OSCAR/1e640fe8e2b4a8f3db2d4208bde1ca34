@@ -100,11 +100,11 @@
     <label for="daysAgo">Nhập số ngày quá khứ bạn muốn phân tích (ví dụ: 1618 ngày):</label>
     <input type="number" id="daysAgo" placeholder="Nhập số ngày quá khứ" min="1" required />
     <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
-    <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required value="39" />
+<input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required value="39" />
     <label for="numberOf3D">Số lượng 3D bạn muốn lấy:</label>
-    <input type="number" id="numberOf3D" placeholder="Nhập số lượng 3D" min="1" required value="7" />
+<input type="number" id="numberOf3D" placeholder="Nhập số lượng 3D" min="1" required value="7" />
     <label for="numberOf4D">Số lượng 4D bạn muốn lấy:</label>
-    <input type="number" id="numberOf4D" placeholder="Nhập số lượng 4D" min="1" required value="7" />
+<input type="number" id="numberOf4D" placeholder="Nhập số lượng 4D" min="1" required value="7" />
     <button onclick="processData()">Xử lý</button>
     <div id="result"></div>
     <button id="copyButton" onclick="copyToClipboard()">Sao chép kết quả</button>
@@ -113,38 +113,31 @@
 
 <script>
     // Biến toàn cục lưu trữ kết quả cố định
-    let fixedResult = null;
-
+let fixedResult = null;
     // Hàm để lấy tổng số ngày đã quay từ URL
-    async function fetchTotalDays(url) {
-        try {
-            const response = await fetch(url);
-            const data = await response.text();
-            const lines = data.split('\n').filter(line => line.trim() !== '');
-            return lines.length - 1; // Trừ 1 vì bỏ dòng tiêu đề
-        } catch (error) {
-            console.error('Lỗi khi tính tổng số ngày:', error.message);
-            return 0;
-        }
+async function fetchTotalDays(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+        return lines.length - 1; // Trừ 1 vì bỏ dòng tiêu đề
+    } catch (error) {
+        console.error('Lỗi khi tính tổng số ngày:', error.message);
+        return 0;
     }
+}
 
-    // Hàm để hiển thị tổng số ngày đã quay
-    async function initializeTotalDays() {
-        const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
-        const totalDays = await fetchTotalDays(url);
-        const totalDaysLabel = document.getElementById('totalDaysLabel');
-        totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
+// Hàm để hiển thị tổng số ngày đã quay
+async function initializeTotalDays() {
+    const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
+    const totalDays = await fetchTotalDays(url);
+    const totalDaysLabel = document.getElementById('totalDaysLabel');
+    totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
 
-        // Tự động điền giá trị vào ô input "Nhập số ngày quá khứ"
-        const daysAgoInput = document.getElementById('daysAgo');
-        daysAgoInput.value = totalDays; // Điền số ngày đã quay vào ô input
-        daysAgoInput.max = totalDays;  // Đảm bảo không nhập số lớn hơn tổng số ngày đã quay
-    }
-
-    // Gọi hàm khi trang web tải xong
-    window.onload = initializeTotalDays;
-</script>
-
+    // Đảm bảo rằng khi nhập số ngày, chương trình hoạt động đúng
+    const daysInput = document.getElementById('daysAgoInput');
+    daysInput.max = totalDays; // Đảm bảo nhập không vượt quá số ngày đã quay
+}
 
 // Hàm để sinh số ngẫu nhiên có sử dụng seed
 function seededRandom(seed) {
