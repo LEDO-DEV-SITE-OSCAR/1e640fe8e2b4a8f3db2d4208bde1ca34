@@ -153,7 +153,7 @@ function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
     return randomResults;
 }
 
-async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 85, seed = 1) {
+async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70, seed = 1) {
     try {
         // Xóa kết quả cố định nếu thay đổi số ngày
         if (fixedResult !== null) {
