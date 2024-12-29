@@ -170,6 +170,10 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
         const data = await response.text();
         const lines = data.split('\n').filter(line => line.trim() !== '');
 
+        if (lines.length === 0) {
+            throw new Error('Dữ liệu không hợp lệ hoặc trống.');
+        }
+
         let allNumbers = [];
         let threeDNumbers = [];
         let fourDNumbers = [];
@@ -184,6 +188,11 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
 
             const columns = line.split(',');
             const date = new Date(columns[0]);
+
+            if (isNaN(date)) {
+                console.warn(`Dòng dữ liệu không hợp lệ (ngày không đúng định dạng): ${line}`);
+                return; // Nếu ngày không hợp lệ, bỏ qua dòng này
+            }
 
             if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
 
@@ -255,9 +264,10 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
         document.getElementById('result').innerHTML = fixedResult;
     } catch (error) {
         console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
-        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
+        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu: ' + error.message;
     }
 }
+
 
 
     // Gọi lại hàm mỗi khi có sự thay đổi (ví dụ: nhập ngày mới)
