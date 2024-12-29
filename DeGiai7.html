@@ -222,14 +222,21 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
     allNumbers.push(...allNumbersFromLine);
 
     // Xử lý thêm các số cho 3 càng và 4 càng
+    // Kiểm tra cột 3 và 4 để tránh lỗi khi thiếu dữ liệu
     if (columns.length > 2) {
-        const thirdDigit = columns[2].trim().charAt(2); // Lấy số thứ 3 từ cột 3
-        threeDNumbers.push(thirdDigit);
+        const thirdColumn = columns[2].trim();
+        if (thirdColumn.length >= 3) {
+            const thirdDigit = thirdColumn.charAt(2); // Lấy số thứ 3 từ cột 3
+            threeDNumbers.push(thirdDigit);
+        }
     }
 
     if (columns.length > 3) {
-        const fourthDigit = columns[3].trim().charAt(3); // Lấy số thứ 4 từ cột 4
-        fourDNumbers.push(fourthDigit);
+        const fourthColumn = columns[3].trim();
+        if (fourthColumn.length >= 4) {
+            const fourthDigit = fourthColumn.charAt(3); // Lấy số thứ 4 từ cột 4
+            fourDNumbers.push(fourthDigit);
+        }
     }
 });
 
@@ -276,6 +283,7 @@ fixedResult = `
     4 Càng: ${fourDNumbers.join(', ')}
 `;
 document.getElementById('result').innerHTML = fixedResult;
+
 
 
 
