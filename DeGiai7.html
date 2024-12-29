@@ -299,6 +299,10 @@ const sorted4DNumbers = Object.keys(fourDFrequencyMap)
 threeDNumbers = sorted3DNumbers.slice(0, 7);
 fourDNumbers = sorted4DNumbers.slice(0, 7);
 
+// Sắp xếp các số 3 càng và 4 càng từ bé đến lớn
+threeDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+fourDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
 // Lưu trữ kết quả cố định
 fixedResult = `
     Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
@@ -306,6 +310,7 @@ fixedResult = `
     4 Càng: ${fourDNumbers.join(', ')}
 `;
 document.getElementById('result').innerHTML = fixedResult;
+
 
 
 
