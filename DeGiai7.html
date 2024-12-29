@@ -131,7 +131,7 @@
         totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
     }
 
-    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D) {
+    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70) {
     try {
         const response = await fetch(url);
         const data = await response.text();
@@ -192,11 +192,15 @@
         const sortedNumbers = Object.keys(frequencyMap)
             .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
 
-        // Lọc kết quả để tránh trùng lặp
-        let result = sortedNumbers.slice(0, numberOfResults);
+        // Tính số lượng số có tần suất cao và số ngẫu nhiên theo tỷ lệ phần trăm
+        const highFreqCount = Math.floor(numberOfResults * (highFreqPercentage / 100));
+        const randomCount = numberOfResults - highFreqCount;
+
+        // Lấy các số có tần suất cao
+        let result = sortedNumbers.slice(0, highFreqCount);
 
         // Trộn số ngẫu nhiên
-        const randomNumbers = getRandomNumbers(allNumbers, numberOfResults - result.length, sortedNumbers.length);
+        const randomNumbers = getRandomNumbers(allNumbers, randomCount, sortedNumbers.length);
         result = result.concat(randomNumbers);
 
         // Lọc số trùng lặp và giới hạn số lượng kết quả
@@ -221,6 +225,7 @@
         document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
     }
 }
+
 
 function getRandomNumbers(allNumbers, numberOfResults, limit) {
     const uniqueNumbers = Array.from(new Set(allNumbers));
