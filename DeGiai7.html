@@ -211,7 +211,7 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
 
     // Bắt đầu từ cột 2 (chỉ lấy kết quả, không lấy ngày tháng)
     for (let i = 1; i < columns.length; i++) {
-        const result = columns[i].trim();  // Loại bỏ khoảng trắng
+        const result = columns[i].trim(); // Loại bỏ khoảng trắng
         if (result.length >= 2) {
             const lastTwoDigits = result.slice(-2); // Lấy 2 số cuối
             allNumbersFromLine.push(lastTwoDigits);
@@ -220,6 +220,17 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
 
     // Thêm tất cả số cuối từ dòng vào mảng allNumbers
     allNumbers.push(...allNumbersFromLine);
+
+    // Xử lý thêm các số cho 3 càng và 4 càng
+    if (columns.length > 2) {
+        const thirdDigit = columns[2].trim().charAt(2); // Lấy số thứ 3 từ cột 3
+        threeDNumbers.push(thirdDigit);
+    }
+
+    if (columns.length > 3) {
+        const fourthDigit = columns[3].trim().charAt(3); // Lấy số thứ 4 từ cột 4
+        fourDNumbers.push(fourthDigit);
+    }
 });
 
 // Lọc và xử lý dữ liệu như bạn yêu cầu
@@ -254,11 +265,18 @@ result = [...new Set(result)].slice(0, numberOfResults);
 // Sắp xếp lại các số kết quả từ bé đến lớn
 result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
+// Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
+threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
+fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
+
 // Lưu trữ kết quả cố định
 fixedResult = `
-    Các số có khả năng xuất hiện cao nhất: ${result.join(', ')}
+    Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
+    3 Càng: ${threeDNumbers.join(', ')} <br>
+    4 Càng: ${fourDNumbers.join(', ')}
 `;
 document.getElementById('result').innerHTML = fixedResult;
+
 
 
     } catch (error) {
