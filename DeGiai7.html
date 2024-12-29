@@ -131,103 +131,59 @@
         totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
     }
 
-    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D) {
-        try {
-            const response = await fetch(url);
-            const data = await response.text();
-            const lines = data.split('\n').filter(line => line.trim() !== '');
+    async function async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D) {
+    try {
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
 
-            let allNumbers = [];
-            let threeDNumbers = [];
-            let fourDNumbers = [];
+        let allNumbers = [];
+        let threeDNumbers = [];
+        let fourDNumbers = [];
 
-            // Tính ngày gần đây để lọc dữ liệu
-            const currentDate = new Date();
-            const startDate = new Date(currentDate);
-            startDate.setDate(currentDate.getDate() - daysAgo);
+        const currentDate = new Date();
+        const startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - daysAgo);
 
-            lines.forEach((line, index) => {
-                if (index === 0) return; // Bỏ qua dòng tiêu đề
+        lines.forEach((line, index) => {
+            if (index === 0) return; // Bỏ qua dòng tiêu đề
 
-                const columns = line.split(',');
-                const date = new Date(columns[0]);
+            const columns = line.split(',');
+            const date = new Date(columns[0]);
 
-                if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
+            if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
 
-                // Lặp qua các giải để lấy 2 số cuối
-                for (let i = 1; i < columns.length; i++) {
-                    const number = columns[i].trim();
-                    if (number.length >= 2) {
-                        const lastTwoDigits = number.slice(-2);
-                        allNumbers.push(lastTwoDigits);
-                    }
-
-                    // Lấy số 3D từ giải thứ 2
-                    if (i === 2 && number.length > 2) {
-                        const thirdDigit = number.charAt(2); // Lấy số từ vị trí 3 của giải đặc biệt
-                        threeDNumbers.push(thirdDigit);
-                    }
-
-                    // Lấy số 4D từ giải thứ 3
-                    if (i === 3 && number.length > 3) {
-                        const fourthDigit = number.charAt(3); // Lấy số từ vị trí 4 của giải đặc biệt
-                        fourDNumbers.push(fourthDigit);
-                    }
+            for (let i = 1; i < columns.length; i++) {
+                const number = columns[i].trim();
+                if (number.length >= 2) {
+                    const lastTwoDigits = number.slice(-2);
+                    allNumbers.push(lastTwoDigits);
                 }
-            });
 
-            allNumbers = allNumbers.map(num => num.padStart(2, '0'));
-
-            // Lọc và bổ sung số 3D
-            threeDNumbers = threeDNumbers.slice(0, numberOf3D);
-            const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
-            threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
-
-            // Lọc và bổ sung số 4D
-            fourDNumbers = fourDNumbers.slice(0, numberOf4D);
-            const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
-            fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
-
-            // Đếm tần suất xuất hiện của từng số
-            const frequencyMap = {};
-            allNumbers.forEach(num => {
-                if (!frequencyMap[num]) {
-                    frequencyMap[num] = 0;
+                if (i === 2 && number.length > 2) {
+                    const thirdDigit = number.charAt(2); 
+                    threeDNumbers.push(thirdDigit);
                 }
-                frequencyMap[num]++;
-            });
 
-            const sortedNumbers = Object.keys(frequencyMap)
-                .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
+                if (i === 3 && number.length > 3) {
+                    const fourthDigit = number.charAt(3);
+                    fourDNumbers.push(fourthDigit);
+                }
+            }
+        });
 
-            // Giảm sự phụ thuộc vào tần suất và thêm yếu tố ngẫu nhiên
-            let result = sortedNumbers.slice(0, numberOfResults); // Chọn số từ tần suất cao
-            const randomNumbers = getRandomNumbers(allNumbers, numberOfResults, sortedNumbers.length);
-            result = result.concat(randomNumbers);
+        allNumbers = allNumbers.map(num => num.padStart(2, '0'));
 
-            // Sắp xếp lại kết quả
-            const sortedResult = result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+        threeDNumbers = threeDNumbers.slice(0, numberOf3D);
+        const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
+        threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
 
-            // Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
-            threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
-            fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
+        fourDNumbers = fourDNumbers.slice(0, numberOf4D);
+        const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
+        fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
 
-            // Hiển thị kết quả
-            const resultText = `
-                Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')} <br>
-                3 Càng: ${threeDNumbers.join(', ')} <br>
-                4 Càng: ${fourDNumbers.join(', ')}
-            `;
-            document.getElementById('result').innerHTML = resultText;
-        } catch (error) {
-            console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
-            document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
-        }
-    }
-
-    function getMostFrequentNumbers(numbers, numberOfResults) {
         const frequencyMap = {};
-        numbers.forEach(num => {
+        allNumbers.forEach(num => {
             if (!frequencyMap[num]) {
                 frequencyMap[num] = 0;
             }
@@ -237,23 +193,48 @@
         const sortedNumbers = Object.keys(frequencyMap)
             .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
 
-        return sortedNumbers.slice(0, numberOfResults);
+        // Giảm sự phụ thuộc vào tần suất và thêm yếu tố ngẫu nhiên
+        let result = sortedNumbers.slice(0, numberOfResults);
+
+        // Chọn số ngẫu nhiên từ danh sách
+        const randomNumbers = getRandomNumbers(allNumbers, numberOfResults - result.length, sortedNumbers.length);
+        result = result.concat(randomNumbers);
+
+        // Lọc và loại bỏ trùng lặp để đảm bảo số lượng không vượt quá yêu cầu
+        result = [...new Set(result)].slice(0, numberOfResults);
+
+        // Sắp xếp kết quả theo thứ tự tăng dần
+        const sortedResult = result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+        threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
+        fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
+
+        const resultText = `
+            Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')} <br>
+            3 Càng: ${threeDNumbers.join(', ')} <br>
+            4 Càng: ${fourDNumbers.join(', ')}
+        `;
+        document.getElementById('result').innerHTML = resultText;
+    } catch (error) {
+        console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
     }
+}
 
-    // Thêm tính ngẫu nhiên vào việc chọn số
-    function getRandomNumbers(allNumbers, numberOfResults, limit) {
-        const uniqueNumbers = Array.from(new Set(allNumbers));
-        const randomResults = [];
-        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+function getRandomNumbers(allNumbers, numberOfResults, limit) {
+    const uniqueNumbers = Array.from(new Set(allNumbers));
+    const randomResults = [];
+    const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
 
-        for (let i = 0; i < availableCount; i++) {
-            const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
-            randomResults.push(uniqueNumbers[randomIndex]);
-            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
-        }
-
-        return randomResults;
+    for (let i = 0; i < availableCount; i++) {
+        const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
+        randomResults.push(uniqueNumbers[randomIndex]);
+        uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
     }
+    
+    return randomResults;
+}
+
 
     function processData() {
         const daysAgo = parseInt(document.getElementById('daysAgo').value, 10);
