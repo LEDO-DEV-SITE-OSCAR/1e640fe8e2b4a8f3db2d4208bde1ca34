@@ -163,6 +163,14 @@ function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
 // Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
 async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70, seed = 1) {
     try {
+        // Lấy tổng số ngày đã quay từ URL
+        const totalDays = await fetchTotalDays(url);
+
+        // Kiểm tra nếu daysAgo vượt quá tổng số ngày đã quay
+        if (daysAgo > totalDays) {
+            throw new Error(`Số ngày nhập vào vượt quá tổng số ngày đã quay (${totalDays} ngày).`);
+        }
+
         // Xóa kết quả cố định nếu thay đổi số ngày
         if (fixedResult !== null) {
             fixedResult = null;
@@ -269,6 +277,7 @@ async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, num
         document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu: ' + error.message;
     }
 }
+
 
 
 
