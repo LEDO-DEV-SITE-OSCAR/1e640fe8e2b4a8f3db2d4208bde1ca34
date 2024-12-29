@@ -112,146 +112,153 @@
 </div>
 
 <script>
-    async function fetchTotalDays(url) {
-        try {
-            const response = await fetch(url);
-            const data = await response.text();
-            const lines = data.split('\n').filter(line => line.trim() !== '');
-            return lines.length - 1; // Trừ 1 vì bỏ dòng tiêu đề
-        } catch (error) {
-            console.error('Lỗi khi tính tổng số ngày:', error.message);
-            return 0;
+    // Hàm để lấy tổng số ngày đã quay từ URL
+async function fetchTotalDays(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+        return lines.length - 1; // Trừ 1 vì bỏ dòng tiêu đề
+    } catch (error) {
+        console.error('Lỗi khi tính tổng số ngày:', error.message);
+        return 0;
+    }
+}
+
+// Hàm để hiển thị tổng số ngày đã quay
+async function initializeTotalDays() {
+    const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
+    const totalDays = await fetchTotalDays(url);
+    const totalDaysLabel = document.getElementById('totalDaysLabel');
+    totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
+
+    // Đảm bảo rằng khi nhập số ngày, chương trình hoạt động đúng
+    const daysInput = document.getElementById('daysAgoInput');
+    daysInput.max = totalDays; // Đảm bảo nhập không vượt quá số ngày đã quay
+}
+
+// Hàm để sinh số ngẫu nhiên có sử dụng seed
+function seededRandom(seed) {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+// Hàm để lấy số ngẫu nhiên có sử dụng seed
+function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
+    const uniqueNumbers = Array.from(new Set(allNumbers));
+    const randomResults = [];
+    const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+
+    for (let i = 0; i < availableCount; i++) {
+        const randomIndex = Math.floor(seededRandom(seed + i) * uniqueNumbers.length);
+        randomResults.push(uniqueNumbers[randomIndex]);
+        uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn để tránh trùng lặp
+    }
+
+    return randomResults;
+}
+
+// Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
+async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70, seed = 1) {
+    try {
+        // Xóa kết quả cố định nếu thay đổi số ngày
+        if (fixedResult !== null) {
+            fixedResult = null;
         }
-    }
 
-    async function initializeTotalDays() {
-        const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
-        const totalDays = await fetchTotalDays(url);
-        const totalDaysLabel = document.getElementById('totalDaysLabel');
-        totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
-    }
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
 
-    // Biến toàn cục lưu trữ kết quả cố định
-    let fixedResult = null;
+        let allNumbers = [];
+        let threeDNumbers = [];
+        let fourDNumbers = [];
 
-    function seededRandom(seed) {
-        let x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-    }
+        // Tính ngày gần đây để lọc dữ liệu
+        const currentDate = new Date();
+        const startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - daysAgo);
 
-    function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
-        const uniqueNumbers = Array.from(new Set(allNumbers));
-        const randomResults = [];
-        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+        lines.forEach((line, index) => {
+            if (index === 0) return; // Bỏ qua dòng tiêu đề
 
-        for (let i = 0; i < availableCount; i++) {
-            const randomIndex = Math.floor(seededRandom(seed + i) * uniqueNumbers.length);
-            randomResults.push(uniqueNumbers[randomIndex]);
-            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn để tránh trùng lặp
-        }
+            const columns = line.split(',');
+            const date = new Date(columns[0]);
 
-        return randomResults;
-    }
+            if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
 
-    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70, seed = 1) {
-        try {
-            // Xóa kết quả cố định nếu thay đổi số ngày
-            if (fixedResult !== null) {
-                fixedResult = null;
+            const firstNumber = columns[1].trim();
+            const lastTwoDigits = firstNumber.slice(-2);
+            allNumbers.push(lastTwoDigits);
+
+            if (columns.length > 2) {
+                const thirdDigit = columns[2].trim().charAt(2); // Lấy số từ vị trí 3 của giải đặc biệt
+                threeDNumbers.push(thirdDigit);
             }
+            if (columns.length > 3) {
+                const fourthDigit = columns[3].trim().charAt(3); // Lấy số từ vị trí 4 của giải đặc biệt
+                fourDNumbers.push(fourthDigit);
+            }
+        });
 
-            const response = await fetch(url);
-            const data = await response.text();
-            const lines = data.split('\n').filter(line => line.trim() !== '');
+        allNumbers = allNumbers.map(num => num.padStart(2, '0'));
 
-            let allNumbers = [];
-            let threeDNumbers = [];
-            let fourDNumbers = [];
+        // Lọc và bổ sung số 3D
+        threeDNumbers = threeDNumbers.slice(0, numberOf3D);
+        const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
+        threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
 
-            // Tính ngày gần đây để lọc dữ liệu
-            const currentDate = new Date();
-            const startDate = new Date(currentDate);
-            startDate.setDate(currentDate.getDate() - daysAgo);
+        // Lọc và bổ sung số 4D
+        fourDNumbers = fourDNumbers.slice(0, numberOf4D);
+        const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
+        fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
 
-            lines.forEach((line, index) => {
-                if (index === 0) return; // Bỏ qua dòng tiêu đề
+        // Đếm tần suất xuất hiện của từng số
+        const frequencyMap = {};
+        allNumbers.forEach(num => {
+            if (!frequencyMap[num]) {
+                frequencyMap[num] = 0;
+            }
+            frequencyMap[num]++;
+        });
 
-                const columns = line.split(',');
-                const date = new Date(columns[0]);
+        const sortedNumbers = Object.keys(frequencyMap)
+            .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
 
-                if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
+        // Tính số lượng số có tần suất cao và số ngẫu nhiên theo tỷ lệ phần trăm
+        const highFreqCount = Math.floor(numberOfResults * (highFreqPercentage / 100));
+        const randomCount = numberOfResults - highFreqCount;
 
-                const firstNumber = columns[1].trim();
-                const lastTwoDigits = firstNumber.slice(-2);
-                allNumbers.push(lastTwoDigits);
+        // Lấy các số có tần suất cao
+        let result = sortedNumbers.slice(0, highFreqCount);
 
-                if (columns.length > 2) {
-                    const thirdDigit = columns[2].trim().charAt(2); // Lấy số từ vị trí 3 của giải đặc biệt
-                    threeDNumbers.push(thirdDigit);
-                }
-                if (columns.length > 3) {
-                    const fourthDigit = columns[3].trim().charAt(3); // Lấy số từ vị trí 4 của giải đặc biệt
-                    fourDNumbers.push(fourthDigit);
-                }
-            });
+        // Trộn số ngẫu nhiên sử dụng seed
+        const randomNumbers = getSeededRandomNumbers(allNumbers, randomCount, seed);
+        result = result.concat(randomNumbers);
 
-            allNumbers = allNumbers.map(num => num.padStart(2, '0'));
+        // Lọc số trùng lặp và giới hạn số lượng kết quả
+        result = [...new Set(result)].slice(0, numberOfResults);
 
-            // Lọc và bổ sung số 3D
-            threeDNumbers = threeDNumbers.slice(0, numberOf3D);
-            const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
-            threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
+        // Sắp xếp lại các số kết quả từ bé đến lớn
+        result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
-            // Lọc và bổ sung số 4D
-            fourDNumbers = fourDNumbers.slice(0, numberOf4D);
-            const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
-            fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
+        // Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
+        threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
+        fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
 
-            // Đếm tần suất xuất hiện của từng số
-            const frequencyMap = {};
-            allNumbers.forEach(num => {
-                if (!frequencyMap[num]) {
-                    frequencyMap[num] = 0;
-                }
-                frequencyMap[num]++;
-            });
-
-            const sortedNumbers = Object.keys(frequencyMap)
-                .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
-
-            // Tính số lượng số có tần suất cao và số ngẫu nhiên theo tỷ lệ phần trăm
-            const highFreqCount = Math.floor(numberOfResults * (highFreqPercentage / 100));
-            const randomCount = numberOfResults - highFreqCount;
-
-            // Lấy các số có tần suất cao
-            let result = sortedNumbers.slice(0, highFreqCount);
-
-            // Trộn số ngẫu nhiên sử dụng seed
-            const randomNumbers = getSeededRandomNumbers(allNumbers, randomCount, seed);
-            result = result.concat(randomNumbers);
-
-            // Lọc số trùng lặp và giới hạn số lượng kết quả
-            result = [...new Set(result)].slice(0, numberOfResults);
-
-            // Sắp xếp lại các số kết quả từ bé đến lớn
-            result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-            // Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
-            threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
-            fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
-
-            // Lưu trữ kết quả cố định
-            fixedResult = `
-                Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
-                3 Càng: ${threeDNumbers.join(', ')} <br>
-                4 Càng: ${fourDNumbers.join(', ')}
-            `;
-            document.getElementById('result').innerHTML = fixedResult;
-        } catch (error) {
-            console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
-            document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
-        }
+        // Lưu trữ kết quả cố định
+        fixedResult = `
+            Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
+            3 Càng: ${threeDNumbers.join(', ')} <br>
+            4 Càng: ${fourDNumbers.join(', ')}
+        `;
+        document.getElementById('result').innerHTML = fixedResult;
+    } catch (error) {
+        console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
     }
+}
+
 
     // Gọi lại hàm mỗi khi có sự thay đổi (ví dụ: nhập ngày mới)
     function updateResultsOnChange() {
