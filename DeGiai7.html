@@ -132,85 +132,94 @@
     }
 
     async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D) {
-        try {
-            const response = await fetch(url);
-            const data = await response.text();
-            const lines = data.split('\n').filter(line => line.trim() !== '');
+    try {
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
 
-            let allNumbers = [];
-            let threeDNumbers = [];
-            let fourDNumbers = [];
+        let allNumbers = [];
+        let threeDNumbers = [];
+        let fourDNumbers = [];
 
-            // Tính ngày gần đây để lọc dữ liệu
-            const currentDate = new Date();
-            const startDate = new Date(currentDate);
-            startDate.setDate(currentDate.getDate() - daysAgo);
+        // Tính ngày gần đây để lọc dữ liệu
+        const currentDate = new Date();
+        const startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - daysAgo);
 
-            lines.forEach((line, index) => {
-                if (index === 0) return; // Bỏ qua dòng tiêu đề
+        lines.forEach((line, index) => {
+            if (index === 0) return; // Bỏ qua dòng tiêu đề
 
-                const columns = line.split(',');
-                const date = new Date(columns[0]);
+            const columns = line.split(',');
+            const date = new Date(columns[0]);
 
-                if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
+            if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
 
-                const firstNumber = columns[1].trim();
-                const lastTwoDigits = firstNumber.slice(-2);
-                allNumbers.push(lastTwoDigits);
+            // Lặp qua các giải để lấy 2 số cuối
+            for (let i = 1; i < columns.length; i++) {
+                const number = columns[i].trim();
+                if (number.length >= 2) {
+                    const lastTwoDigits = number.slice(-2);
+                    allNumbers.push(lastTwoDigits);
+                }
 
-                if (columns.length > 2) {
-                    const thirdDigit = columns[2].trim().charAt(2); // Lấy số từ vị trí 3 của giải đặc biệt
+                // Lấy số 3D từ giải thứ 2
+                if (i === 2 && number.length > 2) {
+                    const thirdDigit = number.charAt(2); // Lấy số từ vị trí 3 của giải đặc biệt
                     threeDNumbers.push(thirdDigit);
                 }
-                if (columns.length > 3) {
-                    const fourthDigit = columns[3].trim().charAt(3); // Lấy số từ vị trí 4 của giải đặc biệt
+
+                // Lấy số 4D từ giải thứ 3
+                if (i === 3 && number.length > 3) {
+                    const fourthDigit = number.charAt(3); // Lấy số từ vị trí 4 của giải đặc biệt
                     fourDNumbers.push(fourthDigit);
                 }
-            });
+            }
+        });
 
-            allNumbers = allNumbers.map(num => num.padStart(2, '0'));
+        allNumbers = allNumbers.map(num => num.padStart(2, '0'));
 
-            // Lọc và bổ sung số 3D
-            threeDNumbers = threeDNumbers.slice(0, numberOf3D);
-            const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
-            threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
+        // Lọc và bổ sung số 3D
+        threeDNumbers = threeDNumbers.slice(0, numberOf3D);
+        const mostFrequent3D = getMostFrequentNumbers(threeDNumbers, numberOf3D);
+        threeDNumbers = [...new Set(threeDNumbers), ...mostFrequent3D];
 
-            // Lọc và bổ sung số 4D
-            fourDNumbers = fourDNumbers.slice(0, numberOf4D);
-            const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
-            fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
+        // Lọc và bổ sung số 4D
+        fourDNumbers = fourDNumbers.slice(0, numberOf4D);
+        const mostFrequent4D = getMostFrequentNumbers(fourDNumbers, numberOf4D);
+        fourDNumbers = [...new Set(fourDNumbers), ...mostFrequent4D];
 
-            // Đếm tần suất xuất hiện của từng số
-            const frequencyMap = {};
-            allNumbers.forEach(num => {
-                if (!frequencyMap[num]) {
-                    frequencyMap[num] = 0;
-                }
-                frequencyMap[num]++;
-            });
+        // Đếm tần suất xuất hiện của từng số
+        const frequencyMap = {};
+        allNumbers.forEach(num => {
+            if (!frequencyMap[num]) {
+                frequencyMap[num] = 0;
+            }
+            frequencyMap[num]++;
+        });
 
-            const sortedNumbers = Object.keys(frequencyMap)
-                .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
+        const sortedNumbers = Object.keys(frequencyMap)
+            .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
 
-            const result = sortedNumbers.slice(0, numberOfResults);
-            const sortedResult = result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+        const result = sortedNumbers.slice(0, numberOfResults);
+        const sortedResult = result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
-            // Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
-            threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
-            fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
+        // Sắp xếp lại các số 3D và 4D theo thứ tự tăng dần
+        threeDNumbers = Array.from(new Set(threeDNumbers)).sort((a, b) => a - b);
+        fourDNumbers = Array.from(new Set(fourDNumbers)).sort((a, b) => a - b);
 
-            // Hiển thị kết quả
-            const resultText = `
-                Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')} <br>
-                3 Càng: ${threeDNumbers.join(', ')} <br>
-                4 Càng: ${fourDNumbers.join(', ')}
-            `;
-            document.getElementById('result').innerHTML = resultText;
-        } catch (error) {
-            console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
-            document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
-        }
+        // Hiển thị kết quả
+        const resultText = `
+            Các số có khả năng xuất hiện cao nhất: ${sortedResult.join(', ')} <br>
+            3 Càng: ${threeDNumbers.join(', ')} <br>
+            4 Càng: ${fourDNumbers.join(', ')}
+        `;
+        document.getElementById('result').innerHTML = resultText;
+    } catch (error) {
+        console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu.';
     }
+}
+
 
     function getMostFrequentNumbers(numbers, numberOfResults) {
         const frequencyMap = {};
