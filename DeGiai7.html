@@ -141,240 +141,148 @@
         daysAgoInput.max = totalDays; // Đảm bảo nhập không vượt quá số ngày đã quay
     }
 
-// Hàm để sinh số ngẫu nhiên có sử dụng seed
-function seededRandom(seed) {
-    let x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
-}
-
-// Hàm để lấy số ngẫu nhiên có sử dụng seed
-function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
-    const uniqueNumbers = Array.from(new Set(allNumbers));
-    const randomResults = [];
-    const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
-
-    for (let i = 0; i < availableCount; i++) {
-        const randomIndex = Math.floor(seededRandom(seed + i) * uniqueNumbers.length);
-        randomResults.push(uniqueNumbers[randomIndex]);
-        uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn để tránh trùng lặp
+    // Hàm để sinh số ngẫu nhiên có sử dụng seed
+    function seededRandom(seed) {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
     }
 
-    return randomResults;
-}
+    // Hàm lấy các số ngẫu nhiên có trọng số
+    function weightedRandomSelection(numbers, numberOfResults, weights, seed) {
+        const weightedNumbers = [];
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        const normalizedWeights = weights.map(weight => weight / totalWeight);
 
-// Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
-async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 30, seed = 1) {
-    try {
-        // Lấy tổng số ngày đã quay từ URL
-        const totalDays = await fetchTotalDays(url);
-
-        // Kiểm tra nếu daysAgo vượt quá tổng số ngày đã quay
-        if (daysAgo > totalDays) {
-            throw new Error(`Số ngày nhập vào vượt quá tổng số ngày đã quay (${totalDays} ngày).`);
+        // Chọn các số có trọng số cao nhất
+        for (let i = 0; i < numberOfResults; i++) {
+            const randomValue = seededRandom(seed + i); // Dùng seed để đảm bảo tính ngẫu nhiên
+            let cumulativeWeight = 0;
+            for (let j = 0; j < numbers.length; j++) {
+                cumulativeWeight += normalizedWeights[j];
+                if (randomValue <= cumulativeWeight) {
+                    weightedNumbers.push(numbers[j]);
+                    numbers.splice(j, 1); // Loại bỏ số đã chọn để tránh trùng lặp
+                    weights.splice(j, 1); // Loại bỏ trọng số của số đã chọn
+                    break;
+                }
+            }
         }
+        return weightedNumbers;
+    }
 
-        // Xóa kết quả cố định nếu thay đổi số ngày
-        if (fixedResult !== null) {
-            fixedResult = null;
+    // Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
+    async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, seed = 1) {
+        try {
+            const totalDays = await fetchTotalDays(url);
+            if (daysAgo > totalDays) {
+                throw new Error(`Số ngày nhập vào vượt quá tổng số ngày đã quay (${totalDays} ngày).`);
+            }
+
+            if (fixedResult !== null) {
+                fixedResult = null;
+            }
+
+            const response = await fetch(url);
+            const data = await response.text();
+            const lines = data.split('\n').filter(line => line.trim() !== '');
+
+            if (lines.length === 0) {
+                throw new Error('Dữ liệu không hợp lệ hoặc trống.');
+            }
+
+            let allNumbers = [];
+            let threeDNumbers = [];
+            let fourDNumbers = [];
+
+            const currentDate = new Date();
+            const startDate = new Date(currentDate);
+            startDate.setDate(currentDate.getDate() - daysAgo);
+
+            lines.forEach((line, index) => {
+                if (index === 0) return; // Bỏ qua dòng tiêu đề
+
+                const columns = line.split(',');
+                const date = new Date(columns[0]);
+
+                if (isNaN(date)) {
+                    console.warn(`Dòng dữ liệu không hợp lệ (ngày không đúng định dạng): ${line}`);
+                    return; // Nếu ngày không hợp lệ, bỏ qua dòng này
+                }
+
+                if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
+
+                // Khởi tạo mảng để chứa các số cuối từ tất cả các cột
+                const allNumbersFromLine = [];
+
+                // Bắt đầu từ cột 2 (chỉ lấy kết quả, không lấy ngày tháng)
+                for (let i = 1; i < columns.length; i++) {
+                    const result = columns[i].trim(); // Loại bỏ khoảng trắng
+                    if (result.length >= 2) {
+                        const lastTwoDigits = result.slice(-2); // Lấy 2 số cuối
+                        allNumbersFromLine.push(lastTwoDigits);
+                    }
+                }
+
+                // Thêm tất cả số cuối vào mảng allNumbers
+                allNumbers.push(...allNumbersFromLine);
+
+                // Xử lý thêm các số cho 3 càng và 4 càng
+                if (columns.length > 2) {
+                    const thirdColumn = columns[2].trim();
+                    if (thirdColumn.length >= 3) {
+                        const thirdDigit = thirdColumn.charAt(2);
+                        threeDNumbers.push(thirdDigit);
+                    }
+                }
+
+                if (columns.length > 3) {
+                    const fourthColumn = columns[3].trim();
+                    if (fourthColumn.length >= 4) {
+                        const fourthDigit = fourthColumn.charAt(3);
+                        fourDNumbers.push(fourthDigit);
+                    }
+                }
+            });
+
+            // Lọc và xử lý dữ liệu
+            allNumbers = allNumbers.map(num => num.padStart(2, '0'));
+
+            // Đếm tần suất xuất hiện của từng số
+            const frequencyMap = {};
+            allNumbers.forEach(num => {
+                if (!frequencyMap[num]) {
+                    frequencyMap[num] = 0;
+                }
+                frequencyMap[num]++;
+            });
+
+            const sortedNumbers = Object.keys(frequencyMap);
+            const weights = sortedNumbers.map(num => frequencyMap[num]);
+
+            // Lấy các số có tỷ lệ thắng cao sử dụng weighted random selection
+            const topNumbers = weightedRandomSelection(sortedNumbers, numberOfResults, weights, seed);
+
+            // Sắp xếp lại kết quả
+            topNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+            // Lưu trữ kết quả cố định
+            fixedResult = `
+                Dàn 2D: ${topNumbers.join(', ')} <br>
+                Ghép 3 Càng: ${threeDNumbers.join(', ')} <br>
+                Ghép 4 Càng: ${fourDNumbers.join(', ')}
+            `;
+            document.getElementById('result').innerHTML = fixedResult;
+
+        } catch (error) {
+            console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+            document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu: ' + error.message;
         }
-
-        const response = await fetch(url);
-        const data = await response.text();
-        const lines = data.split('\n').filter(line => line.trim() !== '');
-
-        if (lines.length === 0) {
-            throw new Error('Dữ liệu không hợp lệ hoặc trống.');
-        }
-
-        let allNumbers = [];
-        let threeDNumbers = [];
-        let fourDNumbers = [];
-
-        // Tính ngày gần đây để lọc dữ liệu
-        const currentDate = new Date();
-        const startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - daysAgo);
-
-        // Duyệt qua các dòng dữ liệu
-lines.forEach((line, index) => {
-    if (index === 0) return; // Bỏ qua dòng tiêu đề
-
-    const columns = line.split(',');
-    const date = new Date(columns[0]);
-
-    if (isNaN(date)) {
-        console.warn(`Dòng dữ liệu không hợp lệ (ngày không đúng định dạng): ${line}`);
-        return; // Nếu ngày không hợp lệ, bỏ qua dòng này
     }
-
-    if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
-
-    // Khởi tạo mảng để chứa các số cuối từ tất cả các cột
-    const allNumbersFromLine = [];
-
-    // Bắt đầu từ cột 2 (chỉ lấy kết quả, không lấy ngày tháng)
-    for (let i = 1; i < columns.length; i++) {
-        const result = columns[i].trim(); // Loại bỏ khoảng trắng
-        if (result.length >= 2) {
-            const lastTwoDigits = result.slice(-2); // Lấy 2 số cuối
-            allNumbersFromLine.push(lastTwoDigits);
-        }
-    }
-
-    // Thêm tất cả số cuối từ dòng vào mảng allNumbers
-    allNumbers.push(...allNumbersFromLine);
-
-    // Xử lý thêm các số cho 3 càng và 4 càng
-    // Kiểm tra cột 3 và 4 để tránh lỗi khi thiếu dữ liệu
-    if (columns.length > 2) {
-        const thirdColumn = columns[2].trim();
-        if (thirdColumn.length >= 3) {
-            const thirdDigit = thirdColumn.charAt(2); // Lấy số thứ 3 từ cột 3
-            threeDNumbers.push(thirdDigit);
-        }
-    }
-
-    if (columns.length > 3) {
-        const fourthColumn = columns[3].trim();
-        if (fourthColumn.length >= 4) {
-            const fourthDigit = fourthColumn.charAt(3); // Lấy số thứ 4 từ cột 4
-            fourDNumbers.push(fourthDigit);
-        }
-    }
-});
-
-// Lọc và xử lý dữ liệu như bạn yêu cầu
-allNumbers = allNumbers.map(num => num.padStart(2, '0'));
-
-// Đếm tần suất xuất hiện của từng số
-const frequencyMap = {};
-allNumbers.forEach(num => {
-    if (!frequencyMap[num]) {
-        frequencyMap[num] = 0;
-    }
-    frequencyMap[num]++;
-});
-
-const sortedNumbers = Object.keys(frequencyMap)
-    .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
-
-// Tính số lượng số có tần suất cao và số ngẫu nhiên theo tỷ lệ phần trăm
-const highFreqCount = Math.floor(numberOfResults * (highFreqPercentage / 100));
-const randomCount = numberOfResults - highFreqCount;
-
-// Lấy các số có tần suất cao
-let result = sortedNumbers.slice(0, highFreqCount);
-
-// Trộn số ngẫu nhiên sử dụng seed
-const randomNumbers = getSeededRandomNumbers(allNumbers, randomCount, seed);
-result = result.concat(randomNumbers);
-
-// Lọc số trùng lặp và giới hạn số lượng kết quả
-result = [...new Set(result)].slice(0, numberOfResults);
-
-// Sắp xếp lại các số kết quả từ bé đến lớn
-result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-// Sắp xếp lại các số 3D và 4D theo thứ tự tần suất
-// Đếm tần suất của các số 3D và 4D
-const threeDFrequencyMap = {};
-threeDNumbers.forEach(num => {
-    if (!threeDFrequencyMap[num]) {
-        threeDFrequencyMap[num] = 0;
-    }
-    threeDFrequencyMap[num]++;
-});
-const sorted3DNumbers = Object.keys(threeDFrequencyMap)
-    .sort((a, b) => threeDFrequencyMap[b] - threeDFrequencyMap[a]);
-
-const fourDFrequencyMap = {};
-fourDNumbers.forEach(num => {
-    if (!fourDFrequencyMap[num]) {
-        fourDFrequencyMap[num] = 0;
-    }
-    fourDFrequencyMap[num]++;
-});
-const sorted4DNumbers = Object.keys(fourDFrequencyMap)
-    .sort((a, b) => fourDFrequencyMap[b] - fourDFrequencyMap[a]);
-
-// Lọc số 3 càng và 4 càng theo tần suất cao nhất (7 số)
-threeDNumbers = sorted3DNumbers.slice(0, 7);
-fourDNumbers = sorted4DNumbers.slice(0, 7);
-
-// Sắp xếp các số 3 càng và 4 càng từ bé đến lớn
-threeDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-fourDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-// Lưu trữ kết quả cố định
-fixedResult = `
-    Dàn 2D: ${result.join(', ')} <br>
-    Ghép 3 Càng: ${threeDNumbers.join(', ')} <br>
-    Ghép 4 Càng: ${fourDNumbers.join(', ')}
-`;
-document.getElementById('result').innerHTML = fixedResult;
-
-
-
-
-
-
-    } catch (error) {
-        console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
-        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu: ' + error.message;
-    }
-}
-
-
-
 
     // Gọi lại hàm mỗi khi có sự thay đổi (ví dụ: nhập ngày mới)
     function updateResultsOnChange() {
-        const daysAgo = parseInt(document.getElementById('daysAgoInput').value, 10); // Nhận số ngày nhập vào
-        processDataFromUrl("your-url-here", 10, daysAgo, 3, 4); // Ví dụ số kết quả, số 3D và 4D
-    }
-
-    function getRandomNumbers(allNumbers, numberOfResults, limit) {
-        const uniqueNumbers = Array.from(new Set(allNumbers));
-        const randomResults = [];
-        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
-
-        for (let i = 0; i < availableCount; i++) {
-            const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
-            randomResults.push(uniqueNumbers[randomIndex]);
-            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
-        }
-        
-        return randomResults;
-    }
-
-    function getMostFrequentNumbers(numbers, numberOfResults) {
-        const frequencyMap = {};
-        numbers.forEach(num => {
-            if (!frequencyMap[num]) {
-                frequencyMap[num] = 0;
-            }
-            frequencyMap[num]++;
-        });
-
-        const sortedNumbers = Object.keys(frequencyMap)
-            .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
-
-        const topNumbers = sortedNumbers.slice(0, numberOfResults - numbers.length);
-        return topNumbers;
-    }
-
-    function getRandomNumbers(allNumbers, numberOfResults, limit) {
-        const uniqueNumbers = Array.from(new Set(allNumbers));
-        const randomResults = [];
-        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
-
-        for (let i = 0; i < availableCount; i++) {
-            const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
-            randomResults.push(uniqueNumbers[randomIndex]);
-            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
-        }
-        
-        return randomResults;
+        const daysAgo = parseInt(document.getElementById('daysAgoInput').value, 10);
+        processDataFromUrl("your-url-here", 10, daysAgo, 3, 4);
     }
 
     function processData() {
@@ -404,28 +312,10 @@ document.getElementById('result').innerHTML = fixedResult;
         processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D);
     }
 
-    function copyToClipboard() {
-        const resultText = document.getElementById('result').innerText;
-        if (!resultText) {
-            alert('Không có kết quả để sao chép!');
-            return;
-        }
-        navigator.clipboard.writeText(resultText)
-            .then(() => {
-                const copyMessage = document.getElementById('copyMessage');
-                copyMessage.style.display = 'block';
-                setTimeout(() => {
-                    copyMessage.style.display = 'none';
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Lỗi sao chép: ', err);
-            });
-    }
-
-    // Khởi tạo khi tải trang
-    initializeTotalDays();
+    // Tải dữ liệu tổng số ngày ngay khi tải trang
+    window.onload = initializeTotalDays;
 </script>
+
 
 
 </body>
