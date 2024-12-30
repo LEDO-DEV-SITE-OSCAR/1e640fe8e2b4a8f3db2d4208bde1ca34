@@ -3,224 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quay Số Xổ Số Miền Bắc</title>
+    <title>Phân tích Xổ Số Miền Bắc</title>
+    <link rel="icon" href="lottery.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f3f3f3;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f4f7fc;
         }
-
         .container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 0 auto;
             padding: 20px;
-            width: 400px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
             text-align: center;
         }
-
-        .container h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .numbers {
-            font-size: 24px;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
+        #copyButton {
+            background-color: #008CBA;
             color: white;
+            padding: 10px 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
         }
-
-        button:hover {
-            background-color: #0056b3;
+        #copyButton:hover {
+            background-color: #007bb5;
         }
-
         #copyMessage {
             display: none;
             color: green;
-            margin-top: 20px;
+            font-size: 1rem;
+            margin-top: 10px;
+            text-align: center;
         }
-
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Dàn Số Xổ Số Miền Bắc</h1>
-        <div id="numbers" class="numbers">Loading...</div>
-        <button id="generateButton">Tạo Dàn Số</button>
-        <button id="copyButton">Sao Chép Dàn Số</button>
-        <div id="copyMessage">Copy Thành Công!</div>
-    </div>
+<div class="container">
+    <h1>Phân tích Xổ Số Miền Bắc</h1>
+    <label id="totalDaysLabel" style="font-weight: bold;">Tổng Số Ngày Đã Quay: Đang tải...</label>
+    <br>
+    <label for="daysAgo">Nhập số ngày quá khứ bạn muốn phân tích:</label>
+    <input type="number" id="daysAgo" placeholder="Nhập số ngày quá khứ" min="1" required />
+    <label for="numberOfResults">Bạn muốn lấy bao nhiêu con số?</label>
+    <input type="number" id="numberOfResults" placeholder="Nhập số kết quả" min="1" required value="39" />
+    <label for="numberOf3D">Số lượng 3D bạn muốn lấy:</label>
+    <input type="number" id="numberOf3D" placeholder="Nhập số lượng 3D" min="1" required value="7" />
+    <label for="numberOf4D">Số lượng 4D bạn muốn lấy:</label>
+    <input type="number" id="numberOf4D" placeholder="Nhập số lượng 4D" min="1" required value="7" />
+    <button onclick="processData()">Xử lý</button>
+    <div id="result"></div>
+    <button id="copyButton" onclick="copyToClipboard()">Sao chép kết quả</button>
+    <div id="copyMessage" style="display: none;">Đã Copy!</div>
+</div>
 
-    <script>
-        const axios = require('axios');
-        const crypto = require('crypto');
+<script>
+    // Biến toàn cục lưu trữ kết quả cố định
+    let fixedResult = null;
 
-        // Hàm để tải và phân tích dữ liệu từ URL
-        async function getDataFromCSV(url) {
-            const data = [];
-            try {
-                const response = await axios.get(url);
-                const rawData = response.data;
+    // Hàm để lấy tổng số ngày đã quay từ URL
+    async function fetchTotalDays(url) {
+        try {
+            const response = await fetch(url);
+            const data = await response.text();
+            const lines = data.split('\n').filter(line => line.trim() !== '');
+            return lines.length - 1; // Trừ 1 vì bỏ dòng tiêu đề
+        } catch (error) {
+            console.error('Lỗi khi tính tổng số ngày:', error.message);
+            return 0;
+        }
+    }
 
-                // Phân tích dữ liệu CSV
-                rawData.split('\n').forEach(line => {
-                    const columns = line.split(',');
-                    if (columns.length > 1) {
-                        const date = columns[0];
-                        const numbers = columns.slice(1).map(num => num.padStart(5, '0')); // Đảm bảo số có 5 chữ số
+    // Hàm để hiển thị tổng số ngày đã quay và đặt giá trị mặc định cho "daysAgo"
+    async function initializeTotalDays() {
+        const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
+        const totalDays = await fetchTotalDays(url);
+        const totalDaysLabel = document.getElementById('totalDaysLabel');
+        totalDaysLabel.textContent = `Tổng Số Ngày Đã Quay: ${totalDays} ngày`;
 
-                        // Kiểm tra và loại bỏ các số không hợp lệ
-                        const validNumbers = numbers.filter(num => /^[0-9]+$/.test(num)); // Chỉ lấy các số hợp lệ
-                        if (validNumbers.length > 0) {
-                            data.push({ date, numbers: validNumbers });
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching data:', error);
+        // Tự động điền giá trị mặc định cho trường "daysAgo"
+        const daysAgoInput = document.getElementById('daysAgo');
+        daysAgoInput.value = totalDays; // Điền giá trị mặc định
+        daysAgoInput.max = totalDays; // Đảm bảo nhập không vượt quá số ngày đã quay
+    }
+
+// Hàm để sinh số ngẫu nhiên có sử dụng seed
+function seededRandom(seed) {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+// Hàm để lấy số ngẫu nhiên có sử dụng seed
+function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
+    const uniqueNumbers = Array.from(new Set(allNumbers));
+    const randomResults = [];
+    const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+
+    for (let i = 0; i < availableCount; i++) {
+        const randomIndex = Math.floor(seededRandom(seed + i) * uniqueNumbers.length);
+        randomResults.push(uniqueNumbers[randomIndex]);
+        uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn để tránh trùng lặp
+    }
+
+    return randomResults;
+}
+
+// Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
+async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 70, seed = 1) {
+    try {
+        // Lấy tổng số ngày đã quay từ URL
+        const totalDays = await fetchTotalDays(url);
+
+        // Kiểm tra nếu daysAgo vượt quá tổng số ngày đã quay
+        if (daysAgo > totalDays) {
+            throw new Error(`Số ngày nhập vào vượt quá tổng số ngày đã quay (${totalDays} ngày).`);
+        }
+
+        // Xóa kết quả cố định nếu thay đổi số ngày
+        if (fixedResult !== null) {
+            fixedResult = null;
+        }
+
+        const response = await fetch(url);
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+
+        if (lines.length === 0) {
+            throw new Error('Dữ liệu không hợp lệ hoặc trống.');
+        }
+
+        let allNumbers = [];
+        let threeDNumbers = [];
+        let fourDNumbers = [];
+
+        // Tính ngày gần đây để lọc dữ liệu
+        const currentDate = new Date();
+        const startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - daysAgo);
+
+        // Duyệt qua các dòng dữ liệu
+lines.forEach((line, index) => {
+    if (index === 0) return; // Bỏ qua dòng tiêu đề
+
+    const columns = line.split(',');
+    const date = new Date(columns[0]);
+
+    if (isNaN(date)) {
+        console.warn(`Dòng dữ liệu không hợp lệ (ngày không đúng định dạng): ${line}`);
+        return; // Nếu ngày không hợp lệ, bỏ qua dòng này
+    }
+
+    if (date < startDate) return; // Bỏ qua dữ liệu ngoài phạm vi ngày nhập vào
+
+    // Khởi tạo mảng để chứa các số cuối từ tất cả các cột
+    const allNumbersFromLine = [];
+
+    // Bắt đầu từ cột 2 (chỉ lấy kết quả, không lấy ngày tháng)
+    for (let i = 1; i < columns.length; i++) {
+        const result = columns[i].trim(); // Loại bỏ khoảng trắng
+        if (result.length >= 2) {
+            const lastTwoDigits = result.slice(-2); // Lấy 2 số cuối
+            allNumbersFromLine.push(lastTwoDigits);
+        }
+    }
+
+    // Thêm tất cả số cuối từ dòng vào mảng allNumbers
+    allNumbers.push(...allNumbersFromLine);
+
+    // Xử lý thêm các số cho 3 càng và 4 càng
+    // Kiểm tra cột 3 và 4 để tránh lỗi khi thiếu dữ liệu
+    if (columns.length > 2) {
+        const thirdColumn = columns[2].trim();
+        if (thirdColumn.length >= 3) {
+            const thirdDigit = thirdColumn.charAt(2); // Lấy số thứ 3 từ cột 3
+            threeDNumbers.push(thirdDigit);
+        }
+    }
+
+    if (columns.length > 3) {
+        const fourthColumn = columns[3].trim();
+        if (fourthColumn.length >= 4) {
+            const fourthDigit = fourthColumn.charAt(3); // Lấy số thứ 4 từ cột 4
+            fourDNumbers.push(fourthDigit);
+        }
+    }
+});
+
+// Lọc và xử lý dữ liệu như bạn yêu cầu
+allNumbers = allNumbers.map(num => num.padStart(2, '0'));
+
+// Đếm tần suất xuất hiện của từng số
+const frequencyMap = {};
+allNumbers.forEach(num => {
+    if (!frequencyMap[num]) {
+        frequencyMap[num] = 0;
+    }
+    frequencyMap[num]++;
+});
+
+const sortedNumbers = Object.keys(frequencyMap)
+    .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
+
+// Tính số lượng số có tần suất cao và số ngẫu nhiên theo tỷ lệ phần trăm
+const highFreqCount = Math.floor(numberOfResults * (highFreqPercentage / 100));
+const randomCount = numberOfResults - highFreqCount;
+
+// Lấy các số có tần suất cao
+let result = sortedNumbers.slice(0, highFreqCount);
+
+// Trộn số ngẫu nhiên sử dụng seed
+const randomNumbers = getSeededRandomNumbers(allNumbers, randomCount, seed);
+result = result.concat(randomNumbers);
+
+// Lọc số trùng lặp và giới hạn số lượng kết quả
+result = [...new Set(result)].slice(0, numberOfResults);
+
+// Sắp xếp lại các số kết quả từ bé đến lớn
+result.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+// Sắp xếp lại các số 3D và 4D theo thứ tự tần suất
+// Đếm tần suất của các số 3D và 4D
+const threeDFrequencyMap = {};
+threeDNumbers.forEach(num => {
+    if (!threeDFrequencyMap[num]) {
+        threeDFrequencyMap[num] = 0;
+    }
+    threeDFrequencyMap[num]++;
+});
+const sorted3DNumbers = Object.keys(threeDFrequencyMap)
+    .sort((a, b) => threeDFrequencyMap[b] - threeDFrequencyMap[a]);
+
+const fourDFrequencyMap = {};
+fourDNumbers.forEach(num => {
+    if (!fourDFrequencyMap[num]) {
+        fourDFrequencyMap[num] = 0;
+    }
+    fourDFrequencyMap[num]++;
+});
+const sorted4DNumbers = Object.keys(fourDFrequencyMap)
+    .sort((a, b) => fourDFrequencyMap[b] - fourDFrequencyMap[a]);
+
+// Lọc số 3 càng và 4 càng theo tần suất cao nhất (7 số)
+threeDNumbers = sorted3DNumbers.slice(0, 7);
+fourDNumbers = sorted4DNumbers.slice(0, 7);
+
+// Sắp xếp các số 3 càng và 4 càng từ bé đến lớn
+threeDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+fourDNumbers.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+// Lưu trữ kết quả cố định
+fixedResult = `
+    Các số có khả năng xuất hiện cao nhất: ${result.join(', ')} <br>
+    3 Càng: ${threeDNumbers.join(', ')} <br>
+    4 Càng: ${fourDNumbers.join(', ')}
+`;
+document.getElementById('result').innerHTML = fixedResult;
+
+
+
+
+
+
+    } catch (error) {
+        console.error('Lỗi khi đọc dữ liệu từ URL hoặc xử lý:', error.message);
+        document.getElementById('result').innerHTML = 'Đã xảy ra lỗi khi xử lý dữ liệu: ' + error.message;
+    }
+}
+
+
+
+
+    // Gọi lại hàm mỗi khi có sự thay đổi (ví dụ: nhập ngày mới)
+    function updateResultsOnChange() {
+        const daysAgo = parseInt(document.getElementById('daysAgoInput').value, 10); // Nhận số ngày nhập vào
+        processDataFromUrl("your-url-here", 10, daysAgo, 3, 4); // Ví dụ số kết quả, số 3D và 4D
+    }
+
+    function getRandomNumbers(allNumbers, numberOfResults, limit) {
+        const uniqueNumbers = Array.from(new Set(allNumbers));
+        const randomResults = [];
+        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+
+        for (let i = 0; i < availableCount; i++) {
+            const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
+            randomResults.push(uniqueNumbers[randomIndex]);
+            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
+        }
+        
+        return randomResults;
+    }
+
+    function getMostFrequentNumbers(numbers, numberOfResults) {
+        const frequencyMap = {};
+        numbers.forEach(num => {
+            if (!frequencyMap[num]) {
+                frequencyMap[num] = 0;
             }
-            return data;
+            frequencyMap[num]++;
+        });
+
+        const sortedNumbers = Object.keys(frequencyMap)
+            .sort((a, b) => frequencyMap[b] - frequencyMap[a]);
+
+        const topNumbers = sortedNumbers.slice(0, numberOfResults - numbers.length);
+        return topNumbers;
+    }
+
+    function getRandomNumbers(allNumbers, numberOfResults, limit) {
+        const uniqueNumbers = Array.from(new Set(allNumbers));
+        const randomResults = [];
+        const availableCount = Math.min(uniqueNumbers.length, numberOfResults);
+
+        for (let i = 0; i < availableCount; i++) {
+            const randomIndex = Math.floor(Math.random() * uniqueNumbers.length);
+            randomResults.push(uniqueNumbers[randomIndex]);
+            uniqueNumbers.splice(randomIndex, 1); // Loại bỏ số đã chọn
+        }
+        
+        return randomResults;
+    }
+
+    function processData() {
+        const daysAgo = parseInt(document.getElementById('daysAgo').value, 10);
+        const numberOfResults = parseInt(document.getElementById('numberOfResults').value, 10);
+        const numberOf3D = parseInt(document.getElementById('numberOf3D').value, 10);
+        const numberOf4D = parseInt(document.getElementById('numberOf4D').value, 10);
+
+        if (isNaN(daysAgo) || daysAgo <= 0) {
+            alert('Vui lòng nhập số ngày hợp lệ.');
+            return;
+        }
+        if (isNaN(numberOfResults) || numberOfResults <= 0) {
+            alert('Vui lòng nhập số lượng kết quả hợp lệ.');
+            return;
+        }
+        if (isNaN(numberOf3D) || numberOf3D <= 0) {
+            alert('Vui lòng nhập số lượng 3D hợp lệ.');
+            return;
+        }
+        if (isNaN(numberOf4D) || numberOf4D <= 0) {
+            alert('Vui lòng nhập số lượng 4D hợp lệ.');
+            return;
         }
 
-        // Hàm để tính toán các con số có tỉ lệ chiến thắng cao nhất cho ngày tiếp theo
-        function analyzeData(data, numberCount = 39, highPercent = 50, lowPercent = 50) {
-            const allNumbers = [];
+        const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
+        processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D);
+    }
 
-            // Lấy tất cả các con số từ dữ liệu
-            data.forEach(item => {
-                item.numbers.forEach(number => {
-                    const lastTwoDigits = number.slice(-2); // Lấy 2 số cuối
-                    allNumbers.push(lastTwoDigits);
-                });
+    function copyToClipboard() {
+        const resultText = document.getElementById('result').innerText;
+        if (!resultText) {
+            alert('Không có kết quả để sao chép!');
+            return;
+        }
+        navigator.clipboard.writeText(resultText)
+            .then(() => {
+                const copyMessage = document.getElementById('copyMessage');
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Lỗi sao chép: ', err);
             });
+    }
 
-            // Đếm tần suất xuất hiện của các số
-            const frequencyMap = {};
-            allNumbers.forEach(num => {
-                frequencyMap[num] = (frequencyMap[num] || 0) + 1;
-            });
+    // Khởi tạo khi tải trang
+    initializeTotalDays();
+</script>
 
-            // Sắp xếp theo tần suất từ cao đến thấp
-            const sortedNumbers = Object.entries(frequencyMap)
-                .sort((a, b) => b[1] - a[1])
-                .map(([num]) => num);
 
-            // Xác định số lượng cho các nhóm cao và thấp
-            const highCount = Math.floor(numberCount * (highPercent / 100));
-            const lowCount = numberCount - highCount;
-
-            // Lấy các số có tần suất cao nhất và thấp nhất
-            const highFrequencyNumbers = sortedNumbers.slice(0, highCount);
-            const lowFrequencyNumbers = sortedNumbers.slice(-lowCount);
-
-            // Tính ngẫu nhiên cho các con số
-            const resultNumbers = [];
-
-            // Thêm các số tần suất cao vào kết quả
-            highFrequencyNumbers.forEach(num => {
-                if (Math.random() < highPercent / 100) {  // Tỉ lệ chiến thắng cao
-                    resultNumbers.push(num);
-                }
-            });
-
-            // Thêm các số tần suất thấp vào kết quả
-            lowFrequencyNumbers.forEach(num => {
-                if (Math.random() < lowPercent / 100) {  // Tỉ lệ chiến thắng thấp
-                    resultNumbers.push(num);
-                }
-            });
-
-            // Nếu chưa đủ số lượng, bổ sung thêm số ngẫu nhiên từ các số khác
-            while (resultNumbers.length < numberCount) {
-                const randomNum = sortedNumbers[Math.floor(Math.random() * sortedNumbers.length)];
-                if (!resultNumbers.includes(randomNum)) {
-                    resultNumbers.push(randomNum);
-                }
-            }
-
-            return resultNumbers.sort();
-        }
-
-        // Phương thức để tạo một hạt giống (seed) từ ngày hiện tại
-        function createSeedForToday() {
-            const currentDate = new Date();
-            const dateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-            return crypto.createHash('sha256').update(dateString).digest('hex');
-        }
-
-        // Hàm quay Monte Carlo
-        function monteCarloSimulation(data, numberCount, highPercent, lowPercent, iterations = 1000) {
-            const results = [];
-
-            // Lặp qua số lần mô phỏng
-            for (let i = 0; i < iterations; i++) {
-                const result = analyzeData(data, numberCount, highPercent, lowPercent);
-                results.push(result);
-            }
-
-            // Sử dụng hạt giống (seed) để xác định kết quả cố định cho ngày hôm đó
-            const seed = createSeedForToday();
-            const hashValue = parseInt(seed.substring(0, 8), 16); // Chỉ lấy 8 ký tự đầu của hash
-            const index = hashValue % results.length; // Đảm bảo chỉ lấy một kết quả từ mô phỏng
-            return results[index];
-        }
-
-        // Hàm để hiển thị kết quả
-        async function generateNumbersForNextDay() {
-            const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.csv';
-            const data = await getDataFromCSV(url);
-            
-            // Lấy 39 con số có tỉ lệ chiến thắng cao nhất (có thể thay đổi numberCount)
-            const highPercent = 70; // Tỉ lệ phần trăm cho các con số tần suất cao
-            const lowPercent = 30;  // Tỉ lệ phần trăm cho các con số tần suất thấp
-            const numbers = monteCarloSimulation(data, 39, highPercent, lowPercent);
-            
-            // Trả về kết quả cho người dùng
-            const formattedDate = new Date().toLocaleDateString('vi-VN');
-            const numbersString = numbers.join(', ');
-            document.getElementById('numbers').textContent = `Dàn Số của ngày mới (${formattedDate}): ${numbersString}`;
-            document.getElementById('numbers').dataset.numbers = numbersString;
-        }
-
-        // Hàm sao chép dàn số
-        function copyNumbers() {
-            const numbers = document.getElementById('numbers').dataset.numbers;
-            navigator.clipboard.writeText(numbers)
-                .then(() => {
-                    const copyMessage = document.getElementById('copyMessage');
-                    copyMessage.style.display = 'block';
-                    setTimeout(() => {
-                        copyMessage.style.display = 'none';
-                    }, 2000);
-                })
-                .catch(err => console.error('Failed to copy: ', err));
-        }
-
-        // Thêm sự kiện cho nút tạo dàn số và sao chép
-        document.getElementById('generateButton').addEventListener('click', generateNumbersForNextDay);
-        document.getElementById('copyButton').addEventListener('click', copyNumbers);
-
-        // Khi load trang, tự động tạo dàn số
-        generateNumbersForNextDay();
-
-    </script>
 </body>
 </html>
