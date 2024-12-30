@@ -163,7 +163,7 @@ function getSeededRandomNumbers(allNumbers, numberOfResults, seed) {
 }
 
 // Hàm để xử lý dữ liệu từ URL và hiển thị kết quả
-async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 20, seed = 1) {
+async function processDataFromUrl(url, numberOfResults, daysAgo, numberOf3D, numberOf4D, highFreqPercentage = 30, seed = 1) {
     try {
         // Lấy tổng số ngày đã quay từ URL
         const totalDays = await fetchTotalDays(url);
