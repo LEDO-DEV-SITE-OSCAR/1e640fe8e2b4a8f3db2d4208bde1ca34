@@ -26,7 +26,7 @@
 </head>
 <body>
 
-    <h1>Phân bổ Dữ liệu XSMB - Ngày Mới</h1>
+    <h1>Phân bổ Dữ liệu XSMB - Ngày Gần Nhất</h1>
 
     <div class="section-title">Giải thưởng:</div>
     <table id="prizes-table">
@@ -55,21 +55,30 @@
         function parseData(data) {
             const rows = data.split('\n').map(row => row.split(','));
 
-            // Lọc lấy ngày hôm nay
-            const today = new Date().toLocaleDateString('vi-VN'); // Lấy ngày hiện tại
-            const todayData = rows.find(row => row[0] === today); // Tìm dữ liệu ngày hôm nay
+            // Tìm ngày gần nhất
+            const dateStrings = rows.map(row => row[0]);
+            const dates = dateStrings.map(dateStr => new Date(dateStr.split('-').reverse().join('-')));
+            
+            // Tìm ngày gần nhất
+            const closestDateIndex = dates.reduce((closestIndex, date, index) => {
+                const currentDate = new Date();
+                const closestDate = new Date(dates[closestIndex]);
+                return (Math.abs(date - currentDate) < Math.abs(closestDate - currentDate)) ? index : closestIndex;
+            }, 0);
 
-            if (todayData) {
+            const closestDateData = rows[closestDateIndex];
+
+            if (closestDateData) {
                 // Giải thưởng
                 const prizes = {
-                    'Đặc biệt': todayData[1],
-                    'Giải nhất': todayData[2],
-                    'Giải nhì': todayData[3],
-                    'Giải ba': todayData[4],
-                    'Giải tư': todayData[5],
-                    'Giải năm': todayData[6],
-                    'Giải sáu': todayData[7],
-                    'Giải bảy': todayData[8]
+                    'Đặc biệt': closestDateData[1],
+                    'Giải nhất': closestDateData[2],
+                    'Giải nhì': closestDateData[3],
+                    'Giải ba': closestDateData[4],
+                    'Giải tư': closestDateData[5],
+                    'Giải năm': closestDateData[6],
+                    'Giải sáu': closestDateData[7],
+                    'Giải bảy': closestDateData[8]
                 };
 
                 // Hiển thị giải thưởng
@@ -86,7 +95,7 @@
                 }
 
                 // Đầu - Đuôi Lô Tô
-                const lottoData = todayData.slice(9); // Lấy phần dữ liệu Lô Tô từ cột 10 trở đi
+                const lottoData = closestDateData.slice(9); // Lấy phần dữ liệu Lô Tô từ cột 10 trở đi
                 const headTailData = {};
 
                 // Phân bổ theo đầu và đuôi
@@ -114,7 +123,7 @@
                     headTailTable.appendChild(row);
                 });
             } else {
-                alert('Không có dữ liệu cho ngày hôm nay.');
+                alert('Không có dữ liệu cho ngày gần nhất.');
             }
         }
 
