@@ -63,14 +63,14 @@
             if (latestData) {
                 // Hiển thị Giải thưởng
                 const prizes = {
-                    'Đặc biệt': latestData.special,
-                    'Giải nhất': latestData.prize1,
-                    'Giải nhì': latestData.prize2_1 + ', ' + latestData.prize2_2,
-                    'Giải ba': latestData.prize3_1 + ', ' + latestData.prize3_2 + ', ' + latestData.prize3_3,
-                    'Giải tư': latestData.prize4,
-                    'Giải năm': latestData.prize5,
-                    'Giải sáu': latestData.prize6,
-                    'Giải bảy': latestData.prize7
+                    'Đặc biệt': latestData.special || 'Không có dữ liệu',
+                    'Giải nhất': latestData.prize1 || 'Không có dữ liệu',
+                    'Giải nhì': (latestData.prize2_1 + ', ' + latestData.prize2_2).trim() || 'Không có dữ liệu',
+                    'Giải ba': (latestData.prize3_1 + ', ' + latestData.prize3_2 + ', ' + latestData.prize3_3).trim() || 'Không có dữ liệu',
+                    'Giải tư': latestData.prize4 || 'Không có dữ liệu',
+                    'Giải năm': latestData.prize5 || 'Không có dữ liệu',
+                    'Giải sáu': latestData.prize6 || 'Không có dữ liệu',
+                    'Giải bảy': latestData.prize7 || 'Không có dữ liệu'
                 };
 
                 const prizeTable = document.getElementById('prizes-table');
