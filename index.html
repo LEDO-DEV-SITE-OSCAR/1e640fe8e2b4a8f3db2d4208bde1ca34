@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
         }
+
         /* Thanh điều hướng */
         .navbar {
             background-color: #4CAF50;
@@ -23,13 +24,16 @@
             align-items: center;
             position: relative;
         }
+
         .navbar h1 {
             margin: 0;
         }
+
         .navbar img {
             height: 40px;
             margin-left: 10px;
         }
+
         .container {
             background-color: white;
             border-radius: 8px;
@@ -39,7 +43,7 @@
             max-width: 600px;
             margin: 20px auto;
         }
-        
+
         .time-display {
             text-align: center;
             font-size: 18px;
@@ -54,6 +58,7 @@
             flex-wrap: wrap;
             justify-content: space-between;
         }
+
         .button-container button {
             width: 48%;
             padding: 10px;
@@ -66,6 +71,7 @@
             transition: background-color 0.3s;
             margin-bottom: 10px;
         }
+
         .button-container button:hover {
             background-color: #45a049;
         }
@@ -79,11 +85,38 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         .kq-title {
             font-size: 18px;
             font-weight: bold;
             color: #730038;
             margin-bottom: 15px;
+        }
+
+        /* CSS cho footer */
+        .footer-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 250px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .footer-container h2 {
+            font-size: 18px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer-container p {
+            font-size: 14px;
+            margin: 5px 0 0;
         }
     </style>
     <script language="javascript" src="//www.minhngoc.net.vn/jquery/jquery-1.7.2.js"></script>
@@ -149,10 +182,10 @@
             window.location.href = 'DanDe2Cham.html';
         });
         document.getElementById('KuBetButton').addEventListener('click', () => { 
-            window.location.href = 'https://giaimasohoc.net/pages/THA-KUBET/';
+            window.location.href = 'https://giaimasohoc.net/pages/THA-KUBET/'; 
         });
         document.getElementById('DeGiai7Button').addEventListener('click', () => { 
-            window.location.href = 'DeGiai7.html';
+            window.location.href = 'DeGiai7.html'; 
         });
 
         // Hiển thị thời gian
@@ -164,19 +197,26 @@
             const dayName = days[now.getDay()];
             
             const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng tính từ 0
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const year = now.getFullYear();
             
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
-
-            timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+            
+            timeDisplay.textContent = `${dayName}, ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
         }
 
-        // Cập nhật thời gian mỗi giây
         setInterval(updateTime, 1000);
-        updateTime(); // Chạy ngay khi tải trang
+        updateTime();
     </script>
+
+    <!-- Footer -->
+    <div class="footer-container">
+        <div class="footer-content">
+            <h2>Thông Tin Xổ Số</h2>
+            <p>Cập nhật kết quả xổ số mới nhất tại đây.</p>
+        </div>
+    </div>
 </body>
 </html>
