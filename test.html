@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả xổ số</title>
+    <style>
+        .kqxs-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            font-family: Arial, sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #730038;
+            color: white;
+        }
+        .lottery-table {
+            width: 70%;
+        }
+        .loto-table {
+            width: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div id="box_kqxs_minhngoc">
+        <h2>Kết quả xổ số mới nhất</h2>
+        <div class="kqxs-container">
+            <table class="lottery-table" id="lottery-table">
+                <thead>
+                    <tr>
+                        <th>Lottery (Xổ số)</th>
+                        <th>Numbers</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table class="loto-table" id="loto-table">
+                <thead>
+                    <tr>
+                        <th>First (Đầu)</th>
+                        <th>Last (Đuôi)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // Đường dẫn đến file CSV
+        const csvUrl = "https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv";
+
+        // Hàm tải và xử lý dữ liệu CSV
+        async function fetchAndRenderData() {
+            const response = await fetch(csvUrl);
+            const csvText = await response.text();
+
+            const rows = csvText.split("\n").map(row => row.split(","));
+            const lotteryTable = document.getElementById("lottery-table").querySelector("tbody");
+            const lotoTable = document.getElementById("loto-table").querySelector("tbody");
+
+            // Lấy dữ liệu xổ số
+            rows.slice(1, 8).forEach((row, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                lotteryTable.appendChild(tr);
+            });
+
+            // Lấy dữ liệu lô tô
+            rows.slice(9).forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                lotoTable.appendChild(tr);
+            });
+        }
+
+        // Gọi hàm tải và hiển thị dữ liệu
+        fetchAndRenderData();
+    </script>
+</body>
+</html>
