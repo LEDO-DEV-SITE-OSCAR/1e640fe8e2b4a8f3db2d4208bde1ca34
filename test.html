@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả xổ số</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
         .kqxs-container {
             display: flex;
-            flex-direction: row;
+            justify-content: space-between;
             gap: 20px;
-            font-family: Arial, sans-serif;
         }
         table {
             border-collapse: collapse;
             width: 100%;
+            margin-top: 10px;
         }
         th, td {
             border: 1px solid #ddd;
@@ -36,6 +39,7 @@
     <div id="box_kqxs_minhngoc">
         <h2>Kết quả xổ số mới nhất</h2>
         <div class="kqxs-container">
+            <!-- Bảng Lottery -->
             <table class="lottery-table" id="lottery-table">
                 <thead>
                     <tr>
@@ -45,6 +49,7 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            <!-- Bảng Loto -->
             <table class="loto-table" id="loto-table">
                 <thead>
                     <tr>
@@ -65,19 +70,31 @@
             const response = await fetch(csvUrl);
             const csvText = await response.text();
 
+            // Tách từng dòng và cột
             const rows = csvText.split("\n").map(row => row.split(","));
             const lotteryTable = document.getElementById("lottery-table").querySelector("tbody");
             const lotoTable = document.getElementById("loto-table").querySelector("tbody");
 
-            // Lấy dữ liệu xổ số
-            rows.slice(1, 8).forEach((row, index) => {
+            // Xử lý bảng Lottery
+            const lotteryKeys = [
+                "Special (Giải đặc biệt)",
+                "First (Giải nhất)",
+                "Second (Giải nhì)",
+                "Third (Giải ba)",
+                "Fourth (Giải tư)",
+                "Fifth (Giải năm)",
+                "Sixth (Giải sáu)",
+                "Seventh (Giải bảy)"
+            ];
+
+            rows.slice(1, 9).forEach((row, index) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
+                tr.innerHTML = `<td>${lotteryKeys[index]}</td><td>${row.join(", ")}</td>`;
                 lotteryTable.appendChild(tr);
             });
 
-            // Lấy dữ liệu lô tô
-            rows.slice(9).forEach(row => {
+            // Xử lý bảng Loto
+            rows.slice(10).forEach(row => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
                 lotoTable.appendChild(tr);
