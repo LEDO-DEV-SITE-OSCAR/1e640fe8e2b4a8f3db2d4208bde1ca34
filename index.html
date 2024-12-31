@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
         }
+
         /* Thanh điều hướng */
         .navbar {
             background-color: #4CAF50;
@@ -23,13 +24,16 @@
             align-items: center;
             position: relative;
         }
+
         .navbar h1 {
             margin: 0;
         }
+
         .navbar img {
             height: 40px;
             margin-left: 10px;
         }
+
         .container {
             background-color: white;
             border-radius: 8px;
@@ -39,7 +43,7 @@
             max-width: 600px;
             margin: 20px auto;
         }
-        
+
         .time-display {
             text-align: center;
             font-size: 18px;
@@ -54,6 +58,7 @@
             flex-wrap: wrap;
             justify-content: space-between;
         }
+
         .button-container button {
             width: 48%;
             padding: 10px;
@@ -66,6 +71,7 @@
             transition: background-color 0.3s;
             margin-bottom: 10px;
         }
+
         .button-container button:hover {
             background-color: #45a049;
         }
@@ -228,20 +234,20 @@ function parseData(data) {
             'Giải tư': (latestData.prize4_1 || '') + (latestData.prize4_2 ? ', ' + latestData.prize4_2 : '') + (latestData.prize4_3 ? ', ' + latestData.prize4_3 : '') + (latestData.prize4_4 ? ', ' + latestData.prize4_4 : '') || 'Không có dữ liệu',
             'Giải năm': (latestData.prize5_1 || '') + (latestData.prize5_2 ? ', ' + latestData.prize5_2 : '') + (latestData.prize5_3 ? ', ' + latestData.prize5_3 : '') + (latestData.prize5_4 ? ', ' + latestData.prize5_4 : '') + (latestData.prize5_5 ? ', ' + latestData.prize5_5 : '') + (latestData.prize5_6 ? ', ' + latestData.prize5_6 : '') || 'Không có dữ liệu',
             'Giải sáu': (latestData.prize6_1 || '') + (latestData.prize6_2 ? ', ' + latestData.prize6_2 : '') + (latestData.prize6_3 ? ', ' + latestData.prize6_3 : '') || 'Không có dữ liệu',
-            'Giải bảy': (latestData.prize7_1 || '') + (latestData.prize7_2 ? ', ' + latestData.prize7_2 : '') + (latestData.prize7_3 ? ', ' + latestData.prize7_3 : '') + (latestData.prize7_4 ? ', ' + latestData.prize7_4 : '') || 'Không có dữ liệu'
+            'Giải bảy': (latestData.prize7_1 || '') + (latestData.prize7_2 ? ', ' + latestData.prize7_2 : '') + (latestData.prize7_3 ? ', ' + latestData.prize7_3 : '') + (latestData.prize7_4 ? ', ' + latestData.prize7_4 : '') || 'Không có dữ liệu',
         };
 
         const prizeTable = document.getElementById('prizes-table');
-        for (const [prize, value] of Object.entries(prizes)) {
+        Object.entries(prizes).forEach(([key, value]) => {
             const row = document.createElement('tr');
             const cell1 = document.createElement('td');
-            cell1.textContent = prize;
+            cell1.textContent = key;
             const cell2 = document.createElement('td');
             cell2.textContent = value;
             row.appendChild(cell1);
             row.appendChild(cell2);
             prizeTable.appendChild(row);
-        }
+        });
 
         // Hiển thị Đầu - Đuôi Lô Tô
         const headTailData = {};
@@ -258,10 +264,10 @@ function parseData(data) {
 
         allPrizes.forEach(prize => {
             if (prize) {
-                const numbers = prize.split(',').map(num => num.trim());
+                const numbers = prize.split(',').map(num => num.trim()); 
                 numbers.forEach(number => {
-                    const head = number.charAt(0);
-                    const tail = number.charAt(number.length - 1);
+                    const head = number.charAt(0); 
+                    const tail = number.charAt(number.length - 1); 
 
                     if (!headTailData[head]) headTailData[head] = [];
                     if (!headTailData[tail]) headTailData[tail] = [];
@@ -287,21 +293,16 @@ function parseData(data) {
             row.appendChild(cell2);
             headTailTable.appendChild(row);
         });
-    } else {
-        alert('Không có dữ liệu cho ngày gần nhất.');
     }
-}
 
-// Hàm định dạng ngày theo định dạng "DD-MM-YYYY"
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-}
+    function formatDate(date) {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
 
-fetchData();
-
-    </script>
+    fetchData();
+</script>
 </body>
 </html>
