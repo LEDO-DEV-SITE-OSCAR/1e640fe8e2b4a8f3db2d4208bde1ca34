@@ -31,13 +31,18 @@
     <div id="loto-tail"></div>
 
     <script>
-        // Hàm fetch dữ liệu từ link (giả định dữ liệu trả về dưới dạng JSON)
-        async function fetchLotteryData() {
-            // Đây là một ví dụ minh họa. Thay URL này bằng URL thực tế của bạn.
-            const response = await fetch("https://api.example.com/lottery-results");
-            const data = await response.json();
-            return data;
-        }
+        // Bộ dữ liệu giả để kiểm tra nếu không có API
+        const dummyData = {
+            date: "30-12-2024",
+            special: "34071",
+            first: "85687",
+            second: ["55202", "84467"],
+            third: ["64837", "67592", "00433", "10933", "84813", "01310"],
+            fourth: ["0808", "8871", "1096", "9171"],
+            fifth: ["7562", "8884", "3508", "6484", "5334", "6745"],
+            sixth: ["432", "971", "308"],
+            seventh: ["98", "95", "90", "11"]
+        };
 
         // Hàm xử lý dữ liệu loto
         function processLotoData(allNumbers) {
@@ -96,7 +101,8 @@
         // Hàm chính để lấy dữ liệu và hiển thị
         async function main() {
             try {
-                const lotteryData = await fetchLotteryData();
+                // Sử dụng dữ liệu giả (dummyData) nếu không có API thực tế
+                const lotteryData = dummyData;
 
                 // Gộp tất cả các số vào một mảng
                 const allNumbers = [
@@ -120,7 +126,7 @@
                 renderLotoTable(lotoHead, "loto-head", "Đầu - Lô tô");
                 renderLotoTable(lotoTail, "loto-tail", "Đuôi - Lô tô");
             } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu:", error);
+                console.error("Lỗi khi xử lý dữ liệu:", error);
             }
         }
 
