@@ -137,35 +137,37 @@
         </div>
     </div>
 
-    <div id="box_kqxs_minhngoc">
-        <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
+    <!-- Bảng kết quả xổ số -->
+<div id="box_kqxs_minhngoc">
+    <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
 
-        <div id="prizes-section">
-            <h3>Giải Thưởng</h3>
-            <table id="prizes-table">
-                <tr><th>Giải</th><th>Giá trị</th></tr>
+    <div id="prizes-section">
+        <h3>Giải Thưởng</h3>
+        <table id="prizes-table">
+            <tr><th>Giải</th><th>Giá trị</th></tr>
+            <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
+        </table>
+    </div>
+
+    <div id="head-tail-section">
+        <h3>Đầu - Đuôi Lô Tô</h3>
+        <div>
+            <h4>Đầu</h4>
+            <table id="head-loto-table">
+                <tr><th>Đầu</th><th>Lô Tô</th></tr>
                 <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
             </table>
         </div>
-
-        <div id="head-tail-section">
-            <h3>Đầu - Đuôi Lô Tô</h3>
-            <div>
-                <h4>Đầu</h4>
-                <table id="head-loto-table">
-                    <tr><th>Đầu</th><th>Lô Tô</th></tr>
-                    <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
-                </table>
-            </div>
-            <div>
-                <h4>Đuôi</h4>
-                <table id="tail-loto-table">
-                    <tr><th>Đuôi</th><th>Lô Tô</th></tr>
-                    <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
-                </table>
-            </div>
+        <div>
+            <h4>Đuôi</h4>
+            <table id="tail-loto-table">
+                <tr><th>Đuôi</th><th>Lô Tô</th></tr>
+                <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
+            </table>
         </div>
     </div>
+</div>
+
 
     <audio id="pageAudio" src="Twindle.mp3" preload="auto"></audio>
 
@@ -219,49 +221,50 @@
         updateTime();
 
         async function fetchData() {
-            const url = 'https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34/test.html';
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                parseData(data);
-            } catch (error) {
-                console.error('Lỗi tải dữ liệu:', error);
-            }
-        }
+    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.json';
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        parseData(data);
+    } catch (error) {
+        console.error('Lỗi tải dữ liệu:', error);
+    }
+}
 
-        function parseData(data) {
-            // Cập nhật bảng Giải Thưởng
-            const prizesTable = document.getElementById('prizes-table');
-            const prizes = data.giai_thuong;
-            prizesTable.innerHTML = '<tr><th>Giải</th><th>Giá trị</th></tr>';
-            prizes.forEach(prize => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${prize.giai}</td><td>${prize.giatri}</td>`;
-                prizesTable.appendChild(row);
-            });
+function parseData(data) {
+    // Cập nhật bảng Giải Thưởng
+    const prizesTable = document.getElementById('prizes-table');
+    const prizes = data.giai_thuong;
+    prizesTable.innerHTML = '<tr><th>Giải</th><th>Giá trị</th></tr>';
+    prizes.forEach(prize => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${prize.giai}</td><td>${prize.giatri}</td>`;
+        prizesTable.appendChild(row);
+    });
 
-            // Cập nhật bảng Đầu Lô Tô
-            const headTable = document.getElementById('head-loto-table');
-            const heads = data.dau_loto;
-            headTable.innerHTML = '<tr><th>Đầu</th><th>Lô Tô</th></tr>';
-            heads.forEach(head => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${head.dau}</td><td>${head.loto}</td>`;
-                headTable.appendChild(row);
-            });
+    // Cập nhật bảng Đầu Lô Tô
+    const headTable = document.getElementById('head-loto-table');
+    const heads = data.dau_loto;
+    headTable.innerHTML = '<tr><th>Đầu</th><th>Lô Tô</th></tr>';
+    heads.forEach(head => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${head.dau}</td><td>${head.loto}</td>`;
+        headTable.appendChild(row);
+    });
 
-            // Cập nhật bảng Đuôi Lô Tô
-            const tailTable = document.getElementById('tail-loto-table');
-            const tails = data.duoi_loto;
-            tailTable.innerHTML = '<tr><th>Đuôi</th><th>Lô Tô</th></tr>';
-            tails.forEach(tail => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${tail.duoi}</td><td>${tail.loto}</td>`;
-                tailTable.appendChild(row);
-            });
-        }
+    // Cập nhật bảng Đuôi Lô Tô
+    const tailTable = document.getElementById('tail-loto-table');
+    const tails = data.duoi_loto;
+    tailTable.innerHTML = '<tr><th>Đuôi</th><th>Lô Tô</th></tr>';
+    tails.forEach(tail => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${tail.duoi}</td><td>${tail.loto}</td>`;
+        tailTable.appendChild(row);
+    });
+}
 
-        fetchData();
+fetchData();
+
     </script>
 </body>
 </html>
