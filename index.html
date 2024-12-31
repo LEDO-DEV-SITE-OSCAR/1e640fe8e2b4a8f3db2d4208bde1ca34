@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOTTERY - LE VAN DO</title>
+    <!-- Chèn logo trên thanh tiêu đề -->
     <link rel="icon" href="lottery.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f5;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
-            color: #333;
         }
-
         /* Thanh điều hướng */
         .navbar {
             background-color: #4CAF50;
@@ -23,47 +22,44 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            font-size: 18px;
         }
         .navbar h1 {
             margin: 0;
         }
         .navbar img {
-            height: 30px;
+            height: 40px;
+            margin-left: 10px;
         }
-
-        /* Container chính */
         .container {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
-            margin: 30px auto;
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
         }
-
-        /* Hiển thị thời gian */
+        
         .time-display {
             text-align: center;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            color: #555;
-            margin-bottom: 15px;
+            color: #333;
+            margin-bottom: 20px;
         }
 
-        /* Các nút */
         .button-container {
+            margin-top: 20px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
         }
         .button-container button {
             width: 48%;
-            padding: 12px;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            font-size: 14px;
+            font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -78,7 +74,7 @@
         #box_kqxs_minhngoc {
             margin-top: 30px;
             padding: 15px;
-            background-color: #f9f9f9;
+            background-color: #f2f2f2;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -89,35 +85,9 @@
             color: #730038;
             margin-bottom: 15px;
         }
-
-        /* Bảng kết quả */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        td {
-            background-color: #fff;
-        }
-
-        /* Hiển thị loading */
-        .loading {
-            font-size: 14px;
-            color: #999;
-            font-style: italic;
-        }
     </style>
+    <script language="javascript" src="//www.minhngoc.net.vn/jquery/jquery-1.7.2.js"></script>
+    <link rel="stylesheet" type="text/css" href="//www.minhngoc.net.vn/style/bangketqua_mini.css"/>
 </head>
 <body>
     <div class="navbar">
@@ -126,9 +96,10 @@
     </div>
 
     <div class="container">
+        <!-- Hiển thị thời gian -->
         <div id="timeDisplay" class="time-display"></div>
-
-        <h2>Chọn Hạng Mục</h2>
+        
+        <h1>Chọn Hạng Mục</h1>
         <div class="button-container">
             <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
             <button id="DeGiai7Button">Đề Giải 7 Hằng Ngày</button>
@@ -137,41 +108,24 @@
         </div>
     </div>
 
-    <!-- Bảng kết quả xổ số -->
-<div id="box_kqxs_minhngoc">
-    <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
-
-    <div id="prizes-section">
-        <h3>Giải Thưởng</h3>
-        <table id="prizes-table">
-            <tr><th>Giải</th><th>Giá trị</th></tr>
-            <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
-        </table>
+    <!-- Kết quả xổ số Minh Ngọc -->
+    <div id="box_kqxs_minhngoc">
+        <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
+        <script language="javascript">  
+            bgcolor="#bfbfbf"; 
+            titlecolor="#730038"; 
+            dbcolor="#000000"; 
+            fsize="12px"; 
+            kqwidth="300px"; 
+        </script>
+        <script language="javascript" src="//www.minhngoc.net.vn/getkqxs/mien-bac.js"></script>
     </div>
 
-    <div id="head-tail-section">
-        <h3>Đầu - Đuôi Lô Tô</h3>
-        <div>
-            <h4>Đầu</h4>
-            <table id="head-loto-table">
-                <tr><th>Đầu</th><th>Lô Tô</th></tr>
-                <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
-            </table>
-        </div>
-        <div>
-            <h4>Đuôi</h4>
-            <table id="tail-loto-table">
-                <tr><th>Đuôi</th><th>Lô Tô</th></tr>
-                <tr><td colspan="2" class="loading">Đang tải dữ liệu...</td></tr>
-            </table>
-        </div>
-    </div>
-</div>
-
-
+    <!-- Thẻ audio -->
     <audio id="pageAudio" src="Twindle.mp3" preload="auto"></audio>
 
     <script>
+        // Chức năng phát âm thanh khi người dùng tương tác
         function playAudioOnce() {
             const audio = document.getElementById('pageAudio');
             if (audio.paused) {
@@ -183,9 +137,11 @@
             }
         }
 
+        // Lắng nghe sự kiện đầu tiên của người dùng
         document.addEventListener('click', playAudioOnce, { once: true });
         document.addEventListener('touchstart', playAudioOnce, { once: true });
 
+        // Sự kiện chuyển trang
         document.getElementById('AIXOSOButton').addEventListener('click', () => { 
             window.location.href = 'AIthongkexsmb.html';
         });
@@ -199,6 +155,7 @@
             window.location.href = 'DeGiai7.html';
         });
 
+        // Hiển thị thời gian
         function updateTime() {
             const timeDisplay = document.getElementById('timeDisplay');
             const now = new Date();
@@ -207,7 +164,7 @@
             const dayName = days[now.getDay()];
             
             const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng tính từ 0
             const year = now.getFullYear();
             
             const hours = now.getHours().toString().padStart(2, '0');
@@ -217,54 +174,9 @@
             timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
         }
 
+        // Cập nhật thời gian mỗi giây
         setInterval(updateTime, 1000);
-        updateTime();
-
-        async function fetchData() {
-    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.json';
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        parseData(data);
-    } catch (error) {
-        console.error('Lỗi tải dữ liệu:', error);
-    }
-}
-
-function parseData(data) {
-    // Cập nhật bảng Giải Thưởng
-    const prizesTable = document.getElementById('prizes-table');
-    const prizes = data.giai_thuong;
-    prizesTable.innerHTML = '<tr><th>Giải</th><th>Giá trị</th></tr>';
-    prizes.forEach(prize => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${prize.giai}</td><td>${prize.giatri}</td>`;
-        prizesTable.appendChild(row);
-    });
-
-    // Cập nhật bảng Đầu Lô Tô
-    const headTable = document.getElementById('head-loto-table');
-    const heads = data.dau_loto;
-    headTable.innerHTML = '<tr><th>Đầu</th><th>Lô Tô</th></tr>';
-    heads.forEach(head => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${head.dau}</td><td>${head.loto}</td>`;
-        headTable.appendChild(row);
-    });
-
-    // Cập nhật bảng Đuôi Lô Tô
-    const tailTable = document.getElementById('tail-loto-table');
-    const tails = data.duoi_loto;
-    tailTable.innerHTML = '<tr><th>Đuôi</th><th>Lô Tô</th></tr>';
-    tails.forEach(tail => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${tail.duoi}</td><td>${tail.loto}</td>`;
-        tailTable.appendChild(row);
-    });
-}
-
-fetchData();
-
+        updateTime(); // Chạy ngay khi tải trang
     </script>
 </body>
 </html>
