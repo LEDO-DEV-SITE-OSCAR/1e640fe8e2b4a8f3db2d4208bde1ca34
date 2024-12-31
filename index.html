@@ -111,14 +111,112 @@
     <!-- Kết quả xổ số Minh Ngọc -->
     <div id="box_kqxs_minhngoc">
         <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
-        <script language="javascript">  
-            bgcolor="#bfbfbf"; 
-            titlecolor="#730038"; 
-            dbcolor="#000000"; 
-            fsize="12px"; 
-            kqwidth="300px"; 
+
+        <!-- Chèn mã JavaScript để lấy dữ liệu từ API -->
+        <script>
+            async function fetchData() {
+                const url = 'https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34/test.html';
+                try {
+                    // Fetch dữ liệu từ API
+                    const response = await fetch(url);
+                    const data = await response.json(); // Giả sử dữ liệu là JSON
+                    parseData(data);
+                } catch (error) {
+                    console.error('Có lỗi khi tải dữ liệu:', error);
+                }
+            }
+
+            function parseData(data) {
+                // Lấy phần dữ liệu giải thưởng
+                const prizeData = data.prizes || {};
+                const prizeTable = document.getElementById('prizes-table');
+                prizeTable.innerHTML = `
+                    <tr>
+                        <th>Giải</th>
+                        <th>Giá trị</th>
+                    </tr>
+                `;
+                Object.entries(prizeData).forEach(([prize, value]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${prize}</td><td>${value}</td>`;
+                    prizeTable.appendChild(row);
+                });
+
+                // Lấy dữ liệu Đầu và Đuôi Lô Tô
+                const headData = data.headData || {};
+                const tailData = data.tailData || {};
+
+                // Đổ dữ liệu Đầu Lô Tô
+                const headTable = document.getElementById('head-loto-table');
+                headTable.innerHTML = `
+                    <tr>
+                        <th>Đầu</th>
+                        <th>Lô Tô</th>
+                    </tr>
+                `;
+                Object.entries(headData).forEach(([head, lotoList]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${head}</td><td>${lotoList.join('; ')}</td>`;
+                    headTable.appendChild(row);
+                });
+
+                // Đổ dữ liệu Đuôi Lô Tô
+                const tailTable = document.getElementById('tail-loto-table');
+                tailTable.innerHTML = `
+                    <tr>
+                        <th>Đuôi</th>
+                        <th>Lô Tô</th>
+                    </tr>
+                `;
+                Object.entries(tailData).forEach(([tail, lotoList]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${tail}</td><td>${lotoList.join('; ')}</td>`;
+                    tailTable.appendChild(row);
+                });
+            }
+
+            // Gọi hàm khi tải trang
+            fetchData();
         </script>
-        <script language="javascript" src="//www.minhngoc.net.vn/getkqxs/mien-bac.js"></script>
+
+        <div class="result-box">
+            <!-- Giải thưởng -->
+            <div id="prizes-section">
+                <h3>Giải Thưởng</h3>
+                <table id="prizes-table">
+                    <tr>
+                        <th>Giải</th>
+                        <th>Giá trị</th>
+                    </tr>
+                    <tr><td colspan="2">Đang tải dữ liệu...</td></tr>
+                </table>
+            </div>
+
+            <!-- Đầu - Đuôi Lô Tô -->
+            <div id="head-tail-section">
+                <h3>Đầu - Đuôi Lô Tô</h3>
+                <div>
+                    <h4>Đầu</h4>
+                    <table id="head-loto-table">
+                        <tr>
+                            <th>Đầu</th>
+                            <th>Lô Tô</th>
+                        </tr>
+                        <tr><td colspan="2">Đang tải dữ liệu...</td></tr>
+                    </table>
+                </div>
+                <div>
+                    <h4>Đuôi</h4>
+                    <table id="tail-loto-table">
+                        <tr>
+                            <th>Đuôi</th>
+                            <th>Lô Tô</th>
+                        </tr>
+                        <tr><td colspan="2">Đang tải dữ liệu...</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Thẻ audio -->
