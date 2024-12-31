@@ -132,18 +132,24 @@
 
 <script>
     document.getElementById('startSimulation').addEventListener('click', async () => {
-        const today = new Date().toLocaleDateString();
-        const spinRef = firebase.database().ref('spinStatus');
-        const spinData = await spinRef.get();
+        // Lưu vào Firebase thay vì localStorage
+const spinRef = firebase.database().ref('spinStatus');
+const spinData = await spinRef.get();
 
-        if (spinData.exists() && spinData.val().lastSpin === today) {
-            alert('Hôm nay đã quay rồi. Vui lòng quay lại vào ngày mai!');
-            return;
-        }
+if (spinData.exists() && spinData.val().lastSpin === today && spinData.val().provinces[province]) {
+    alert('Hôm nay đã quay rồi. Vui lòng quay lại vào ngày mai!');
+    return;
+}
 
-        alert('Quay thành công!');
-        spinRef.set({ lastSpin: today });
-    });
+const updateData = {
+    lastSpin: today,
+    provinces: {
+        [province]: true
+    }
+};
+
+spinRef.set(updateData);
+
 </script>
 </body>
 </html>
@@ -331,36 +337,37 @@ document.getElementById("region").addEventListener("change", (e) => {
     updateProvinceDropdown(region);
 });
 
-document.getElementById("startSimulation").addEventListener("click", () => {
-    const region = document.getElementById("region").value;
-    const province = document.getElementById("province").value;
-    const simulations = parseInt(document.getElementById("simulations").value, 10);
+document.getElementById('startSimulation').addEventListener('click', async () => {
+    const today = new Date().toLocaleDateString();
+    const region = document.getElementById('region').value;
+    const province = document.getElementById('province').value;
 
-    if (!simulations || simulations <= 0) {
-        alert("Vui lòng nhập số phiên chạy hợp lệ!");
-        return;
+    if (region !== "Lotto Ku") {
+        // Kiểm tra trạng thái quay từ Firebase
+        const spinRef = firebase.database().ref('spinStatus');
+        const spinData = await spinRef.get();
+        
+        if (spinData.exists() && spinData.val().lastSpin === today && spinData.val().provinces[province]) {
+            alert('Hôm nay bạn đã quay xổ số cho tỉnh này rồi. Vui lòng quay lại vào ngày mai!');
+            return;
+        }
+
+        // Cập nhật Firebase với ngày hiện tại và trạng thái quay của tỉnh
+        const updateData = {
+            lastSpin: today,
+            provinces: {
+                [province]: true
+            }
+        };
+
+        // Cập nhật cơ sở dữ liệu Firebase
+        spinRef.set(updateData);
     }
 
-    if (isNewDay()) {
-        console.log("Reset data for a new day.");
-    }
+    alert('Quay xổ số thành công!');
+    // Tiến hành mô phỏng và hiển thị kết quả ở đây...
+});
 
-    const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-    if (spinData[province] && region !== "Lotto Ku") {
-        document.getElementById("spinNotice").style.display = "block";
-        document.getElementById("output").style.display = "none";
-        return;
-    }
-    spinData[province] = true;
-    localStorage.setItem("spinRecords", JSON.stringify(spinData));
-    document.getElementById("spinNotice").style.display = "none";
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("output").style.display = "block";
-    setTimeout(() => {
-        const results = monteCarloSimulation(simulations);
-        displayResults(results, province);
-        document.getElementById("loading").style.display = "none";
-    }, 2000);
 
     // Nếu là Lotto Ku, tăng bộ đếm lên 1
     if (region === "Lotto Ku") {
