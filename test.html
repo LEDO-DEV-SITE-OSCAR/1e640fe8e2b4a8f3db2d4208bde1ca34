@@ -25,9 +25,9 @@
     </style>
 </head>
 <body>
+
     <h1>Phân bổ Dữ liệu XSMB - Ngày Gần Nhất</h1>
 
-    <!-- Hiển thị Giải thưởng -->
     <div class="section-title">Giải thưởng:</div>
     <table id="prizes-table">
         <tr>
@@ -36,19 +36,11 @@
         </tr>
     </table>
 
-    <!-- Hiển thị Đầu - Đuôi Lô Tô -->
     <div class="section-title">Đầu - Đuôi Lô Tô:</div>
     <table id="head-tail-table">
         <tr>
             <th>Đầu</th>
-            <th>Lô Tô</th>
-        </tr>
-    </table>
-
-    <table id="tail-loto-table">
-        <tr>
             <th>Đuôi</th>
-            <th>Lô Tô</th>
         </tr>
     </table>
 
@@ -63,7 +55,7 @@
         function parseData(data) {
             // Lọc ra ngày gần nhất
             const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
+            
             if (latestData) {
                 // Hiển thị Giải thưởng
                 const prizes = {
@@ -89,10 +81,10 @@
                     prizeTable.appendChild(row);
                 }
 
-                // Phân tích Đầu - Đuôi Lô Tô
-                const headData = { "0": [], "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [] };
-                const tailData = { "0": [], "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [] };
+                // Hiển thị Đầu - Đuôi Lô Tô
+                const headTailData = {};
 
+                // Phân chia đầu và đuôi từ prize1 đến prize7
                 const allPrizes = [
                     latestData.prize1, latestData.prize2_1, latestData.prize2_2,
                     latestData.prize3_1, latestData.prize3_2, latestData.prize3_3,
@@ -107,50 +99,34 @@
                     if (prize) {
                         const numbers = prize.split(',').map(num => num.trim());
                         numbers.forEach(number => {
-                            const head = number.charAt(0);  // Lấy đầu
-                            const tail = number.charAt(number.length - 1);  // Lấy đuôi
-                            const loto = number.slice(1, number.length - 1); // Phần lô tô
+                            const head = number.charAt(0); // Lấy đầu
+                            const tail = number.charAt(number.length - 1); // Lấy đuôi
 
-                            // Thêm số vào nhóm "Đầu"
-                            if (!headData[head].includes(loto)) {
-                                headData[head].push(loto);
+                            if (!headTailData[head]) headTailData[head] = [];
+                            if (!headTailData[tail]) headTailData[tail] = [];
+
+                            // Thêm đuôi vào đầu và ngược lại
+                            if (!headTailData[head].includes(tail)) {
+                                headTailData[head].push(tail);
                             }
-                            // Thêm số vào nhóm "Đuôi"
-                            if (!tailData[tail].includes(loto)) {
-                                tailData[tail].push(loto);
+                            if (!headTailData[tail].includes(head)) {
+                                headTailData[tail].push(head);
                             }
                         });
                     }
                 });
 
-                // Hiển thị bảng Đầu Lô Tô
+                // Hiển thị bảng Đầu - Đuôi Lô Tô
                 const headTailTable = document.getElementById('head-tail-table');
-                Object.entries(headData).forEach(([key, value]) => {
-                    if (value.length > 0) {
-                        const row = document.createElement('tr');
-                        const cell1 = document.createElement('td');
-                        cell1.textContent = key;
-                        const cell2 = document.createElement('td');
-                        cell2.textContent = value.join('; ');
-                        row.appendChild(cell1);
-                        row.appendChild(cell2);
-                        headTailTable.appendChild(row);
-                    }
-                });
-
-                // Hiển thị bảng Đuôi Lô Tô
-                const tailLotoTable = document.getElementById('tail-loto-table');
-                Object.entries(tailData).forEach(([key, value]) => {
-                    if (value.length > 0) {
-                        const row = document.createElement('tr');
-                        const cell1 = document.createElement('td');
-                        cell1.textContent = key;
-                        const cell2 = document.createElement('td');
-                        cell2.textContent = value.join('; ');
-                        row.appendChild(cell1);
-                        row.appendChild(cell2);
-                        tailLotoTable.appendChild(row);
-                    }
+                Object.entries(headTailData).forEach(([key, value]) => {
+                    const row = document.createElement('tr');
+                    const cell1 = document.createElement('td');
+                    cell1.textContent = key;
+                    const cell2 = document.createElement('td');
+                    cell2.textContent = value.join('; ');
+                    row.appendChild(cell1);
+                    row.appendChild(cell2);
+                    headTailTable.appendChild(row);
                 });
             } else {
                 alert('Không có dữ liệu cho ngày gần nhất.');
@@ -160,5 +136,6 @@
         // Gọi hàm khi tải trang
         fetchData();
     </script>
+
 </body>
 </html>
