@@ -53,11 +53,9 @@
         }
 
         function parseData(data) {
-            // Lọc ra ngày gần nhất
+            // Sắp xếp theo ngày (đảm bảo ngày gần nhất)
             const dates = data.map(item => new Date(item.date));
             const latestDate = new Date(Math.max(...dates));
-
-            // Lọc ra bản ghi có ngày gần nhất
             const latestData = data.find(item => new Date(item.date).getTime() === latestDate.getTime());
 
             if (latestData) {
@@ -65,8 +63,8 @@
                 const prizes = {
                     'Đặc biệt': latestData.special || 'Không có dữ liệu',
                     'Giải nhất': latestData.prize1 || 'Không có dữ liệu',
-                    'Giải nhì': (latestData.prize2_1 + ', ' + latestData.prize2_2).trim() || 'Không có dữ liệu',
-                    'Giải ba': (latestData.prize3_1 + ', ' + latestData.prize3_2 + ', ' + latestData.prize3_3).trim() || 'Không có dữ liệu',
+                    'Giải nhì': (latestData.prize2_1 || '') + (latestData.prize2_2 ? ', ' + latestData.prize2_2 : '') || 'Không có dữ liệu',
+                    'Giải ba': (latestData.prize3_1 || '') + (latestData.prize3_2 ? ', ' + latestData.prize3_2 : '') + (latestData.prize3_3 ? ', ' + latestData.prize3_3 : '') || 'Không có dữ liệu',
                     'Giải tư': latestData.prize4 || 'Không có dữ liệu',
                     'Giải năm': latestData.prize5 || 'Không có dữ liệu',
                     'Giải sáu': latestData.prize6 || 'Không có dữ liệu',
