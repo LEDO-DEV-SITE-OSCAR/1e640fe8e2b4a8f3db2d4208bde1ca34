@@ -124,24 +124,25 @@
 
     <!-- Xử lý Dữ liệu XSMB -->
     <div class="container">
-        <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất: <span id="latest-date"></span></h2>
+    <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất: <span id="latest-date"></span></h2>
 
-        <div class="section-title">Giải thưởng:</div>
-        <table id="prizes-table">
-            <tr>
-                <th>Giải</th>
-                <th>Giá trị</th>
-            </tr>
-        </table>
+    <div class="section-title">Giải thưởng:</div>
+    <table id="prizes-table">
+        <tr>
+            <th>Giải</th>
+            <th>Giá trị</th>
+        </tr>
+    </table>
 
-        <div class="section-title">Đầu - Đuôi Lô Tô:</div>
-        <table id="head-tail-table">
-            <tr>
-                <th>Đầu</th>
-                <th>Đuôi</th>
-            </tr>
-        </table>
-    </div>
+    <div class="section-title">Đầu - Đuôi Lô Tô:</div>
+    <table id="head-tail-table">
+        <tr>
+            <th>Đầu</th>
+            <th>Đuôi</th>
+        </tr>
+    </table>
+</div>
+
 
     <!-- Thẻ audio -->
     <audio id="pageAudio" src="Twindle.mp3" preload="auto"></audio>
@@ -202,68 +203,105 @@
 
         // Xử lý dữ liệu XSMB
         async function fetchData() {
-            const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb-2-digits.json';
-            const response = await fetch(url);
-            const data = await response.json();
-            parseData(data);
+    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.json';
+    const response = await fetch(url);
+    const data = await response.json();
+    parseData(data);
+}
+
+function parseData(data) {
+    // Lọc ra ngày gần nhất
+    const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    
+    if (latestData) {
+        // Hiển thị ngày gần nhất
+        const latestDate = new Date(latestData.date);
+        const formattedDate = formatDate(latestDate);  // Định dạng ngày theo "DD-MM-YYYY"
+        document.getElementById('latest-date').innerText = formattedDate;
+
+        // Hiển thị Giải thưởng
+        const prizes = {
+            'Đặc biệt': latestData.special || 'Không có dữ liệu',
+            'Giải nhất': latestData.prize1 || 'Không có dữ liệu',
+            'Giải nhì': (latestData.prize2_1 || '') + (latestData.prize2_2 ? ', ' + latestData.prize2_2 : '') || 'Không có dữ liệu',
+            'Giải ba': (latestData.prize3_1 || '') + (latestData.prize3_2 ? ', ' + latestData.prize3_2 : '') + (latestData.prize3_3 ? ', ' + latestData.prize3_3 : '') + (latestData.prize3_4 ? ', ' + latestData.prize3_4 : '') + (latestData.prize3_5 ? ', ' + latestData.prize3_5 : '') + (latestData.prize3_6 ? ', ' + latestData.prize3_6 : '') || 'Không có dữ liệu',
+            'Giải tư': (latestData.prize4_1 || '') + (latestData.prize4_2 ? ', ' + latestData.prize4_2 : '') + (latestData.prize4_3 ? ', ' + latestData.prize4_3 : '') + (latestData.prize4_4 ? ', ' + latestData.prize4_4 : '') || 'Không có dữ liệu',
+            'Giải năm': (latestData.prize5_1 || '') + (latestData.prize5_2 ? ', ' + latestData.prize5_2 : '') + (latestData.prize5_3 ? ', ' + latestData.prize5_3 : '') + (latestData.prize5_4 ? ', ' + latestData.prize5_4 : '') + (latestData.prize5_5 ? ', ' + latestData.prize5_5 : '') + (latestData.prize5_6 ? ', ' + latestData.prize5_6 : '') || 'Không có dữ liệu',
+            'Giải sáu': (latestData.prize6_1 || '') + (latestData.prize6_2 ? ', ' + latestData.prize6_2 : '') + (latestData.prize6_3 ? ', ' + latestData.prize6_3 : '') || 'Không có dữ liệu',
+            'Giải bảy': (latestData.prize7_1 || '') + (latestData.prize7_2 ? ', ' + latestData.prize7_2 : '') + (latestData.prize7_3 ? ', ' + latestData.prize7_3 : '') + (latestData.prize7_4 ? ', ' + latestData.prize7_4 : '') || 'Không có dữ liệu'
+        };
+
+        const prizeTable = document.getElementById('prizes-table');
+        for (const [prize, value] of Object.entries(prizes)) {
+            const row = document.createElement('tr');
+            const cell1 = document.createElement('td');
+            cell1.textContent = prize;
+            const cell2 = document.createElement('td');
+            cell2.textContent = value;
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            prizeTable.appendChild(row);
         }
 
-        function parseData(data) {
-            const headTailData = { head: {}, tail: {} };
+        // Hiển thị Đầu - Đuôi Lô Tô
+        const headTailData = {};
 
-            // Duyệt qua từng kết quả để lấy Đầu - Đuôi
-            data.forEach(entry => {
-                entry.numbers.forEach(number => {
-                    const head = number[0];  // Đầu
-                    const tail = number[1];  // Đuôi
+        const allPrizes = [
+            latestData.prize1, latestData.prize2_1, latestData.prize2_2,
+            latestData.prize3_1, latestData.prize3_2, latestData.prize3_3,
+            latestData.prize3_4, latestData.prize3_5, latestData.prize3_6,
+            latestData.prize4_1, latestData.prize4_2, latestData.prize4_3, latestData.prize4_4,
+            latestData.prize5_1, latestData.prize5_2, latestData.prize5_3, latestData.prize5_4, latestData.prize5_5, latestData.prize5_6,
+            latestData.prize6_1, latestData.prize6_2, latestData.prize6_3,
+            latestData.prize7_1, latestData.prize7_2, latestData.prize7_3, latestData.prize7_4
+        ];
 
-                    // Thêm vào danh sách Đầu
-                    if (!headTailData.head[head]) headTailData.head[head] = [];
-                    if (!headTailData.head[head].includes(number)) {
-                        headTailData.head[head].push(number);
+        allPrizes.forEach(prize => {
+            if (prize) {
+                const numbers = prize.split(',').map(num => num.trim());
+                numbers.forEach(number => {
+                    const head = number.charAt(0);
+                    const tail = number.charAt(number.length - 1);
+
+                    if (!headTailData[head]) headTailData[head] = [];
+                    if (!headTailData[tail]) headTailData[tail] = [];
+
+                    if (!headTailData[head].includes(tail)) {
+                        headTailData[head].push(tail);
                     }
-
-                    // Thêm vào danh sách Đuôi
-                    if (!headTailData.tail[tail]) headTailData.tail[tail] = [];
-                    if (!headTailData.tail[tail].includes(number)) {
-                        headTailData.tail[tail].push(number);
+                    if (!headTailData[tail].includes(head)) {
+                        headTailData[tail].push(head);
                     }
                 });
-            });
+            }
+        });
 
-            // Hiển thị dữ liệu Đầu - Đuôi
-            const headTailTable = document.getElementById('head-tail-table');
+        const headTailTable = document.getElementById('head-tail-table');
+        Object.entries(headTailData).forEach(([key, value]) => {
+            const row = document.createElement('tr');
+            const cell1 = document.createElement('td');
+            cell1.textContent = key;
+            const cell2 = document.createElement('td');
+            cell2.textContent = value.join('; ');
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            headTailTable.appendChild(row);
+        });
+    } else {
+        alert('Không có dữ liệu cho ngày gần nhất.');
+    }
+}
 
-            // Hiển thị Đầu
-            Object.entries(headTailData.head).forEach(([key, value]) => {
-                const row = document.createElement('tr');
-                const headCell = document.createElement('td');
-                headCell.textContent = key;
-                const tailCell = document.createElement('td');
-                tailCell.textContent = value.join('; ');
-                row.appendChild(headCell);
-                row.appendChild(tailCell);
-                headTailTable.appendChild(row);
-            });
+// Hàm định dạng ngày theo định dạng "DD-MM-YYYY"
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
 
-            // Hiển thị Đuôi
-            Object.entries(headTailData.tail).forEach(([key, value]) => {
-                const row = document.createElement('tr');
-                const headCell = document.createElement('td');
-                headCell.textContent = key;
-                const tailCell = document.createElement('td');
-                tailCell.textContent = value.join('; ');
-                row.appendChild(headCell);
-                row.appendChild(tailCell);
-                headTailTable.appendChild(row);
-            });
+fetchData();
 
-            // Hiển thị ngày mới nhất
-            const latestDate = data[0].date;  // Giả sử dữ liệu có trường 'date'
-            document.getElementById('latest-date').textContent = latestDate;
-        }
-
-        fetchData();
     </script>
 </body>
 </html>
