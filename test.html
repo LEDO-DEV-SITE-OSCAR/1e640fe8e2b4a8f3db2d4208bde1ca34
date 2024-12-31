@@ -46,42 +46,33 @@
 
     <script>
         async function fetchData() {
-            const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv';
+            const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.json';
             const response = await fetch(url);
-            const data = await response.text();
+            const data = await response.json();
             parseData(data);
         }
 
         function parseData(data) {
-            const rows = data.split('\n').map(row => row.split(','));
+            // Lọc ra ngày gần nhất
+            const dates = data.map(item => new Date(item.date));
+            const latestDate = new Date(Math.max(...dates));
 
-            // Tìm ngày gần nhất
-            const dateStrings = rows.map(row => row[0]);
-            const dates = dateStrings.map(dateStr => new Date(dateStr.split('-').reverse().join('-')));
+            // Lọc ra bản ghi có ngày gần nhất
+            const latestData = data.find(item => new Date(item.date).getTime() === latestDate.getTime());
 
-            // Tìm ngày gần nhất
-            const closestDateIndex = dates.reduce((closestIndex, date, index) => {
-                const currentDate = new Date();
-                const closestDate = new Date(dates[closestIndex]);
-                return (Math.abs(date - currentDate) < Math.abs(closestDate - currentDate)) ? index : closestIndex;
-            }, 0);
-
-            const closestDateData = rows[closestDateIndex];
-
-            if (closestDateData) {
-                // Giải thưởng
+            if (latestData) {
+                // Hiển thị Giải thưởng
                 const prizes = {
-                    'Đặc biệt': closestDateData[1],
-                    'Giải nhất': closestDateData[2],
-                    'Giải nhì': closestDateData[3],
-                    'Giải ba': closestDateData[4],
-                    'Giải tư': closestDateData[5],
-                    'Giải năm': closestDateData[6],
-                    'Giải sáu': closestDateData[7],
-                    'Giải bảy': closestDateData[8]
+                    'Đặc biệt': latestData.special,
+                    'Giải nhất': latestData.prize1,
+                    'Giải nhì': latestData.prize2_1 + ', ' + latestData.prize2_2,
+                    'Giải ba': latestData.prize3_1 + ', ' + latestData.prize3_2 + ', ' + latestData.prize3_3,
+                    'Giải tư': latestData.prize4,
+                    'Giải năm': latestData.prize5,
+                    'Giải sáu': latestData.prize6,
+                    'Giải bảy': latestData.prize7
                 };
 
-                // Hiển thị giải thưởng
                 const prizeTable = document.getElementById('prizes-table');
                 for (const [prize, value] of Object.entries(prizes)) {
                     const row = document.createElement('tr');
@@ -94,25 +85,38 @@
                     prizeTable.appendChild(row);
                 }
 
-                // Đầu - Đuôi Lô Tô
-                const lottoData = closestDateData.slice(9); // Lấy phần dữ liệu Lô Tô từ cột 10 trở đi
+                // Hiển thị Đầu - Đuôi Lô Tô
                 const headTailData = {};
 
-                // Phân bổ theo đầu và đuôi
-                lottoData.forEach(number => {
-                    if (number.trim()) {
-                        const head = number.charAt(0); // Lấy đầu
-                        const tail = number.charAt(number.length - 1); // Lấy đuôi
+                // Phân chia đầu và đuôi từ prize1 đến prize7
+                const allPrizes = [
+                    latestData.prize1, latestData.prize2_1, latestData.prize2_2,
+                    latestData.prize3_1, latestData.prize3_2, latestData.prize3_3,
+                    latestData.prize4, latestData.prize5, latestData.prize6, latestData.prize7
+                ];
 
-                        if (!headTailData[head]) headTailData[head] = [];
-                        if (!headTailData[tail]) headTailData[tail] = [];
+                allPrizes.forEach(prize => {
+                    if (prize) {
+                        const numbers = prize.split(',').map(num => num.trim());
+                        numbers.forEach(number => {
+                            const head = number.charAt(0); // Lấy đầu
+                            const tail = number.charAt(number.length - 1); // Lấy đuôi
 
-                        headTailData[head].push(tail);
-                        headTailData[tail].push(head);
+                            if (!headTailData[head]) headTailData[head] = [];
+                            if (!headTailData[tail]) headTailData[tail] = [];
+
+                            // Thêm đuôi vào đầu và ngược lại
+                            if (!headTailData[head].includes(tail)) {
+                                headTailData[head].push(tail);
+                            }
+                            if (!headTailData[tail].includes(head)) {
+                                headTailData[tail].push(head);
+                            }
+                        });
                     }
                 });
 
-                // Hiển thị Đầu - Đuôi Lô Tô
+                // Hiển thị bảng Đầu - Đuôi Lô Tô
                 const headTailTable = document.getElementById('head-tail-table');
                 Object.entries(headTailData).forEach(([key, value]) => {
                     const row = document.createElement('tr');
