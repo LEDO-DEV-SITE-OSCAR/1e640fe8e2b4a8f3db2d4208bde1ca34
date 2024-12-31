@@ -46,12 +46,6 @@
     <div class="container">
         <!-- Bảng Lottery -->
         <table class="lottery-table" id="lottery-table">
-            <thead>
-                <tr>
-                    <th>Lottery (Xổ số)</th>
-                    <th>Numbers</th>
-                </tr>
-            </thead>
             <tbody></tbody>
         </table>
         <!-- Bảng Loto -->
@@ -77,7 +71,7 @@
             // Chuyển đổi dữ liệu CSV thành mảng
             const rows = csvText.trim().split("\n").map(row => row.split(","));
             const latestData = rows[rows.length - 1]; // Lấy dòng mới nhất
-            const lotteryTable = document.getElementById("lottery-table").querySelector("tbody");
+            const lotteryTable = document.getElementById("lottery-table");
             const lotoTable = document.getElementById("loto-table").querySelector("tbody");
 
             // Tên các giải
@@ -96,8 +90,19 @@
             // Hiển thị dữ liệu Lottery
             lotteryKeys.forEach((key, index) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${key}</td><td>${latestData[index]}</td>`;
-                lotteryTable.appendChild(tr);
+                if (key === "Third (Giải ba)" || key === "Fifth (Giải năm)") {
+                    // Tách thành 2 dòng nếu cần
+                    const valueParts = latestData[index].split("|");
+                    tr.innerHTML = `<td rowspan="2">${key}</td><td>${valueParts[0]}</td>`;
+                    lotteryTable.appendChild(tr);
+
+                    const tr2 = document.createElement("tr");
+                    tr2.innerHTML = `<td>${valueParts[1]}</td>`;
+                    lotteryTable.appendChild(tr2);
+                } else {
+                    tr.innerHTML = `<td>${key}</td><td>${latestData[index]}</td>`;
+                    lotteryTable.appendChild(tr);
+                }
             });
 
             // Tách số để hiển thị Loto (First - Last)
