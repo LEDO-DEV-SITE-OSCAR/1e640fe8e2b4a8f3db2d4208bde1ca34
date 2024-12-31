@@ -58,7 +58,7 @@
             // Tìm ngày gần nhất
             const dateStrings = rows.map(row => row[0]);
             const dates = dateStrings.map(dateStr => new Date(dateStr.split('-').reverse().join('-')));
-            
+
             // Tìm ngày gần nhất
             const closestDateIndex = dates.reduce((closestIndex, date, index) => {
                 const currentDate = new Date();
@@ -100,14 +100,16 @@
 
                 // Phân bổ theo đầu và đuôi
                 lottoData.forEach(number => {
-                    const head = number.charAt(0); // Lấy đầu
-                    const tail = number.charAt(number.length - 1); // Lấy đuôi
+                    if (number.trim()) {
+                        const head = number.charAt(0); // Lấy đầu
+                        const tail = number.charAt(number.length - 1); // Lấy đuôi
 
-                    if (!headTailData[head]) headTailData[head] = [];
-                    if (!headTailData[tail]) headTailData[tail] = [];
+                        if (!headTailData[head]) headTailData[head] = [];
+                        if (!headTailData[tail]) headTailData[tail] = [];
 
-                    headTailData[head].push(tail);
-                    headTailData[tail].push(head);
+                        headTailData[head].push(tail);
+                        headTailData[tail].push(head);
+                    }
                 });
 
                 // Hiển thị Đầu - Đuôi Lô Tô
