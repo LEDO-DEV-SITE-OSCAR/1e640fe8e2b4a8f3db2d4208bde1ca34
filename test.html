@@ -5,187 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phân bổ dữ liệu XSMB</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
         table {
             width: 100%;
-            margin: 20px 0;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #000;
         }
         th, td {
             padding: 8px;
-            text-align: center;
+            text-align: left;
         }
-        th {
-            background-color: #f2f2f2;
-        }
-        .title {
-            font-size: 24px;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .sub-title {
-            font-size: 20px;
-            margin-top: 30px;
+        .section-title {
+            font-size: 1.5em;
+            margin-top: 20px;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <div id="content">
-        <h1 class="title">Phân bổ dữ liệu XSMB</h1>
+    <h1>Phân bổ dữ liệu XSMB</h1>
 
-        <!-- Bảng Giải Thưởng -->
-        <div class="sub-title">Giải thưởng:</div>
-        <table id="prizes">
-            <thead>
-                <tr>
-                    <th>Giải</th>
-                    <th>Giá trị</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dữ liệu sẽ được chèn vào đây -->
-            </tbody>
-        </table>
+    <div class="section-title">Giải thưởng:</div>
+    <table id="prizes-table">
+        <tr>
+            <th>Giải</th>
+            <th>Giá trị</th>
+        </tr>
+    </table>
 
-        <!-- Lô Tô Trực Tiếp -->
-        <div class="sub-title">Lô tô trực tiếp:</div>
-        <table id="lottery-direct">
-            <thead>
-                <tr>
-                    <th>Con số</th>
-                    <th>Giá trị</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dữ liệu sẽ được chèn vào đây -->
-            </tbody>
-        </table>
+    <div class="section-title">Lô tô trực tiếp:</div>
+    <table id="lotto-direct">
+        <tr>
+            <th>Con số</th>
+        </tr>
+    </table>
 
-        <!-- Đầu Lô Tô -->
-        <div class="sub-title">Đầu Lô Tô:</div>
-        <table id="lottery-head">
-            <thead>
-                <tr>
-                    <th>Đầu</th>
-                    <th>Lô tô</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dữ liệu sẽ được chèn vào đây -->
-            </tbody>
-        </table>
+    <div class="section-title">Đầu Lô Tô:</div>
+    <table id="lotto-head">
+        <tr>
+            <th>Đầu</th>
+            <th>Lô tô</th>
+        </tr>
+    </table>
 
-        <!-- Đuôi Lô Tô -->
-        <div class="sub-title">Đuôi Lô Tô:</div>
-        <table id="lottery-tail">
-            <thead>
-                <tr>
-                    <th>Đuôi</th>
-                    <th>Lô tô</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dữ liệu sẽ được chèn vào đây -->
-            </tbody>
-        </table>
-    </div>
+    <div class="section-title">Đuôi Lô Tô:</div>
+    <table id="lotto-tail">
+        <tr>
+            <th>Đuôi</th>
+            <th>Lô tô</th>
+        </tr>
+    </table>
 
     <script>
-        // Hàm tải dữ liệu từ CSV
-        function loadData() {
-            fetch('https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv')
-                .then(response => response.text())
-                .then(csv => {
-                    // Chuyển đổi dữ liệu CSV thành mảng
-                    const rows = csv.split('\n').map(row => row.split(','));
-
-                    // Chèn dữ liệu vào các bảng
-                    populatePrizes(rows);
-                    populateLotteryDirect(rows);
-                    populateLotteryHeadTail(rows);
-                });
+        async function fetchData() {
+            const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv';
+            const response = await fetch(url);
+            const data = await response.text();
+            parseData(data);
         }
 
-        // Hàm phân bổ dữ liệu giải thưởng
-        function populatePrizes(rows) {
-            const prizeTable = document.getElementById('prizes').getElementsByTagName('tbody')[0];
-            const prizes = [
-                { name: 'Đặc biệt', index: 0 },
-                { name: 'Giải nhất', index: 1 },
-                { name: 'Giải nhì', index: 2 },
-                { name: 'Giải ba', index: 3 },
-                { name: 'Giải tư', index: 4 },
-                { name: 'Giải năm', index: 5 },
-                { name: 'Giải sáu', index: 6 },
-                { name: 'Giải bảy', index: 7 }
-            ];
+        function parseData(data) {
+            const rows = data.split('\n').map(row => row.split(','));
+            
+            const prizes = {
+                'Đặc biệt': rows[0][0],
+                'Giải nhất': rows[0][1],
+                'Giải nhì': rows[0][2],
+                'Giải ba': rows[0][3],
+                'Giải tư': rows[0][4],
+                'Giải năm': rows[0][5],
+                'Giải sáu': rows[0][6],
+                'Giải bảy': rows[0][7]
+            };
 
-            prizes.forEach(prize => {
-                const row = prizeTable.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-
-                cell1.textContent = prize.name;
-                cell2.textContent = rows[prize.index][0]; // Lấy giá trị từ cột dữ liệu
-            });
-        }
-
-        // Hàm phân bổ lô tô trực tiếp
-        function populateLotteryDirect(rows) {
-            const lotteryDirectTable = document.getElementById('lottery-direct').getElementsByTagName('tbody')[0];
-            const lotteryDirect = rows[8]; // Giả sử lô tô trực tiếp nằm ở hàng thứ 9
-
-            lotteryDirect.forEach(value => {
-                const row = lotteryDirectTable.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-
-                cell1.textContent = value;
+            // Hiển thị giải thưởng
+            const prizeTable = document.getElementById('prizes-table');
+            for (const [prize, value] of Object.entries(prizes)) {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = prize;
+                const cell2 = document.createElement('td');
                 cell2.textContent = value;
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                prizeTable.appendChild(row);
+            }
+
+            // Lô tô trực tiếp
+            const lottoDirect = rows[0].slice(8);
+            const lottoTable = document.getElementById('lotto-direct');
+            lottoDirect.forEach(num => {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.textContent = num;
+                row.appendChild(cell);
+                lottoTable.appendChild(row);
+            });
+
+            // Đầu Lô tô
+            const lottoHead = {};
+            rows.forEach(row => {
+                const head = row[0];
+                const numbers = row.slice(8).join('; ');
+                if (!lottoHead[head]) {
+                    lottoHead[head] = [];
+                }
+                lottoHead[head].push(numbers);
+            });
+
+            const headTable = document.getElementById('lotto-head');
+            Object.entries(lottoHead).forEach(([head, numbers]) => {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = head;
+                const cell2 = document.createElement('td');
+                cell2.textContent = numbers.join('; ');
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                headTable.appendChild(row);
+            });
+
+            // Đuôi Lô tô
+            const lottoTail = {};
+            rows.forEach(row => {
+                const tail = row[1];
+                const numbers = row.slice(8).join('; ');
+                if (!lottoTail[tail]) {
+                    lottoTail[tail] = [];
+                }
+                lottoTail[tail].push(numbers);
+            });
+
+            const tailTable = document.getElementById('lotto-tail');
+            Object.entries(lottoTail).forEach(([tail, numbers]) => {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = tail;
+                const cell2 = document.createElement('td');
+                cell2.textContent = numbers.join('; ');
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                tailTable.appendChild(row);
             });
         }
 
-        // Hàm phân bổ đầu và đuôi lô tô
-        function populateLotteryHeadTail(rows) {
-            const lotteryHeadTable = document.getElementById('lottery-head').getElementsByTagName('tbody')[0];
-            const lotteryTailTable = document.getElementById('lottery-tail').getElementsByTagName('tbody')[0];
-
-            const heads = rows.slice(1, 11);  // Giả sử đầu lô tô nằm từ hàng 1 đến 10
-            const tails = rows.slice(11, 21); // Giả sử đuôi lô tô nằm từ hàng 11 đến 20
-
-            // Chèn dữ liệu đầu
-            heads.forEach((item, index) => {
-                const row = lotteryHeadTable.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-
-                cell1.textContent = index;  // Đầu từ 0 đến 9
-                cell2.textContent = item.join('; ');
-            });
-
-            // Chèn dữ liệu đuôi
-            tails.forEach((item, index) => {
-                const row = lotteryTailTable.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-
-                cell1.textContent = index;  // Đuôi từ 0 đến 9
-                cell2.textContent = item.join('; ');
-            });
-        }
-
-        // Tải dữ liệu khi trang được tải
-        window.onload = loadData;
+        // Gọi hàm khi tải trang
+        fetchData();
     </script>
 
 </body>
