@@ -5,131 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả xổ số</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            margin: 20px auto;
-            width: 90%;
-        }
         table {
-            border-collapse: collapse;
             width: 100%;
-            margin-top: 10px;
+            border-collapse: collapse;
         }
-        th, td {
+        td, th {
             border: 1px solid #ddd;
-            text-align: center;
             padding: 8px;
         }
-        th {
-            background-color: #730038;
-            color: white;
+        td {
+            text-align: left;
         }
-        .lottery-table {
-            width: 70%;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        .loto-table {
-            width: 30%;
-        }
-        .title {
-            text-align: center;
-            margin-top: 20px;
+        tr:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
 <body>
-    <h2 class="title">Kết quả xổ số mới nhất</h2>
-    <div class="container">
-        <!-- Bảng Lottery -->
-        <table class="lottery-table" id="lottery-table">
-            <tbody></tbody>
-        </table>
-        <!-- Bảng Loto -->
-        <table class="loto-table" id="loto-table">
-            <thead>
-                <tr>
-                    <th>First (Đầu)</th>
-                    <th>Last (Đuôi)</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    <h1>Kết quả xổ số mới nhất</h1>
+    <div id="lottery-table"></div>
+    <div id="loto-table"></div>
+
     <script>
-        // Đường dẫn tới file CSV
-        const csvUrl = "https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv";
+        // Dữ liệu xổ số từ file CSV (giả định đã được cung cấp)
+        const lotteryData = {
+            date: "30-12-2024",
+            special: "34071",
+            first: "85687",
+            second: ["55202", "84467"],
+            third: ["64837", "67592", "00433", "10933", "84813", "01310"],
+            fourth: ["0808", "8871", "1096", "9171"],
+            fifth: ["7562", "8884", "3508", "6484", "5334", "6745"],
+            sixth: ["432", "971", "308"],
+            seventh: ["98", "95", "90", "11"]
+        };
 
-        // Hàm tải và hiển thị dữ liệu
-        async function fetchAndRenderData() {
-            const response = await fetch(csvUrl);
-            const csvText = await response.text();
+        // Xử lý dữ liệu Loto (đầu và đuôi)
+        const lotoData = {};
+        const allNumbers = [
+            lotteryData.special,
+            lotteryData.first,
+            ...lotteryData.second,
+            ...lotteryData.third,
+            ...lotteryData.fourth,
+            ...lotteryData.fifth,
+            ...lotteryData.sixth,
+            ...lotteryData.seventh
+        ];
 
-            // Chuyển đổi dữ liệu CSV thành mảng
-            const rows = csvText.trim().split("\n").map(row => row.split(","));
-            const latestData = rows[rows.length - 1]; // Lấy dòng mới nhất
-            const lotteryTable = document.getElementById("lottery-table");
-            const lotoTable = document.getElementById("loto-table").querySelector("tbody");
+        allNumbers.forEach(num => {
+            const head = num[0]; // Đầu (chữ số đầu tiên)
+            const tail = num[num.length - 1]; // Đuôi (chữ số cuối cùng)
+            if (!lotoData[head]) lotoData[head] = [];
+            lotoData[head].push(tail);
+        });
 
-            // Tên các giải
-            const lotteryKeys = [
-                "Date (Ngày)",
-                "Special (Giải đặc biệt)",
-                "First (Giải nhất)",
-                "Second (Giải nhì)",
-                "Third (Giải ba)",
-                "Fourth (Giải tư)",
-                "Fifth (Giải năm)",
-                "Sixth (Giải sáu)",
-                "Seventh (Giải bảy)"
-            ];
-
-            // Hiển thị dữ liệu Lottery
-            lotteryKeys.forEach((key, index) => {
-                const tr = document.createElement("tr");
-                if (key === "Third (Giải ba)" || key === "Fifth (Giải năm)") {
-                    // Tách thành 2 dòng nếu cần
-                    const valueParts = latestData[index].split("|");
-                    tr.innerHTML = `<td rowspan="2">${key}</td><td>${valueParts[0]}</td>`;
-                    lotteryTable.appendChild(tr);
-
-                    const tr2 = document.createElement("tr");
-                    tr2.innerHTML = `<td>${valueParts[1]}</td>`;
-                    lotteryTable.appendChild(tr2);
+        // Hàm tạo bảng HTML
+        function createTable(data, title) {
+            let html = `<h2>${title}</h2><table>`;
+            for (const key in data) {
+                if (Array.isArray(data[key])) {
+                    html += `<tr><td>${key}</td><td>${data[key].join(", ")}</td></tr>`;
                 } else {
-                    tr.innerHTML = `<td>${key}</td><td>${latestData[index]}</td>`;
-                    lotteryTable.appendChild(tr);
+                    html += `<tr><td>${key}</td><td>${data[key]}</td></tr>`;
                 }
-            });
-
-            // Tách số để hiển thị Loto (First - Last)
-            const allNumbers = latestData.slice(1).join(",").split(",").map(num => num.trim());
-            const lotoData = {};
-
-            allNumbers.forEach(num => {
-                if (num.length > 0) {
-                    const first = num[0]; // Số đầu
-                    const last = num[num.length - 1]; // Số đuôi
-                    if (!lotoData[first]) lotoData[first] = [];
-                    lotoData[first].push(last);
-                }
-            });
-
-            // Hiển thị dữ liệu Loto
-            for (let i = 0; i <= 9; i++) {
-                const first = i.toString();
-                const lastNumbers = lotoData[first] ? lotoData[first].join(", ") : "-";
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${first}</td><td>${lastNumbers}</td>`;
-                lotoTable.appendChild(tr);
             }
+            html += "</table>";
+            return html;
         }
 
-        // Gọi hàm tải dữ liệu
-        fetchAndRenderData();
+        // Tạo bảng Lottery
+        const lotteryTable = `
+            <table>
+                <tr><td>Date (Ngày)</td><td>${lotteryData.date}</td></tr>
+                <tr><td>Special (Giải đặc biệt)</td><td>${lotteryData.special}</td></tr>
+                <tr><td>First (Giải nhất)</td><td>${lotteryData.first}</td></tr>
+                <tr><td>Second (Giải nhì)</td><td>${lotteryData.second.join(", ")}</td></tr>
+                <tr><td rowspan="2">Third (Giải ba)</td><td>${lotteryData.third.slice(0, 3).join(", ")}</td></tr>
+                <tr><td>${lotteryData.third.slice(3).join(", ")}</td></tr>
+                <tr><td>Fourth (Giải tư)</td><td>${lotteryData.fourth.join(", ")}</td></tr>
+                <tr><td rowspan="2">Fifth (Giải năm)</td><td>${lotteryData.fifth.slice(0, 3).join(", ")}</td></tr>
+                <tr><td>${lotteryData.fifth.slice(3).join(", ")}</td></tr>
+                <tr><td>Sixth (Giải sáu)</td><td>${lotteryData.sixth.join(", ")}</td></tr>
+                <tr><td>Seventh (Giải bảy)</td><td>${lotteryData.seventh.join(", ")}</td></tr>
+            </table>
+        `;
+
+        // Tạo bảng Loto
+        let lotoTable = "<table><tr><th>First (Đầu)</th><th>Last (Đuôi)</th></tr>";
+        for (let i = 0; i <= 9; i++) {
+            const head = i.toString();
+            const tails = lotoData[head] ? lotoData[head].join(", ") : "-";
+            lotoTable += `<tr><td>${head}</td><td>${tails}</td></tr>`;
+        }
+        lotoTable += "</table>";
+
+        // Hiển thị bảng
+        document.getElementById("lottery-table").innerHTML = lotteryTable;
+        document.getElementById("loto-table").innerHTML = lotoTable;
     </script>
 </body>
 </html>
