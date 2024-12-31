@@ -209,6 +209,73 @@
     parseData(data);
 }
 
+// Xử lý dữ liệu Đầu - Đuôi Lô Tô từ API
+async function fetchHeadTailData() {
+    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb-2-digits.json';
+    const response = await fetch(url);
+    const data = await response.json();
+    parseHeadTailData(data);
+}
+
+function parseHeadTailData(data) {
+    const headData = {};
+    const tailData = {};
+
+    // Duyệt qua từng kết quả và phân loại đầu và đuôi
+    data.forEach(item => {
+        const prizes = item.prizes || []; // Giả sử dữ liệu kết quả có thuộc tính 'prizes'
+        prizes.forEach(prize => {
+            prize.split(',').forEach(number => {
+                const trimmedNumber = number.trim();
+                const head = trimmedNumber.charAt(0);  // Lấy chữ số đầu
+                const tail = trimmedNumber.charAt(trimmedNumber.length - 1);  // Lấy chữ số cuối
+
+                // Cập nhật Đầu
+                if (!headData[head]) headData[head] = [];
+                if (!headData[head].includes(trimmedNumber)) {
+                    headData[head].push(trimmedNumber);
+                }
+
+                // Cập nhật Đuôi
+                if (!tailData[tail]) tailData[tail] = [];
+                if (!tailData[tail].includes(trimmedNumber)) {
+                    tailData[tail].push(trimmedNumber);
+                }
+            });
+        });
+    });
+
+    // Hiển thị Đầu Lô Tô
+    const headTailTable = document.getElementById('head-tail-table');
+    headTailTable.innerHTML = ''; // Xóa dữ liệu cũ
+    for (let i = 0; i <= 9; i++) {
+        const headRow = document.createElement('tr');
+        const headCell1 = document.createElement('td');
+        headCell1.textContent = i;  // Đầu
+        const headCell2 = document.createElement('td');
+        headCell2.textContent = headData[i] ? headData[i].join('; ') : '';
+        headRow.appendChild(headCell1);
+        headRow.appendChild(headCell2);
+        headTailTable.appendChild(headRow);
+    }
+
+    // Hiển thị Đuôi Lô Tô
+    for (let i = 0; i <= 9; i++) {
+        const tailRow = document.createElement('tr');
+        const tailCell1 = document.createElement('td');
+        tailCell1.textContent = i;  // Đuôi
+        const tailCell2 = document.createElement('td');
+        tailCell2.textContent = tailData[i] ? tailData[i].join('; ') : '';
+        tailRow.appendChild(tailCell1);
+        tailRow.appendChild(tailCell2);
+        headTailTable.appendChild(tailRow);
+    }
+}
+
+// Gọi hàm fetch dữ liệu
+fetchHeadTailData();
+
+
 function parseData(data) {
     // Lọc ra ngày gần nhất
     const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
