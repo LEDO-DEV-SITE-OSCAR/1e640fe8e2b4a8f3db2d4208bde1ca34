@@ -105,7 +105,19 @@
     <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
     <div class="input-section">
        <label for="simulations">Số phiên chạy tần suất:</label>
-<input type="number" id="simulations" value="6" readonly>
+    <input type="number" id="simulations" value="0" readonly>
+
+    <script>
+        // Hàm để tạo số ngẫu nhiên lớn hơn 0
+        function getRandomNumber() {
+            return Math.floor(Math.random() * 100) + 1; // Ví dụ: số ngẫu nhiên từ 1 đến 100
+        }
+
+        // Gán số ngẫu nhiên vào input khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('simulations').value = getRandomNumber();
+        });
+    </script>
         <label for="region">Chọn miền:</label>
         <select id="region">
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
