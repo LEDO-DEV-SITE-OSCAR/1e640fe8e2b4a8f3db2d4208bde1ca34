@@ -126,21 +126,28 @@
     <div class="container">
     <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất: <span id="latest-date"></span></h2>
 
-    <div class="section-title">Giải thưởng:</div>
-    <table id="prizes-table">
-        <tr>
-            <th>Giải</th>
-            <th>Giá trị</th>
-        </tr>
-    </table>
+    <div class="section-title">Giải Thưởng XSMB:</div>
+<table id="prizes-table">
+    <tr>
+        <th>Giải</th>
+        <th>Con số</th>
+    </tr>
+</table>
 
-    <div class="section-title">Đầu - Đuôi Lô Tô:</div>
-<table id="head-tail-table">
+<div class="section-title">Đầu - Đuôi Lô Tô:</div>
+<table id="head-table">
     <tr>
         <th>Đầu</th>
         <th>Lô tô</th>
     </tr>
 </table>
+<table id="tail-table">
+    <tr>
+        <th>Đuôi</th>
+        <th>Lô tô</th>
+    </tr>
+</table>
+
 
 </div>
 
@@ -257,17 +264,41 @@ function parseData(data) {
 
 // Hiển thị dữ liệu Đầu - Đuôi Lô Tô
 function displayHeadTailData(data) {
-    const headTailTable = document.getElementById('head-tail-table');
-    Object.entries(data).forEach(([key, value]) => {
-        const row = document.createElement('tr');
-        const headCell = document.createElement('td');
-        headCell.textContent = key;
-        const tailCell = document.createElement('td');
-        tailCell.textContent = value.join('; ');
-        row.appendChild(headCell);
-        row.appendChild(tailCell);
-        headTailTable.appendChild(row);
-    });
+    const headTable = document.getElementById('head-table');  // Thêm bảng cho "Đầu"
+    const tailTable = document.getElementById('tail-table');  // Thêm bảng cho "Đuôi"
+
+    if (data && data.length > 0) {
+        const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+        if (latestData) {
+            const headData = latestData.head || {};
+            const tailData = latestData.tail || {};
+
+            // Hiển thị Đầu Lô Tô
+            Object.entries(headData).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = key;
+                const cell2 = document.createElement('td');
+                cell2.textContent = value.join('; ');
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                headTable.appendChild(row);
+            });
+
+            // Hiển thị Đuôi Lô Tô
+            Object.entries(tailData).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = key;
+                const cell2 = document.createElement('td');
+                cell2.textContent = value.join('; ');
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                tailTable.appendChild(row);
+            });
+        }
+    }
 }
 
 // Hàm định dạng ngày theo định dạng "DD-MM-YYYY"
@@ -279,55 +310,6 @@ function formatDate(date) {
 }
 
 fetchData();
-
-// Xử lý dữ liệu XSMB - Đầu - Đuôi Lô Tô
-async function fetchHeadTailData() {
-    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb-2-digits.json';
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    // Lọc ra dữ liệu gần nhất
-    const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-    
-    if (latestData) {
-        // Hiển thị Đầu - Đuôi Lô Tô
-        const headData = latestData.head || {};  // Lấy dữ liệu đầu
-        const tailData = latestData.tail || {};  // Lấy dữ liệu đuôi
-
-        // Hiển thị Đầu Lô Tô
-        const headTable = document.getElementById('head-tail-table');
-        Object.entries(headData).forEach(([key, value]) => {
-            const row = document.createElement('tr');
-            const cell1 = document.createElement('td');
-            cell1.textContent = key; // Hiển thị đầu
-            const cell2 = document.createElement('td');
-            cell2.textContent = value.join('; '); // Hiển thị lô tô liên quan
-            row.appendChild(cell1);
-            row.appendChild(cell2);
-            headTable.appendChild(row);
-        });
-
-        // Hiển thị Đuôi Lô Tô
-        const tailTable = document.getElementById('head-tail-table');
-        Object.entries(tailData).forEach(([key, value]) => {
-            const row = document.createElement('tr');
-            const cell1 = document.createElement('td');
-            cell1.textContent = key; // Hiển thị đuôi
-            const cell2 = document.createElement('td');
-            cell2.textContent = value.join('; '); // Hiển thị lô tô liên quan
-            row.appendChild(cell1);
-            row.appendChild(cell2);
-            tailTable.appendChild(row);
-        });
-    } else {
-        alert('Không có dữ liệu cho ngày gần nhất.');
-    }
-}
-
-// Gọi API và xử lý dữ liệu
-fetchHeadTailData();
-
-
 
     </script>
 </body>
