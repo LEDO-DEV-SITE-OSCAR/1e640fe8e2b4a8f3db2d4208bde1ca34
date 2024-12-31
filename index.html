@@ -135,12 +135,13 @@
     </table>
 
     <div class="section-title">Đầu - Đuôi Lô Tô:</div>
-    <table id="head-tail-table">
-        <tr>
-            <th>Đầu</th>
-            <th>Đuôi</th>
-        </tr>
-    </table>
+<table id="head-tail-table">
+    <tr>
+        <th>Đầu</th>
+        <th>Lô tô</th>
+    </tr>
+</table>
+
 </div>
 
 
@@ -278,6 +279,54 @@ function formatDate(date) {
 }
 
 fetchData();
+
+// Xử lý dữ liệu XSMB - Đầu - Đuôi Lô Tô
+async function fetchHeadTailData() {
+    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb-2-digits.json';
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Lọc ra dữ liệu gần nhất
+    const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    
+    if (latestData) {
+        // Hiển thị Đầu - Đuôi Lô Tô
+        const headData = latestData.head || {};  // Lấy dữ liệu đầu
+        const tailData = latestData.tail || {};  // Lấy dữ liệu đuôi
+
+        // Hiển thị Đầu Lô Tô
+        const headTable = document.getElementById('head-tail-table');
+        Object.entries(headData).forEach(([key, value]) => {
+            const row = document.createElement('tr');
+            const cell1 = document.createElement('td');
+            cell1.textContent = key; // Hiển thị đầu
+            const cell2 = document.createElement('td');
+            cell2.textContent = value.join('; '); // Hiển thị lô tô liên quan
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            headTable.appendChild(row);
+        });
+
+        // Hiển thị Đuôi Lô Tô
+        const tailTable = document.getElementById('head-tail-table');
+        Object.entries(tailData).forEach(([key, value]) => {
+            const row = document.createElement('tr');
+            const cell1 = document.createElement('td');
+            cell1.textContent = key; // Hiển thị đuôi
+            const cell2 = document.createElement('td');
+            cell2.textContent = value.join('; '); // Hiển thị lô tô liên quan
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            tailTable.appendChild(row);
+        });
+    } else {
+        alert('Không có dữ liệu cho ngày gần nhất.');
+    }
+}
+
+// Gọi API và xử lý dữ liệu
+fetchHeadTailData();
+
 
 
     </script>
