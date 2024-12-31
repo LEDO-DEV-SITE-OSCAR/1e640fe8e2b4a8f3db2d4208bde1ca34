@@ -70,20 +70,41 @@
             background-color: #45a049;
         }
 
-        /* Kết quả xổ số Minh Ngọc */
-        #box_kqxs_minhngoc {
+        /* Bảng kết quả */
+        .section-title {
+            font-size: 1.5em;
             margin-top: 30px;
-            padding: 15px;
-            background-color: #f2f2f2;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            text-decoration: underline;
+            color: #4CAF50;
         }
-        .kq-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #730038;
-            margin-bottom: 15px;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Kết quả Xổ Số Minh Ngọc */
+        #box_kqxs_minhngoc {
+            display: none;
         }
     </style>
     <script language="javascript" src="//www.minhngoc.net.vn/jquery/jquery-1.7.2.js"></script>
@@ -108,17 +129,25 @@
         </div>
     </div>
 
-    <!-- Kết quả xổ số Minh Ngọc -->
-    <div id="box_kqxs_minhngoc">
-        <div class="kq-title">Kết Quả Xổ Số Mới Nhất</div>
-        <script language="javascript">  
-            bgcolor="#bfbfbf"; 
-            titlecolor="#730038"; 
-            dbcolor="#000000"; 
-            fsize="12px"; 
-            kqwidth="300px"; 
-        </script>
-        <script language="javascript" src="//www.minhngoc.net.vn/getkqxs/mien-bac.js"></script>
+    <!-- Xử lý Dữ liệu XSMB -->
+    <div class="container">
+        <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất</h2>
+
+        <div class="section-title">Giải thưởng:</div>
+        <table id="prizes-table">
+            <tr>
+                <th>Giải</th>
+                <th>Giá trị</th>
+            </tr>
+        </table>
+
+        <div class="section-title">Đầu - Đuôi Lô Tô:</div>
+        <table id="head-tail-table">
+            <tr>
+                <th>Đầu</th>
+                <th>Đuôi</th>
+            </tr>
+        </table>
     </div>
 
     <!-- Thẻ audio -->
@@ -177,6 +206,94 @@
         // Cập nhật thời gian mỗi giây
         setInterval(updateTime, 1000);
         updateTime(); // Chạy ngay khi tải trang
+
+        // Xử lý dữ liệu XSMB
+        async function fetchData() {
+            const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.json';
+            const response = await fetch(url);
+            const data = await response.json();
+            parseData(data);
+        }
+
+        function parseData(data) {
+            // Lọc ra ngày gần nhất
+            const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            
+            if (latestData) {
+                // Hiển thị Giải thưởng
+                const prizes = {
+                    'Đặc biệt': latestData.special || 'Không có dữ liệu',
+                    'Giải nhất': latestData.prize1 || 'Không có dữ liệu',
+                    'Giải nhì': (latestData.prize2_1 || '') + (latestData.prize2_2 ? ', ' + latestData.prize2_2 : '') || 'Không có dữ liệu',
+                    'Giải ba': (latestData.prize3_1 || '') + (latestData.prize3_2 ? ', ' + latestData.prize3_2 : '') + (latestData.prize3_3 ? ', ' + latestData.prize3_3 : '') + (latestData.prize3_4 ? ', ' + latestData.prize3_4 : '') + (latestData.prize3_5 ? ', ' + latestData.prize3_5 : '') + (latestData.prize3_6 ? ', ' + latestData.prize3_6 : '') || 'Không có dữ liệu',
+                    'Giải tư': (latestData.prize4_1 || '') + (latestData.prize4_2 ? ', ' + latestData.prize4_2 : '') + (latestData.prize4_3 ? ', ' + latestData.prize4_3 : '') + (latestData.prize4_4 ? ', ' + latestData.prize4_4 : '') || 'Không có dữ liệu',
+                    'Giải năm': (latestData.prize5_1 || '') + (latestData.prize5_2 ? ', ' + latestData.prize5_2 : '') + (latestData.prize5_3 ? ', ' + latestData.prize5_3 : '') + (latestData.prize5_4 ? ', ' + latestData.prize5_4 : '') + (latestData.prize5_5 ? ', ' + latestData.prize5_5 : '') + (latestData.prize5_6 ? ', ' + latestData.prize5_6 : '') || 'Không có dữ liệu',
+                    'Giải sáu': (latestData.prize6_1 || '') + (latestData.prize6_2 ? ', ' + latestData.prize6_2 : '') + (latestData.prize6_3 ? ', ' + latestData.prize6_3 : '') || 'Không có dữ liệu',
+                    'Giải bảy': (latestData.prize7_1 || '') + (latestData.prize7_2 ? ', ' + latestData.prize7_2 : '') + (latestData.prize7_3 ? ', ' + latestData.prize7_3 : '') + (latestData.prize7_4 ? ', ' + latestData.prize7_4 : '') || 'Không có dữ liệu'
+                };
+
+                const prizeTable = document.getElementById('prizes-table');
+                for (const [prize, value] of Object.entries(prizes)) {
+                    const row = document.createElement('tr');
+                    const cell1 = document.createElement('td');
+                    cell1.textContent = prize;
+                    const cell2 = document.createElement('td');
+                    cell2.textContent = value;
+                    row.appendChild(cell1);
+                    row.appendChild(cell2);
+                    prizeTable.appendChild(row);
+                }
+
+                // Hiển thị Đầu - Đuôi Lô Tô
+                const headTailData = {};
+
+                const allPrizes = [
+                    latestData.prize1, latestData.prize2_1, latestData.prize2_2,
+                    latestData.prize3_1, latestData.prize3_2, latestData.prize3_3,
+                    latestData.prize3_4, latestData.prize3_5, latestData.prize3_6,
+                    latestData.prize4_1, latestData.prize4_2, latestData.prize4_3, latestData.prize4_4,
+                    latestData.prize5_1, latestData.prize5_2, latestData.prize5_3, latestData.prize5_4, latestData.prize5_5, latestData.prize5_6,
+                    latestData.prize6_1, latestData.prize6_2, latestData.prize6_3,
+                    latestData.prize7_1, latestData.prize7_2, latestData.prize7_3, latestData.prize7_4
+                ];
+
+                allPrizes.forEach(prize => {
+                    if (prize) {
+                        const numbers = prize.split(',').map(num => num.trim());
+                        numbers.forEach(number => {
+                            const head = number.charAt(0);
+                            const tail = number.charAt(number.length - 1);
+
+                            if (!headTailData[head]) headTailData[head] = [];
+                            if (!headTailData[tail]) headTailData[tail] = [];
+
+                            if (!headTailData[head].includes(tail)) {
+                                headTailData[head].push(tail);
+                            }
+                            if (!headTailData[tail].includes(head)) {
+                                headTailData[tail].push(head);
+                            }
+                        });
+                    }
+                });
+
+                const headTailTable = document.getElementById('head-tail-table');
+                Object.entries(headTailData).forEach(([key, value]) => {
+                    const row = document.createElement('tr');
+                    const cell1 = document.createElement('td');
+                    cell1.textContent = key;
+                    const cell2 = document.createElement('td');
+                    cell2.textContent = value.join('; ');
+                    row.appendChild(cell1);
+                    row.appendChild(cell2);
+                    headTailTable.appendChild(row);
+                });
+            } else {
+                alert('Không có dữ liệu cho ngày gần nhất.');
+            }
+        }
+
+        fetchData();
     </script>
 </body>
 </html>
