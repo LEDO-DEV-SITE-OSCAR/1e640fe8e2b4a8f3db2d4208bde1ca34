@@ -8,10 +8,12 @@
         body {
             font-family: Arial, sans-serif;
         }
-        .kqxs-container {
+        .container {
             display: flex;
             justify-content: space-between;
             gap: 20px;
+            margin: 20px auto;
+            width: 90%;
         }
         table {
             border-collapse: collapse;
@@ -33,50 +35,54 @@
         .loto-table {
             width: 30%;
         }
+        .title {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div id="box_kqxs_minhngoc">
-        <h2>Kết quả xổ số mới nhất</h2>
-        <div class="kqxs-container">
-            <!-- Bảng Lottery -->
-            <table class="lottery-table" id="lottery-table">
-                <thead>
-                    <tr>
-                        <th>Lottery (Xổ số)</th>
-                        <th>Numbers</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <!-- Bảng Loto -->
-            <table class="loto-table" id="loto-table">
-                <thead>
-                    <tr>
-                        <th>First (Đầu)</th>
-                        <th>Last (Đuôi)</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    <h2 class="title">Kết quả xổ số mới nhất</h2>
+    <div class="container">
+        <!-- Bảng Lottery -->
+        <table class="lottery-table" id="lottery-table">
+            <thead>
+                <tr>
+                    <th>Lottery (Xổ số)</th>
+                    <th>Numbers</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <!-- Bảng Loto -->
+        <table class="loto-table" id="loto-table">
+            <thead>
+                <tr>
+                    <th>First (Đầu)</th>
+                    <th>Last (Đuôi)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     <script>
-        // Đường dẫn đến file CSV
+        // Đường dẫn tới file CSV
         const csvUrl = "https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/API_XSMB/refs/heads/main/data/xsmb.csv";
 
-        // Hàm tải và xử lý dữ liệu CSV
+        // Hàm tải và hiển thị dữ liệu
         async function fetchAndRenderData() {
             const response = await fetch(csvUrl);
             const csvText = await response.text();
 
-            // Tách từng dòng và cột
-            const rows = csvText.split("\n").map(row => row.split(","));
+            // Chuyển đổi dữ liệu CSV thành mảng
+            const rows = csvText.trim().split("\n").map(row => row.split(","));
+            const latestData = rows[rows.length - 1]; // Lấy dòng mới nhất
             const lotteryTable = document.getElementById("lottery-table").querySelector("tbody");
             const lotoTable = document.getElementById("loto-table").querySelector("tbody");
 
-            // Xử lý bảng Lottery
+            // Tên các giải
             const lotteryKeys = [
+                "Date (Ngày)",
                 "Special (Giải đặc biệt)",
                 "First (Giải nhất)",
                 "Second (Giải nhì)",
@@ -87,21 +93,37 @@
                 "Seventh (Giải bảy)"
             ];
 
-            rows.slice(1, 9).forEach((row, index) => {
+            // Hiển thị dữ liệu Lottery
+            lotteryKeys.forEach((key, index) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${lotteryKeys[index]}</td><td>${row.join(", ")}</td>`;
+                tr.innerHTML = `<td>${key}</td><td>${latestData[index]}</td>`;
                 lotteryTable.appendChild(tr);
             });
 
-            // Xử lý bảng Loto
-            rows.slice(10).forEach(row => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td>`;
-                lotoTable.appendChild(tr);
+            // Tách số để hiển thị Loto (First - Last)
+            const allNumbers = latestData.slice(1).join(",").split(",").map(num => num.trim());
+            const lotoData = {};
+
+            allNumbers.forEach(num => {
+                if (num.length > 0) {
+                    const first = num[0]; // Số đầu
+                    const last = num[num.length - 1]; // Số đuôi
+                    if (!lotoData[first]) lotoData[first] = [];
+                    lotoData[first].push(last);
+                }
             });
+
+            // Hiển thị dữ liệu Loto
+            for (let i = 0; i <= 9; i++) {
+                const first = i.toString();
+                const lastNumbers = lotoData[first] ? lotoData[first].join(", ") : "-";
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${first}</td><td>${lastNumbers}</td>`;
+                lotoTable.appendChild(tr);
+            }
         }
 
-        // Gọi hàm tải và hiển thị dữ liệu
+        // Gọi hàm tải dữ liệu
         fetchAndRenderData();
     </script>
 </body>
