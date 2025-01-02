@@ -32,6 +32,9 @@
     <div class="container">
         <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất: <span id="latest-date"></span></h2>
 
+        <div class="section-title">Kết quả xổ số:</div>
+        <div id="results"></div>
+
         <div class="section-title">Đầu - Đuôi Lô Tô:</div>
         <table id="head-table">
             <tr>
@@ -50,74 +53,69 @@
     <script>
         async function fetchData() {
             try {
-                const headTailUrl = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/LE-VAN-DO---API-XSMB/refs/heads/main/data/xsmb.json';
-                const headTailResponse = await fetch(headTailUrl);
-
-                if (!headTailResponse.ok) {
-                    throw new Error(`HTTP error! status: ${headTailResponse.status}`);
+                console.log('Fetching data...');
+                const apiUrl = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/LE-VAN-DO---API-XSMB/refs/heads/main/data/xsmb.json';
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const data = await response.json();
+                console.log('Data received:', data);
 
-                const headTailData = await headTailResponse.json();
-                processData(headTailData);
+                // Process the data
+                displayResults(data);
             } catch (error) {
-                console.error('Lỗi khi lấy dữ liệu:', error);
+                console.error('Error fetching data:', error);
             }
         }
 
-        function processData(results) {
-            const latestResult = results[results.length - 1]; // Lấy kết quả mới nhất
-            document.getElementById('latest-date').textContent = latestResult.date;
+        function displayResults(data) {
+            const latestDate = data.date;
+            const results = data.results;
+            const resultsDiv = document.getElementById('results');
+            document.getElementById('latest-date').textContent = latestDate;
 
-            const allNumbers = getAllNumbers(latestResult);
+            // Display the full lottery results
+            let resultsHTML = '<table>';
+            for (const [key, value] of Object.entries(results)) {
+                resultsHTML += `<tr><td>${key}</td><td>${value}</td></tr>`;
+            }
+            resultsHTML += '</table>';
+            resultsDiv.innerHTML = resultsHTML;
+
+            // Process head and tail data
             const headData = {};
             const tailData = {};
 
+            // Collect all numbers from the results
+            const allNumbers = Object.values(results)
+                .join(' ')
+                .match(/\d{2}/g) || []; // Match all two-digit numbers
+
             allNumbers.forEach(num => {
-                const formattedNum = num.toString().padStart(2, '0');
-                const head = formattedNum[0];
-                const tail = formattedNum[1];
+                const head = num[0];
+                const tail = num[1];
 
+                // Head data
                 if (!headData[head]) headData[head] = new Set();
-                headData[head].add(formattedNum);
+                headData[head].add(num);
 
+                // Tail data
                 if (!tailData[tail]) tailData[tail] = new Set();
-                tailData[tail].add(formattedNum);
+                tailData[tail].add(num);
             });
 
-            displayResults(headData, tailData);
+            updateTable('head-table', headData);
+            updateTable('tail-table', tailData);
         }
 
-        function getAllNumbers(result) {
-            const numbers = [];
+        function updateTable(tableId, data) {
+            const table = document.getElementById(tableId);
+            while (table.rows.length > 1) table.deleteRow(1);
 
-            if (result.special) numbers.push(result.special);
-            if (result.first) numbers.push(result.first);
-            if (result.second) numbers.push(...result.second);
-            if (result.third) numbers.push(...result.third);
-            if (result.fourth) numbers.push(...result.fourth);
-            if (result.fifth) numbers.push(...result.fifth);
-            if (result.sixth) numbers.push(...result.sixth);
-            if (result.seventh) numbers.push(...result.seventh);
-
-            return numbers;
-        }
-
-        function displayResults(headData, tailData) {
-            const headTable = document.getElementById('head-table');
-            const tailTable = document.getElementById('tail-table');
-
-            while (headTable.rows.length > 1) headTable.deleteRow(1);
-            while (tailTable.rows.length > 1) tailTable.deleteRow(1);
-
-            Object.entries(headData).sort((a, b) => a[0] - b[0]).forEach(([head, numbers]) => {
-                const row = headTable.insertRow();
-                row.insertCell(0).textContent = head;
-                row.insertCell(1).textContent = Array.from(numbers).sort().join('; ');
-            });
-
-            Object.entries(tailData).sort((a, b) => a[0] - b[0]).forEach(([tail, numbers]) => {
-                const row = tailTable.insertRow();
-                row.insertCell(0).textContent = tail;
+            Object.entries(data).sort((a, b) => a[0] - b[0]).forEach(([key, numbers]) => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = key;
                 row.insertCell(1).textContent = Array.from(numbers).sort().join('; ');
             });
         }
