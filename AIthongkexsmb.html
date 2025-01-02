@@ -130,6 +130,9 @@
     <div>
     <button id="resetSpin" style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; margin-bottom: 10px;">Reset</button>
     <button class="btn" id="startSimulation" style="margin-bottom: 10px;">Lấy Kết Quả</button>
+        <!-- Nút Fresh -->
+<button class="btn" id="refreshButton" style="margin-bottom: 10px;">Fresh</button>
+
     <div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">
         Đã reset quay tất cả...!
     </div>
@@ -146,6 +149,10 @@
 
 
 <script>
+    document.getElementById("refreshButton").addEventListener("click", () => {
+    location.reload(); // Tải lại trang
+});
+
     // Tạo số ngẫu nhiên
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
