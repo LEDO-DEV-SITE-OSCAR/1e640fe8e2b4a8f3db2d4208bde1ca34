@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>XSMB - Đầu Đuôi Lô Tô</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section-title {
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="section-title">Phân bổ Dữ liệu XSMB - Ngày Gần Nhất: <span id="latest-date"></span></h2>
+
+        <div class="section-title">Đầu - Đuôi Lô Tô:</div>
+        <table id="head-table">
+            <tr>
+                <th>Đầu</th>
+                <th>Lô tô</th>
+            </tr>
+        </table>
+        <table id="tail-table">
+            <tr>
+                <th>Đuôi</th>
+                <th>Lô tô</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const headTailUrl = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/LE-VAN-DO---API-XSMB/refs/heads/main/data/xsmb.json';
+                const headTailResponse = await fetch(headTailUrl);
+
+                if (!headTailResponse.ok) {
+                    throw new Error(`HTTP error! status: ${headTailResponse.status}`);
+                }
+
+                const headTailData = await headTailResponse.json();
+                processData(headTailData);
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu:', error);
+            }
+        }
+
+        function processData(results) {
+            const latestResult = results[results.length - 1]; // Lấy kết quả mới nhất
+            document.getElementById('latest-date').textContent = latestResult.date;
+
+            const allNumbers = getAllNumbers(latestResult);
+            const headData = {};
+            const tailData = {};
+
+            allNumbers.forEach(num => {
+                const formattedNum = num.toString().padStart(2, '0');
+                const head = formattedNum[0];
+                const tail = formattedNum[1];
+
+                if (!headData[head]) headData[head] = new Set();
+                headData[head].add(formattedNum);
+
+                if (!tailData[tail]) tailData[tail] = new Set();
+                tailData[tail].add(formattedNum);
+            });
+
+            displayResults(headData, tailData);
+        }
+
+        function getAllNumbers(result) {
+            const numbers = [];
+
+            if (result.special) numbers.push(result.special);
+            if (result.first) numbers.push(result.first);
+            if (result.second) numbers.push(...result.second);
+            if (result.third) numbers.push(...result.third);
+            if (result.fourth) numbers.push(...result.fourth);
+            if (result.fifth) numbers.push(...result.fifth);
+            if (result.sixth) numbers.push(...result.sixth);
+            if (result.seventh) numbers.push(...result.seventh);
+
+            return numbers;
+        }
+
+        function displayResults(headData, tailData) {
+            const headTable = document.getElementById('head-table');
+            const tailTable = document.getElementById('tail-table');
+
+            while (headTable.rows.length > 1) headTable.deleteRow(1);
+            while (tailTable.rows.length > 1) tailTable.deleteRow(1);
+
+            Object.entries(headData).sort((a, b) => a[0] - b[0]).forEach(([head, numbers]) => {
+                const row = headTable.insertRow();
+                row.insertCell(0).textContent = head;
+                row.insertCell(1).textContent = Array.from(numbers).sort().join('; ');
+            });
+
+            Object.entries(tailData).sort((a, b) => a[0] - b[0]).forEach(([tail, numbers]) => {
+                const row = tailTable.insertRow();
+                row.insertCell(0).textContent = tail;
+                row.insertCell(1).textContent = Array.from(numbers).sort().join('; ');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>
