@@ -207,7 +207,7 @@
         // Xử lý dữ liệu XSMB
 async function fetchData() {
     // URL giải thưởng XSMB
-    const url = 'https://raw.githubusercontent.com/LEDO-DEV-SITE-OSCAR/LE-VAN-DO---API-XSMB/refs/heads/main/data/xsmb.json';
+    const url = 'https://raw.githubusercontent.com/khiemdoan/vietnam-lottery-xsmb-analysis/refs/heads/main/data/xsmb.json';
     const response = await fetch(url);
     const data = await response.json();
     parseData(data);
