@@ -131,23 +131,6 @@
         <th>Giải</th>
         <th>Con số</th>
     </tr>
-</table>
-
-<div class="section-title">Đầu - Đuôi Lô Tô:</div>
-<table id="head-table">
-    <tr>
-        <th>Đầu</th>
-        <th>Lô tô</th>
-    </tr>
-</table>
-<table id="tail-table">
-    <tr>
-        <th>Đuôi</th>
-        <th>Lô tô</th>
-    </tr>
-</table>
-
-
 </div>
 
 
@@ -257,44 +240,6 @@ function parseData(data) {
     }
 }
 
-// Hiển thị dữ liệu Đầu - Đuôi Lô Tô
-function displayHeadTailData(data) {
-    const headTable = document.getElementById('head-table');  // Thêm bảng cho "Đầu"
-    const tailTable = document.getElementById('tail-table');  // Thêm bảng cho "Đuôi"
-
-    if (data && data.length > 0) {
-        const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
-        if (latestData) {
-            const headData = latestData.head || {};
-            const tailData = latestData.tail || {};
-
-            // Hiển thị Đầu Lô Tô
-            Object.entries(headData).forEach(([key, value]) => {
-                const row = document.createElement('tr');
-                const cell1 = document.createElement('td');
-                cell1.textContent = key;
-                const cell2 = document.createElement('td');
-                cell2.textContent = value.join('; ');
-                row.appendChild(cell1);
-                row.appendChild(cell2);
-                headTable.appendChild(row);
-            });
-
-            // Hiển thị Đuôi Lô Tô
-            Object.entries(tailData).forEach(([key, value]) => {
-                const row = document.createElement('tr');
-                const cell1 = document.createElement('td');
-                cell1.textContent = key;
-                const cell2 = document.createElement('td');
-                cell2.textContent = value.join('; ');
-                row.appendChild(cell1);
-                row.appendChild(cell2);
-                tailTable.appendChild(row);
-            });
-        }
-    }
-}
 
 // Hàm định dạng ngày theo định dạng "DD-MM-YYYY"
 function formatDate(date) {
