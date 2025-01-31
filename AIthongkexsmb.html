@@ -224,23 +224,25 @@ const monteCarloSimulation = (iterations) => {
     return results;
 };
 
-// Hiển thị kết quả
+// Hiển thị kết quả (chỉ hiển thị lần quay cuối cùng)
 const displayResults = (results, province) => {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `<h2>Kết quả Xổ Số: ${province}</h2>`;
 
-    for (let i = 0; i < results.ghep4D.length; i++) {
-        resultDiv.innerHTML += `
-            <h3>Lần quay ${i + 1}:</h3>
-            <p><strong>Ghép 4D:</strong> ${results.ghep4D[i].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[i].join(',')}')">Copy</button></p>
-            <p><strong>Ghép 3D:</strong> ${results.ghep3D[i].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[i].join(',')}')">Copy</button></p>
-            <p><strong>Dàn Đặc Biệt - Giải 7:</strong> ${results.dan2D[i].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[i].join(',')}')">Copy</button></p>
-            <p><strong>Mega 6/45:</strong> ${results.mega6_45[i].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[i].join(',')}')">Copy</button></p>
-            <p><strong>Power 6/55:</strong> ${results.power6_55[i].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[i].join(',')}')">Copy</button></p>
-            <hr>
-        `;
-    }
+    // Lấy lần quay cuối cùng
+    let lastIndex = results.ghep4D.length - 1;
+
+    resultDiv.innerHTML += `
+        <h3>Lần quay ${lastIndex + 1}:</h3>
+        <p><strong>Ghép 4D:</strong> ${results.ghep4D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[lastIndex].join(',')}')">Copy</button></p>
+        <p><strong>Ghép 3D:</strong> ${results.ghep3D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[lastIndex].join(',')}')">Copy</button></p>
+        <p><strong>Dàn Đặc Biệt - Giải 7:</strong> ${results.dan2D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[lastIndex].join(',')}')">Copy</button></p>
+        <p><strong>Mega 6/45:</strong> ${results.mega6_45[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[lastIndex].join(',')}')">Copy</button></p>
+        <p><strong>Power 6/55:</strong> ${results.power6_55[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[lastIndex].join(',')}')">Copy</button></p>
+        <hr>
+    `;
 };
+
 
 
 
