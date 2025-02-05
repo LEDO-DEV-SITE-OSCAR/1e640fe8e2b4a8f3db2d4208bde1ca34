@@ -205,7 +205,7 @@ const monteCarloSimulation = (iterations) => {
         results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
         
         // Dàn 2D
-        const dan2D = fillWithProbability(new Set(), 39, 0, 99, frequencyMap)
+        const dan2D = fillWithProbability(new Set(), 64, 0, 99, frequencyMap)
             .map(n => n.toString().padStart(2, '0'))
             .sort((a, b) => a - b);
         results.dan2D.push(dan2D);
