@@ -105,14 +105,14 @@
     <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
     <div class="input-section">
        <label for="simulations">Số Phiên Chạy:</label>
-<input type="number" id="simulations" value="0">
+<input type="number" id="simulations" value="50" readonly>
 
 <script>
-    // Không gán giá trị cố định nữa, để người dùng nhập số
     document.addEventListener('DOMContentLoaded', function() {
-        // Không cần thực hiện bất kỳ hành động nào nếu bạn chỉ muốn cho phép nhập liệu
+        document.getElementById('simulations').value = 50; // Gán giá trị cố định
     });
 </script>
+
         <label for="region">Chọn miền:</label>
         <select id="region">
             <option value="Miền Bắc">Xổ Số Miền Bắc</option>
@@ -236,7 +236,7 @@ const displayResults = (results, province) => {
         <h3>Lần quay ${lastIndex + 1}:</h3>
         <p><strong>Ghép 4D:</strong> ${results.ghep4D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[lastIndex].join(',')}')">Copy</button></p>
         <p><strong>Ghép 3D:</strong> ${results.ghep3D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[lastIndex].join(',')}')">Copy</button></p>
-        <p><strong>Dàn Đặc Biệt - Giải 7:</strong> ${results.dan2D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[lastIndex].join(',')}')">Copy</button></p>
+        <p><strong>Dàn 64s:</strong> ${results.dan2D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[lastIndex].join(',')}')">Copy</button></p>
         <p><strong>Mega 6/45:</strong> ${results.mega6_45[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[lastIndex].join(',')}')">Copy</button></p>
         <p><strong>Power 6/55:</strong> ${results.power6_55[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[lastIndex].join(',')}')">Copy</button></p>
         <hr>
