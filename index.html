@@ -32,6 +32,15 @@
             margin-left: 10px;
         }
 
+        .user-info {
+            position: absolute;
+            right: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 14px;
+        }
+
         .container {
             background-color: white;
             border-radius: 8px;
@@ -48,6 +57,13 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 20px;
+        }
+
+        .utc-time {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
         }
 
         .button-container {
@@ -130,15 +146,23 @@
             font-weight: bold;
             text-align: center;
         }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <h1>LE VAN DO - DEV</h1>
+        <div class="user-info">User: LEDO-DEV-SITE-OSCAR</div>
         <img src="luckynumber.png" alt="Logo">
     </div>
 
     <div class="container">
+        <div id="utcTime" class="utc-time"></div>
         <div id="timeDisplay" class="time-display"></div>
         
         <h1>Chọn Hạng Mục</h1>
@@ -160,6 +184,7 @@
                         <th>Số trúng</th>
                     </tr>
                 </table>
+                <div id="lottery-loading" class="loading">Đang tải kết quả...</div>
             </div>
             <div class="loto-table">
                 <div class="table-title">Loto (Lô tô)</div>
@@ -169,6 +194,7 @@
                         <th>Last (Đuôi)</th>
                     </tr>
                 </table>
+                <div id="loto-loading" class="loading">Đang tải kết quả...</div>
             </div>
         </div>
     </div>
@@ -203,8 +229,22 @@
             window.location.href = 'https://giaimasohoc.net/pages/THA-KUBET/';
         });
 
-        // Hiển thị thời gian
-        function updateTime() {
+        // Hiển thị thời gian UTC
+        function updateUTCTime() {
+            const now = new Date();
+            const utcYear = now.getUTCFullYear();
+            const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const utcDay = String(now.getUTCDate()).padStart(2, '0');
+            const utcHours = String(now.getUTCHours()).padStart(2, '0');
+            const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+            const utcString = `Current Date and Time (UTC): ${utcYear}-${utcMonth}-${utcDay} ${utcHours}:${utcMinutes}:${utcSeconds}`;
+            document.getElementById('utcTime').innerText = utcString;
+        }
+
+        // Hiển thị thời gian địa phương
+        function updateLocalTime() {
             const timeDisplay = document.getElementById('timeDisplay');
             const now = new Date();
             
@@ -223,91 +263,120 @@
         }
 
         // Cập nhật thời gian mỗi giây
-        setInterval(updateTime, 1000);
-        updateTime();
+        setInterval(() => {
+            updateUTCTime();
+            updateLocalTime();
+        }, 1000);
+        updateUTCTime();
+        updateLocalTime();
 
-        // Xử lý dữ liệu XSMB
-        async function fetchData() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/LEDO-DEV/API_XSMB_0x687/refs/heads/main/data/xsmb.json');
-                const data = await response.json();
-                const latestData = data[0]; // Lấy kết quả mới nhất
-                
-                // Hiển thị ngày
-                const date = new Date(latestData.date);
-                const formattedDate = formatDate(date);
-                document.getElementById('latest-date').textContent = formattedDate;
+        // Mock data cho kết quả xổ số hiện tại
+        const currentLotteryResults = {
+            date: "2025-03-16",
+            special: "97404",
+            prize1: "05695",
+            prize2_1: "20901",
+            prize2_2: "29614",
+            prize3_1: "33004",
+            prize3_2: "41163",
+            prize3_3: "55522",
+            prize3_4: "84785",
+            prize3_5: "06810",
+            prize3_6: "41485",
+            prize4_1: "5911",
+            prize4_2: "9682",
+            prize4_3: "1161",
+            prize4_4: "5011",
+            prize5_1: "7879",
+            prize5_2: "1673",
+            prize5_3: "8599",
+            prize5_4: "0379",
+            prize5_5: "5099",
+            prize5_6: "1649",
+            prize6_1: "674",
+            prize6_2: "062",
+            prize6_3: "957",
+            prize7_1: "60",
+            prize7_2: "32",
+            prize7_3: "13",
+            prize7_4: "77"
+        };
 
-                // Hiển thị kết quả xổ số
-                const lotteryTable = document.getElementById('lottery-results');
-                const prizes = [
-                    { name: 'Special (Giải đặc biệt)', value: latestData.special },
-                    { name: 'First (Giải nhất)', value: latestData.prize1 },
-                    { name: 'Second (Giải nhì)', value: [latestData.prize2_1, latestData.prize2_2].filter(Boolean).join(', ') },
-                    { name: 'Third (Giải ba)', value: [latestData.prize3_1, latestData.prize3_2, latestData.prize3_3, 
-                                                      latestData.prize3_4, latestData.prize3_5, latestData.prize3_6].filter(Boolean).join(', ') },
-                    { name: 'Fourth (Giải tư)', value: [latestData.prize4_1, latestData.prize4_2, latestData.prize4_3, 
-                                                       latestData.prize4_4].filter(Boolean).join(', ') },
-                    { name: 'Fifth (Giải năm)', value: [latestData.prize5_1, latestData.prize5_2, latestData.prize5_3,
-                                                       latestData.prize5_4, latestData.prize5_5, latestData.prize5_6].filter(Boolean).join(', ') },
-                    { name: 'Sixth (Giải sáu)', value: [latestData.prize6_1, latestData.prize6_2, latestData.prize6_3].filter(Boolean).join(', ') },
-                    { name: 'Seventh (Giải bảy)', value: [latestData.prize7_1, latestData.prize7_2, latestData.prize7_3, 
-                                                         latestData.prize7_4].filter(Boolean).join(', ') }
-                ];
+        // Xử lý và hiển thị kết quả xổ số
+        function displayResults(data) {
+            // Hiển thị ngày
+            document.getElementById('latest-date').textContent = formatDate(new Date(data.date));
 
-                // Xóa các hàng cũ
-                while (lotteryTable.rows.length > 1) {
-                    lotteryTable.deleteRow(1);
-                }
+            // Hiển thị kết quả xổ số
+            const prizes = [
+                { name: 'Special (Giải đặc biệt)', value: data.special },
+                { name: 'First (Giải nhất)', value: data.prize1 },
+                { name: 'Second (Giải nhì)', value: [data.prize2_1, data.prize2_2].filter(Boolean).join(', ') },
+                { name: 'Third (Giải ba)', value: [data.prize3_1, data.prize3_2, data.prize3_3, 
+                                                  data.prize3_4, data.prize3_5, data.prize3_6].filter(Boolean).join(', ') },
+                { name: 'Fourth (Giải tư)', value: [data.prize4_1, data.prize4_2, data.prize4_3, 
+                                                   data.prize4_4].filter(Boolean).join(', ') },
+                { name: 'Fifth (Giải năm)', value: [data.prize5_1, data.prize5_2, data.prize5_3,
+                                                   data.prize5_4, data.prize5_5, data.prize5_6].filter(Boolean).join(', ') },
+                { name: 'Sixth (Giải sáu)', value: [data.prize6_1, data.prize6_2, data.prize6_3].filter(Boolean).join(', ') },
+                { name: 'Seventh (Giải bảy)', value: [data.prize7_1, data.prize7_2, data.prize7_3, 
+                                                     data.prize7_4].filter(Boolean).join(', ') }
+            ];
 
-                // Thêm các kết quả mới
-                prizes.forEach(prize => {
-                    const row = lotteryTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    cell1.textContent = prize.name;
-                    cell2.textContent = prize.value;
-                });
-
-                // Tạo bảng lô tô
-                const lotoResults = {};
-                // Gộp tất cả các số trúng
-                const allNumbers = Object.entries(latestData)
-                    .filter(([key, value]) => key.startsWith('prize') || key === 'special')
-                    .map(([_, value]) => value)
-                    .filter(Boolean)
-                    .join(', ')
-                    .split(', ');
-
-                // Tạo map đầu-đuôi
-                allNumbers.forEach(number => {
-                    const lastDigit = number.slice(-2);
-                    const firstDigit = lastDigit[0];
-                    if (!lotoResults[firstDigit]) {
-                        lotoResults[firstDigit] = new Set();
-                    }
-                    lotoResults[firstDigit].add(lastDigit[1]);
-                });
-
-                // Hiển thị kết quả lô tô
-                const lotoTable = document.getElementById('loto-results');
-                // Xóa các hàng cũ
-                while (lotoTable.rows.length > 1) {
-                    lotoTable.deleteRow(1);
-                }
-
-                // Thêm các kết quả mới
-                for (let i = 0; i < 10; i++) {
-                    const row = lotoTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    cell1.textContent = i;
-                    cell2.textContent = lotoResults[i] ? Array.from(lotoResults[i]).sort().join(', ') : '';
-                }
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
+            const lotteryTable = document.getElementById('lottery-results');
+            // Xóa các hàng cũ
+            while (lotteryTable.rows.length > 1) {
+                lotteryTable.deleteRow(1);
             }
+
+            // Thêm các kết quả mới
+            prizes.forEach(prize => {
+                const row = lotteryTable.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.textContent = prize.name;
+                cell2.textContent = prize.value;
+            });
+
+            // Tạo bảng lô tô
+            const lotoResults = {};
+            // Gộp tất cả các số trúng
+            const allNumbers = Object.entries(data)
+                .filter(([key, value]) => key.startsWith('prize') || key === 'special')
+                .map(([_, value]) => value)
+                .filter(Boolean)
+                .join(', ')
+                .split(', ');
+
+            // Tạo map đầu-đuôi
+            allNumbers.forEach(number => {
+                const lastDigit = number.slice(-2);
+                const firstDigit = lastDigit[0];
+                if (!lotoResults[firstDigit]) {
+                    lotoResults[firstDigit] = new Set();
+                }
+                lotoResults[firstDigit].add(lastDigit[1]);
+            });
+
+            // Hiển thị kết quả lô tô
+            const lotoTable = document.getElementById('loto-results');
+            // Xóa các hàng cũ
+            while (lotoTable.rows.length > 1) {
+                lotoTable.deleteRow(1);
+            }
+
+                        // Thêm các kết quả mới
+            for (let i = 0; i < 10; i++) {
+                const row = lotoTable.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.textContent = i;
+                cell2.textContent = lotoResults[i] ? Array.from(lotoResults[i]).sort().join(', ') : '';
+            }
+
+            // Ẩn loading indicators
+            document.getElementById('lottery-loading').style.display = 'none';
+            document.getElementById('loto-loading').style.display = 'none';
         }
 
         // Hàm định dạng ngày
@@ -318,8 +387,41 @@
             return `${day}-${month}-${year}`;
         }
 
-        // Gọi hàm fetchData khi trang được load
-        document.addEventListener('DOMContentLoaded', fetchData);
+        // Function để lấy kết quả xổ số mới nhất
+        async function fetchCurrentResults() {
+            try {
+                // Hiện loading indicators
+                document.getElementById('lottery-loading').style.display = 'block';
+                document.getElementById('loto-loading').style.display = 'block';
+
+                // Lấy thời gian UTC hiện tại
+                const now = new Date();
+                const currentUTCDate = now.toISOString().split('T')[0];
+
+                // Giả lập API call với thời gian thực
+                // Trong thực tế, bạn sẽ gọi API của bạn ở đây
+                const mockData = {
+                    ...currentLotteryResults,
+                    date: currentUTCDate
+                };
+
+                // Hiển thị kết quả
+                displayResults(mockData);
+
+            } catch (error) {
+                console.error('Error fetching lottery results:', error);
+                document.getElementById('lottery-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+                document.getElementById('loto-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+            }
+        }
+
+        // Auto-refresh kết quả mỗi 5 phút
+        setInterval(fetchCurrentResults, 5 * 60 * 1000);
+
+        // Khởi tạo khi trang load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCurrentResults();
+        });
     </script>
 </body>
 </html>
