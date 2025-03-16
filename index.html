@@ -6,16 +6,98 @@
     <title>LOTTERY - LE VAN DO</title>
     <link rel="icon" href="lottery.png" type="image/png">
     <style>
-        /* Giữ nguyên các style cũ */
-        /* Thêm style mới cho bảng kết quả */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .navbar h1 {
+            margin: 0;
+        }
+
+        .navbar img {
+            height: 40px;
+            margin-left: 10px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .button-container button {
+            width: 48%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-top: 30px;
+            text-decoration: underline;
+            color: #4CAF50;
+            text-align: center;
+        }
+
         .result-container {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .lottery-table, .loto-table {
             width: 48%;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .lottery-table, .loto-table {
+                width: 100%;
+            }
         }
 
         .lottery-table table, .loto-table table {
@@ -27,7 +109,7 @@
         .lottery-table th, .lottery-table td,
         .loto-table th, .loto-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
 
@@ -46,13 +128,27 @@
             color: #4CAF50;
             margin-bottom: 10px;
             font-weight: bold;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Giữ nguyên phần navbar và container đầu tiên -->
+    <div class="navbar">
+        <h1>LE VAN DO - DEV</h1>
+        <img src="luckynumber.png" alt="Logo">
+    </div>
 
-    <!-- Thay đổi phần container kết quả -->
+    <div class="container">
+        <div id="timeDisplay" class="time-display"></div>
+        
+        <h1>Chọn Hạng Mục</h1>
+        <div class="button-container">
+            <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
+            <button id="DanDe2ChamButton">Quy Đổi Chạm</button>
+            <button id="KuBetButton">Kubet</button>
+        </div>
+    </div>
+
     <div class="container">
         <h2 class="section-title">Kết Quả Xổ Số Miền Bắc: <span id="latest-date"></span></h2>
         <div class="result-container">
@@ -77,12 +173,60 @@
         </div>
     </div>
 
-    <!-- Giữ nguyên phần audio -->
+    <audio id="pageAudio" src="Twindle.mp3" preload="auto"></audio>
 
     <script>
-        // Giữ nguyên các function cũ về audio và time display
+        // Chức năng phát âm thanh
+        function playAudioOnce() {
+            const audio = document.getElementById('pageAudio');
+            if (audio.paused) {
+                audio.play().then(() => {
+                    console.log("Âm thanh đã được phát.");
+                }).catch(err => {
+                    console.error("Lỗi phát âm thanh:", err);
+                });
+            }
+        }
 
-        // Cập nhật hàm fetchData
+        // Lắng nghe sự kiện người dùng
+        document.addEventListener('click', playAudioOnce, { once: true });
+        document.addEventListener('touchstart', playAudioOnce, { once: true });
+
+        // Xử lý chuyển trang
+        document.getElementById('AIXOSOButton').addEventListener('click', () => { 
+            window.location.href = 'AIthongkexsmb.html';
+        });
+        document.getElementById('DanDe2ChamButton').addEventListener('click', () => { 
+            window.location.href = 'DanDe2Cham.html';
+        });
+        document.getElementById('KuBetButton').addEventListener('click', () => { 
+            window.location.href = 'https://giaimasohoc.net/pages/THA-KUBET/';
+        });
+
+        // Hiển thị thời gian
+        function updateTime() {
+            const timeDisplay = document.getElementById('timeDisplay');
+            const now = new Date();
+            
+            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const dayName = days[now.getDay()];
+            
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = now.getFullYear();
+            
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Cập nhật thời gian mỗi giây
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Xử lý dữ liệu XSMB
         async function fetchData() {
             try {
                 const response = await fetch('https://raw.githubusercontent.com/LEDO-DEV/API_XSMB_0x687/refs/heads/main/data/xsmb.json');
