@@ -239,8 +239,7 @@
             const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
             const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
 
-            const utcString = `Current Date and Time (UTC): ${utcYear}-${utcMonth}-${utcDay} ${utcHours}:${utcMinutes}:${utcSeconds}`;
-            document.getElementById('utcTime').innerText = utcString;
+            document.getElementById('utcTime').innerText = `${utcYear}-${utcMonth}-${utcDay} ${utcHours}:${utcMinutes}:${utcSeconds}`;
         }
 
         // Hiển thị thời gian địa phương
@@ -267,12 +266,14 @@
             updateUTCTime();
             updateLocalTime();
         }, 1000);
+
+        // Khởi tạo thời gian
         updateUTCTime();
         updateLocalTime();
 
-        // Mock data cho kết quả xổ số hiện tại
+        // Kết quả xổ số mới nhất
         const currentLotteryResults = {
-            date: "2025-03-16",
+            date: "2025-03-17",
             special: "97404",
             prize1: "05695",
             prize2_1: "20901",
@@ -313,14 +314,14 @@
                 { name: 'Giải nhất', value: data.prize1 },
                 { name: 'Giải nhì', value: [data.prize2_1, data.prize2_2].filter(Boolean).join(', ') },
                 { name: 'Giải ba', value: [data.prize3_1, data.prize3_2, data.prize3_3, 
-                                                  data.prize3_4, data.prize3_5, data.prize3_6].filter(Boolean).join(', ') },
+                                         data.prize3_4, data.prize3_5, data.prize3_6].filter(Boolean).join(', ') },
                 { name: 'Giải tư', value: [data.prize4_1, data.prize4_2, data.prize4_3, 
-                                                   data.prize4_4].filter(Boolean).join(', ') },
+                                         data.prize4_4].filter(Boolean).join(', ') },
                 { name: 'Giải năm', value: [data.prize5_1, data.prize5_2, data.prize5_3,
-                                                   data.prize5_4, data.prize5_5, data.prize5_6].filter(Boolean).join(', ') },
+                                         data.prize5_4, data.prize5_5, data.prize5_6].filter(Boolean).join(', ') },
                 { name: 'Giải sáu', value: [data.prize6_1, data.prize6_2, data.prize6_3].filter(Boolean).join(', ') },
                 { name: 'Giải bảy', value: [data.prize7_1, data.prize7_2, data.prize7_3, 
-                                                     data.prize7_4].filter(Boolean).join(', ') }
+                                         data.prize7_4].filter(Boolean).join(', ') }
             ];
 
             const lotteryTable = document.getElementById('lottery-results');
@@ -365,7 +366,7 @@
                 lotoTable.deleteRow(1);
             }
 
-                        // Thêm các kết quả mới
+            // Thêm các kết quả mới
             for (let i = 0; i < 10; i++) {
                 const row = lotoTable.insertRow();
                 const cell1 = row.insertCell(0);
@@ -378,8 +379,7 @@
             document.getElementById('lottery-loading').style.display = 'none';
             document.getElementById('loto-loading').style.display = 'none';
         }
-
-        // Hàm định dạng ngày
+                // Hàm định dạng ngày
         function formatDate(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -394,34 +394,93 @@
                 document.getElementById('lottery-loading').style.display = 'block';
                 document.getElementById('loto-loading').style.display = 'block';
 
-                // Lấy thời gian UTC hiện tại
+                // Lấy thời gian hiện tại
                 const now = new Date();
-                const currentUTCDate = now.toISOString().split('T')[0];
+                const currentDate = now.toISOString().split('T')[0];
 
-                // Giả lập API call với thời gian thực
-                // Trong thực tế, bạn sẽ gọi API của bạn ở đây
-                const mockData = {
-                    ...currentLotteryResults,
-                    date: currentUTCDate
-                };
+                // Cấu hình API URL - bạn cần thay thế URL này bằng API thực tế của bạn
+                const apiUrl = `https://api.example.com/lottery/results/${currentDate}`;
 
-                // Hiển thị kết quả
-                displayResults(mockData);
+                try {
+                    // Thử gọi API thực
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    displayResults(data);
+                } catch (apiError) {
+                    console.warn('API call failed, using fallback data:', apiError);
+                    // Sử dụng dữ liệu fallback nếu API call thất bại
+                    const fallbackData = {
+                        ...currentLotteryResults,
+                        date: currentDate
+                    };
+                    displayResults(fallbackData);
+                }
 
             } catch (error) {
-                console.error('Error fetching lottery results:', error);
+                console.error('Error in fetchCurrentResults:', error);
                 document.getElementById('lottery-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
                 document.getElementById('loto-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
             }
         }
 
         // Auto-refresh kết quả mỗi 5 phút
-        setInterval(fetchCurrentResults, 5 * 60 * 1000);
+        const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 phút
+        let refreshTimer = setInterval(fetchCurrentResults, REFRESH_INTERVAL);
+
+        // Hàm để reset timer
+        function resetRefreshTimer() {
+            clearInterval(refreshTimer);
+            refreshTimer = setInterval(fetchCurrentResults, REFRESH_INTERVAL);
+        }
+
+        // Thêm sự kiện để reset timer khi tab được focus lại
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                fetchCurrentResults();
+                resetRefreshTimer();
+            }
+        });
+
+        // Thêm nút refresh thủ công
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r')) {
+                event.preventDefault();
+                fetchCurrentResults();
+                resetRefreshTimer();
+            }
+        });
 
         // Khởi tạo khi trang load
         document.addEventListener('DOMContentLoaded', () => {
             fetchCurrentResults();
+            
+            // Thêm sự kiện click cho các nút trong bảng kết quả
+            document.querySelectorAll('.lottery-table, .loto-table').forEach(table => {
+                table.addEventListener('click', () => {
+                    // Có thể thêm hiệu ứng hoặc chức năng khác khi click vào bảng
+                });
+            });
         });
+
+        // Thêm xử lý lỗi toàn cục
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Global error:', {
+                message: msg,
+                url: url,
+                lineNo: lineNo,
+                columnNo: columnNo,
+                error: error
+            });
+            return false;
+        };
+
+        // Thêm xử lý promise rejection không được bắt
+        window.onunhandledrejection = function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+        };
     </script>
 </body>
 </html>
