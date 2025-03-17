@@ -388,43 +388,67 @@
         }
 
         // Function để lấy kết quả xổ số mới nhất
-        async function fetchCurrentResults() {
-            try {
-                // Hiện loading indicators
-                document.getElementById('lottery-loading').style.display = 'block';
-                document.getElementById('loto-loading').style.display = 'block';
+async function fetchCurrentResults() {
+    try {
+        // Hiện loading indicators
+        document.getElementById('lottery-loading').style.display = 'block';
+        document.getElementById('loto-loading').style.display = 'block';
 
-                // Lấy thời gian hiện tại
-                const now = new Date();
-                const currentDate = now.toISOString().split('T')[0];
-
-                // Cấu hình API URL - bạn cần thay thế URL này bằng API thực tế của bạn
-                const apiUrl = `https://api.example.com/lottery/results/${currentDate}`;
-
-                try {
-                    // Thử gọi API thực
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    const data = await response.json();
-                    displayResults(data);
-                } catch (apiError) {
-                    console.warn('API call failed, using fallback data:', apiError);
-                    // Sử dụng dữ liệu fallback nếu API call thất bại
-                    const fallbackData = {
-                        ...currentLotteryResults,
-                        date: currentDate
-                    };
-                    displayResults(fallbackData);
-                }
-
-            } catch (error) {
-                console.error('Error in fetchCurrentResults:', error);
-                document.getElementById('lottery-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
-                document.getElementById('loto-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
-            }
+        // Gọi API của bạn
+        const apiUrl = 'https://raw.githubusercontent.com/LEDO-DEV/API_XSMB_0x687/refs/heads/main/data/xsmb.json';
+        
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        
+        const jsonData = await response.json();
+        // Lấy kết quả mới nhất (phần tử cuối cùng của mảng)
+        const latestResult = jsonData[jsonData.length - 1];
+        
+        // Chuyển đổi định dạng date
+        const formattedData = {
+            ...latestResult,
+            date: latestResult.date.split('T')[0], // Lấy phần ngày từ ISO string
+            // Chuyển đổi các số thành chuỗi và đảm bảo độ dài phù hợp
+            special: String(latestResult.special).padStart(5, '0'),
+            prize1: String(latestResult.prize1).padStart(5, '0'),
+            prize2_1: String(latestResult.prize2_1).padStart(5, '0'),
+            prize2_2: String(latestResult.prize2_2).padStart(5, '0'),
+            prize3_1: String(latestResult.prize3_1).padStart(5, '0'),
+            prize3_2: String(latestResult.prize3_2).padStart(5, '0'),
+            prize3_3: String(latestResult.prize3_3).padStart(5, '0'),
+            prize3_4: String(latestResult.prize3_4).padStart(5, '0'),
+            prize3_5: String(latestResult.prize3_5).padStart(5, '0'),
+            prize3_6: String(latestResult.prize3_6).padStart(5, '0'),
+            prize4_1: String(latestResult.prize4_1).padStart(4, '0'),
+            prize4_2: String(latestResult.prize4_2).padStart(4, '0'),
+            prize4_3: String(latestResult.prize4_3).padStart(4, '0'),
+            prize4_4: String(latestResult.prize4_4).padStart(4, '0'),
+            prize5_1: String(latestResult.prize5_1).padStart(4, '0'),
+            prize5_2: String(latestResult.prize5_2).padStart(4, '0'),
+            prize5_3: String(latestResult.prize5_3).padStart(4, '0'),
+            prize5_4: String(latestResult.prize5_4).padStart(4, '0'),
+            prize5_5: String(latestResult.prize5_5).padStart(4, '0'),
+            prize5_6: String(latestResult.prize5_6).padStart(4, '0'),
+            prize6_1: String(latestResult.prize6_1).padStart(3, '0'),
+            prize6_2: String(latestResult.prize6_2).padStart(3, '0'),
+            prize6_3: String(latestResult.prize6_3).padStart(3, '0'),
+            prize7_1: String(latestResult.prize7_1).padStart(2, '0'),
+            prize7_2: String(latestResult.prize7_2).padStart(2, '0'),
+            prize7_3: String(latestResult.prize7_3).padStart(2, '0'),
+            prize7_4: String(latestResult.prize7_4).padStart(2, '0')
+        };
+
+        // Hiển thị kết quả
+        displayResults(formattedData);
+
+    } catch (error) {
+        console.error('Error fetching lottery results:', error);
+        document.getElementById('lottery-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+        document.getElementById('loto-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+    }
+}
 
         // Auto-refresh kết quả mỗi 5 phút
         const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 phút
