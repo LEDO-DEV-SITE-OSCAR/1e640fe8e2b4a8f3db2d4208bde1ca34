@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Xổ Số - Phiên Bản Pro</title>
+    <title>AI Xổ Số - Phiên Bản RGB</title>
     <link rel="icon" href="lottery.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #ff0055;
+            --secondary-color: #00ff88;
+            --accent-color: #0088ff;
+            --background: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,189 +26,189 @@
         }
 
         body {
-            background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+            background: var(--background);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* RGB Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(255, 0, 85, 0.1), 
+                rgba(0, 255, 136, 0.1), 
+                rgba(0, 136, 255, 0.1));
+            animation: rgbFlow 15s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rgbFlow {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 20px;
         }
 
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
+            padding: 20px 0;
         }
 
         .header h1 {
-            color: #fff;
             font-size: 2.5em;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #FFC107, #FF5722);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px var(--primary-color),
+                         0 0 20px var(--primary-color),
+                         0 0 30px var(--primary-color);
         }
 
-        .control-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .input-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
             margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        .input-group {
-            position: relative;
+        .select-group {
+            margin-bottom: 20px;
         }
 
-        .input-group label {
-            color: #fff;
+        .select-group label {
             display: block;
-            margin-bottom: 10px;
             font-size: 1.1em;
-            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
         }
 
         select {
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         select:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        select option {
-            background: #004e92;
-            color: #fff;
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 30px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 0, 85, 0.2);
         }
 
         .btn {
-            padding: 15px 25px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #00b09b, #96c93d);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #4A00E0, #8E2DE2);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #FF416C, #FF4B2B);
-            color: white;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3);
         }
 
-        .statistics {
-            background: rgba(255, 255, 255, 0.05);
+        .result-section {
+            background: var(--card-bg);
             border-radius: 15px;
-            padding: 20px;
-            margin: 30px 0;
-            color: #fff;
-        }
-
-        .statistics h2 {
-            color: #FFC107;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .results {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             margin-top: 30px;
-            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .result-title {
-            color: #FFC107;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            text-align: center;
+        .number-set {
+            margin-bottom: 25px;
         }
 
-        .result-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 10px;
+        .number-set h3 {
+            color: var(--text-primary);
             margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-size: 1.3em;
+            text-shadow: 0 0 5px var(--accent-color);
         }
 
-        .result-label {
-            font-weight: 500;
-            color: #4CAF50;
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
         }
 
-        .result-numbers {
-            font-family: monospace;
-            font-size: 1.1em;
-            color: #fff;
-        }
-
-        .copy-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
+        .number-cell {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
             transition: all 0.3s ease;
         }
 
+        .hot-number {
+            background: linear-gradient(45deg, #ff0055, #ff0088);
+            color: white;
+        }
+
+        .cold-number {
+            background: linear-gradient(45deg, #0088ff, #00ffcc);
+            color: white;
+        }
+
+        .pattern-number {
+            background: linear-gradient(45deg, #00ff88, #88ff00);
+            color: white;
+        }
+
+        .copy-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
         .copy-btn:hover {
-            background: #45a049;
+            background: #0066cc;
             transform: translateY(-2px);
         }
 
@@ -205,10 +216,11 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 15px 25px;
-            background: #4CAF50;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
-            border-radius: 10px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: none;
             animation: slideIn 0.3s ease;
         }
@@ -224,341 +236,311 @@
             }
         }
 
+        /* Loading Animation */
         .loading {
-            text-align: center;
-            color: #FFC107;
-            font-size: 1.2em;
-            margin: 20px 0;
             display: none;
+            text-align: center;
+            margin: 20px 0;
         }
 
-        @media (max-width: 768px) {
-            .control-panel {
-                grid-template-columns: 1fr;
-            }
+        .loading-dots {
+            display: inline-block;
+        }
 
-            .button-group {
-                grid-template-columns: 1fr;
-            }
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
 
-            .result-item {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80% { content: '....'; }
+            100% { content: '.....'; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>AI XỔ SỐ MIỀN BẮC TRUNG NAM</h1>
-        </div>
-
-        <div class="control-panel">
-            <div class="input-group">
-                <label for="region">Chọn miền:</label>
-                <select id="region">
-                    <option value="Miền Bắc">Xổ Số Miền Bắc</option>
-                    <option value="Miền Trung">Xổ Số Miền Trung</option>
-                    <option value="Miền Nam">Xổ Số Miền Nam</option>
-                    <option value="Lotto Ku">Lotto Ku</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="province">Chọn đài xổ số:</label>
-                <select id="province"></select>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn btn-primary" id="startSimulation">Phân Tích & Dự Đoán</button>
-            <button class="btn btn-secondary" id="refreshButton">Làm Mới</button>
-            <button class="btn btn-danger" id="resetSpin">Reset Dữ Liệu</button>
-        </div>
-
-        <div class="statistics" id="statistics" style="display: none;">
-            <h2>Thống Kê & Phân Tích</h2>
-            <div class="stat-item">
-                <span>Số hay về (Hot):</span>
-                <span id="hotNumbersList"></span>
-            </div>
-            <div class="stat-item">
-                <span>Số lâu chưa về (Cold):</span>
-                <span id="coldNumbersList"></span>
-            </div>
-            <div class="stat-item">
-                <span>Mẫu số thường xuất hiện:</span>
-                <span id="patternsList"></span>
-            </div>
-        </div>
-
-        <div class="loading" id="loading">Đang phân tích dữ liệu...</div>
-
-        <div class="results" id="output" style="display: none;">
-            <h2 class="result-title">Kết quả Xổ Số: <span id="provinceName"></span></h2>
-            <div id="result">
-                <!-- Kết quả sẽ được thêm vào đây -->
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
     </div>
 
-    <div class="notification" id="notification"></div>
+    <div class="input-section">
+        <div class="select-group">
+            <label for="region">Chọn miền:</label>
+            <select id="region">
+                <option value="mien-bac">Xổ Số Miền Bắc</option>
+                <option value="mien-trung">Xổ Số Miền Trung</option>
+                <option value="mien-nam">Xổ Số Miền Nam</option>
+                <option value="lotto-ku">Lotto Ku</option>
+            </select>
+        </div>
 
-    <script>
-        // Thêm code JavaScript từ phiên bản trước
-        // [Code JavaScript giữ nguyên như cũ, chỉ thay đổi phần displayResults]
+        <div class="select-group">
+            <label for="province">Chọn đài xổ số:</label>
+            <select id="province"></select>
+        </div>
 
-        // Hiển thị kết quả
-function displayResults(gameType, numbers) {
+        <button class="btn" id="startSimulation">Phân Tích & Dự Đoán</button>
+        <button class="btn" id="refreshButton" style="background: linear-gradient(45deg, #00ff88, #0088ff);">Làm Mới</button>
+        <button class="btn" id="resetSpin" style="background: linear-gradient(45deg, #ff0055, #ff8800);">Reset Dữ Liệu</button>
+    </div>
+
+    <div class="loading">
+        <span class="loading-dots">Đang phân tích dữ liệu</span>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script>
+// Định nghĩa các tỉnh/thành cho từng miền
+const provinces = {
+    "mien-bac": [
+        "Hà Nội", "Quảng Ninh", "Bắc Ninh", "Hải Phòng", 
+        "Nam Định", "Thái Bình", "Hà Nam", "Ninh Bình"
+    ],
+    "mien-trung": [
+        "Đà Nẵng", "Quảng Nam", "Quảng Ngãi", "Bình Định", 
+        "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
+        "Kon Tum", "Gia Lai", "Đắk Lắk", "Đắk Nông",
+        "Quảng Bình", "Quảng Trị", "Thừa Thiên Huế"
+    ],
+    "mien-nam": [
+        "TP.HCM", "Long An", "Bến Tre", "Vũng Tàu",
+        "Bạc Liêu", "Đồng Tháp", "Cần Thơ", "Sóc Trăng",
+        "Tây Ninh", "An Giang", "Bình Thuận", "Vĩnh Long",
+        "Bình Dương", "Trà Vinh", "Đồng Nai", "Cà Mau",
+        "Kiên Giang", "Tiền Giang"
+    ],
+    "lotto-ku": ["Lotto Win"]
+};
+
+// Khởi tạo class quản lý dữ liệu
+class LotteryManager {
+    constructor() {
+        this.storage = localStorage;
+        this.historyKey = 'lottery_history';
+    }
+
+    saveResult(region, province, numbers) {
+        let history = this.getHistory();
+        history.push({
+            region,
+            province,
+            numbers,
+            timestamp: new Date().toISOString()
+        });
+        if (history.length > 100) history.shift();
+        this.storage.setItem(this.historyKey, JSON.stringify(history));
+    }
+
+    getHistory() {
+        const history = this.storage.getItem(this.historyKey);
+        return history ? JSON.parse(history) : [];
+    }
+
+    clearHistory() {
+        this.storage.removeItem(this.historyKey);
+    }
+
+    generateNumbers(type, count) {
+        const numbers = new Set();
+        const history = this.getHistory();
+        const recentNumbers = this.getRecentNumbers(history);
+        
+        while (numbers.size < count) {
+            let num;
+            if (Math.random() < 0.4 && recentNumbers.hot.length > 0) {
+                // 40% chance to pick a hot number
+                num = recentNumbers.hot[Math.floor(Math.random() * recentNumbers.hot.length)];
+            } else if (Math.random() < 0.3 && recentNumbers.cold.length > 0) {
+                // 30% chance to pick a cold number
+                num = recentNumbers.cold[Math.floor(Math.random() * recentNumbers.cold.length)];
+            } else {
+                // 30% chance for random number
+                num = this.getRandomNumber(type);
+            }
+            numbers.add(num.toString().padStart(2, '0'));
+        }
+        return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+    }
+
+    getRandomNumber(type) {
+        switch(type) {
+            case 'mega645': return Math.floor(Math.random() * 45) + 1;
+            case 'power655': return Math.floor(Math.random() * 55) + 1;
+            default: return Math.floor(Math.random() * 100);
+        }
+    }
+
+    getRecentNumbers(history) {
+        const numberFrequency = {};
+        history.forEach(record => {
+            Object.values(record.numbers).flat().forEach(num => {
+                numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+            });
+        });
+
+        const entries = Object.entries(numberFrequency);
+        entries.sort((a, b) => b[1] - a[1]);
+
+        return {
+            hot: entries.slice(0, 10).map(entry => entry[0]),
+            cold: entries.slice(-10).map(entry => entry[0])
+        };
+    }
+}
+
+// Khởi tạo
+const lotteryManager = new LotteryManager();
+
+// Cập nhật danh sách tỉnh/thành
+function updateProvinceDropdown(region) {
+    const provinceSelect = document.getElementById('province');
+    provinceSelect.innerHTML = '';
+    
+    provinces[region].forEach(province => {
+        const option = document.createElement('option');
+        option.value = province;
+        option.textContent = province;
+        provinceSelect.appendChild(option);
+    });
+}
+
+// Hiển thị kết quả
+function displayResults(region, province) {
     const resultDiv = document.getElementById('result');
-    const statistics = document.getElementById('statistics');
     
-    // Hiển thị thống kê
-    statistics.style.display = 'block';
-    document.getElementById('hotNumbersList').textContent = numberAnalyzer.getHotNumbers(gameType).join(', ');
-    document.getElementById('coldNumbersList').textContent = numberAnalyzer.getColdNumbers(gameType).join(', ');
-    
-    const patterns = numberAnalyzer.findPatterns(gameType);
-    document.getElementById('patternsList').textContent = 
-        `Lặp lại: ${patterns.repeatedNumbers.join(', ')} | Dãy số: ${patterns.sequences.join(', ')}`;
+    // Generate different number sets
+    const ghep4D = lotteryManager.generateNumbers('normal', 7);
+    const ghep3D = lotteryManager.generateNumbers('normal', 7);
+    const dan2D = lotteryManager.generateNumbers('normal', 64);
+    const mega645 = lotteryManager.generateNumbers('mega645', 6);
+    const power655 = lotteryManager.generateNumbers('power655', 6);
 
-    // Tạo các bộ số
-    const ghep4D = numberGenerator.generateNumbers(gameType, 7).sort((a, b) => a - b);
-    const ghep3D = numberGenerator.generateNumbers(gameType, 7).sort((a, b) => a - b);
-    const dan2D = numberGenerator.generateNumbers(gameType, 64)
-        .map(n => n.toString().padStart(2, '0'))
-        .sort((a, b) => a - b);
-    const mega645 = numberGenerator.generateNumbers('Mega 6/45', 6)
-        .map(n => n.toString().padStart(2, '0'))
-        .sort((a, b) => a - b);
-    const power655 = numberGenerator.generateNumbers('Power 6/55', 6)
-        .map(n => n.toString().padStart(2, '0'))
-        .sort((a, b) => a - b);
-
-    // Phân tích tần suất và tối ưu bộ số
-    const optimizedResults = optimizeNumberSets({
+    const numbers = {
         ghep4D,
         ghep3D,
         dan2D,
         mega645,
         power655
-    }, patterns);
+    };
 
-    // Hiển thị kết quả chi tiết
+    // Save results
+    lotteryManager.saveResult(region, province, numbers);
+
+    // Display results
     resultDiv.innerHTML = `
         <div class="result-section">
-            <h3>Kết Quả Phân Tích & Dự Đoán:</h3>
+            <h2>Kết quả Xổ Số: ${province}</h2>
             
             <div class="number-set">
-                <h4>Ghép 4D (Độ tin cậy: ${optimizedResults.confidence.ghep4D}%)</h4>
+                <h3>Ghép 4D:</h3>
                 <div class="number-grid">
-                    ${optimizedResults.ghep4D.map(num => `
-                        <div class="number-cell ${getNumberClass(num, patterns)}">
-                            ${num}
-                        </div>
+                    ${ghep4D.map(num => `
+                        <div class="number-cell">${num}</div>
                     `).join('')}
                 </div>
-                <button class="copy-btn" onclick="copyText('${optimizedResults.ghep4D.join(',')}')">Copy</button>
+                <button class="copy-btn" onclick="copyText('${ghep4D.join(',')}')">Copy</button>
             </div>
 
             <div class="number-set">
-                <h4>Ghép 3D (Độ tin cậy: ${optimizedResults.confidence.ghep3D}%)</h4>
+                <h3>Ghép 3D:</h3>
                 <div class="number-grid">
-                    ${optimizedResults.ghep3D.map(num => `
-                        <div class="number-cell ${getNumberClass(num, patterns)}">
-                            ${num}
-                        </div>
+                    ${ghep3D.map(num => `
+                        <div class="number-cell">${num}</div>
                     `).join('')}
                 </div>
-                <button class="copy-btn" onclick="copyText('${optimizedResults.ghep3D.join(',')}')">Copy</button>
+                <button class="copy-btn" onclick="copyText('${ghep3D.join(',')}')">Copy</button>
             </div>
 
             <div class="number-set">
-                <h4>Dàn 2D - 64 Số (Độ tin cậy: ${optimizedResults.confidence.dan2D}%)</h4>
-                <div class="number-grid small">
-                    ${optimizedResults.dan2D.map(num => `
-                        <div class="number-cell ${getNumberClass(num, patterns)}">
-                            ${num}
-                        </div>
+                <h3>Dàn 2D - 64 Số:</h3>
+                <div class="number-grid">
+                    ${dan2D.map(num => `
+                        <div class="number-cell">${num}</div>
                     `).join('')}
                 </div>
-                <button class="copy-btn" onclick="copyText('${optimizedResults.dan2D.join(',')}')">Copy</button>
+                <button class="copy-btn" onclick="copyText('${dan2D.join(',')}')">Copy</button>
             </div>
 
             <div class="number-set">
-                <h4>Mega 6/45 (Độ tin cậy: ${optimizedResults.confidence.mega645}%)</h4>
+                <h3>Mega 6/45:</h3>
                 <div class="number-grid">
-                    ${optimizedResults.mega645.map(num => `
-                        <div class="number-cell ${getNumberClass(num, patterns)}">
-                            ${num}
-                        </div>
+                    ${mega645.map(num => `
+                        <div class="number-cell">${num}</div>
                     `).join('')}
                 </div>
-                <button class="copy-btn" onclick="copyText('${optimizedResults.mega645.join(',')}')">Copy</button>
+                <button class="copy-btn" onclick="copyText('${mega645.join(',')}')">Copy</button>
             </div>
 
             <div class="number-set">
-                <h4>Power 6/55 (Độ tin cậy: ${optimizedResults.confidence.power655}%)</h4>
+                <h3>Power 6/55:</h3>
                 <div class="number-grid">
-                    ${optimizedResults.power655.map(num => `
-                        <div class="number-cell ${getNumberClass(num, patterns)}">
-                            ${num}
-                        </div>
+                    ${power655.map(num => `
+                        <div class="number-cell">${num}</div>
                     `).join('')}
                 </div>
-                <button class="copy-btn" onclick="copyText('${optimizedResults.power655.join(',')}')">Copy</button>
+                <button class="copy-btn" onclick="copyText('${power655.join(',')}')">Copy</button>
             </div>
         </div>
     `;
+}
 
-    // Lưu kết quả vào lịch sử
-    historyManager.saveResult(gameType, {
-        ghep4D: optimizedResults.ghep4D,
-        ghep3D: optimizedResults.ghep3D,
-        dan2D: optimizedResults.dan2D,
-        mega645: optimizedResults.mega645,
-        power655: optimizedResults.power655,
-        timestamp: new Date().getTime()
+// Xử lý sự kiện copy
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Đã sao chép!');
+    }).catch(err => {
+        showNotification('Không thể sao chép: ' + err);
     });
 }
 
-// Hàm tối ưu bộ số
-function optimizeNumberSets(numberSets, patterns) {
-    const confidence = {
-        ghep4D: calculateConfidence(numberSets.ghep4D, patterns),
-        ghep3D: calculateConfidence(numberSets.ghep3D, patterns),
-        dan2D: calculateConfidence(numberSets.dan2D, patterns),
-        mega645: calculateConfidence(numberSets.mega645, patterns),
-        power655: calculateConfidence(numberSets.power655, patterns)
-    };
-
-    return {
-        ...numberSets,
-        confidence
-    };
-}
-
-// Tính độ tin cậy của bộ số
-function calculateConfidence(numbers, patterns) {
-    let score = 0;
-    const totalNumbers = numbers.length;
-
-    numbers.forEach(num => {
-        // Kiểm tra số nóng
-        if (patterns.repeatedNumbers.includes(num)) {
-            score += 2;
-        }
-
-        // Kiểm tra chuỗi số
-        if (patterns.sequences.includes(num)) {
-            score += 1.5;
-        }
-
-        // Kiểm tra mẫu thống kê
-        if (checkStatisticalPattern(num)) {
-            score += 1;
-        }
-    });
-
-    // Tính phần trăm độ tin cậy
-    return Math.min(Math.round((score / (totalNumbers * 3)) * 100), 100);
-}
-
-// Kiểm tra mẫu thống kê
-function checkStatisticalPattern(number) {
-    // Thêm logic kiểm tra mẫu thống kê tại đây
-    const num = parseInt(number);
+// Hiển thị thông báo
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.style.display = 'block';
     
-    // Kiểm tra số đẹp
-    if (/^(\d)\1+$/.test(number)) return true; // Số lặp
-    if (/^(?:01|12|23|34|45|56|67|78|89|90)$/.test(number)) return true; // Số tiến
-    if (/^(?:09|98|87|76|65|54|43|32|21|10)$/.test(number)) return true; // Số lùi
-
-    // Kiểm tra tổng chữ số
-    const digitSum = number.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-    if (digitSum === 9 || digitSum === 7) return true; // Số tổng 9 hoặc 7 được coi là đẹp
-
-    return false;
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 2000);
 }
 
-// Xác định class cho số
-function getNumberClass(number, patterns) {
-    const classes = [];
+// Khởi tạo sự kiện
+document.getElementById('region').addEventListener('change', (e) => {
+    updateProvinceDropdown(e.target.value);
+});
+
+document.getElementById('startSimulation').addEventListener('click', () => {
+    const region = document.getElementById('region').value;
+    const province = document.getElementById('province').value;
     
-    if (patterns.repeatedNumbers.includes(number)) {
-        classes.push('hot-number');
-    }
-    if (patterns.sequences.includes(number)) {
-        classes.push('sequence-number');
-    }
-    if (checkStatisticalPattern(number)) {
-        classes.push('pattern-number');
-    }
+    document.querySelector('.loading').style.display = 'block';
+    document.getElementById('result').innerHTML = '';
 
-    return classes.join(' ');
-}
+    setTimeout(() => {
+        displayResults(region, province);
+        document.querySelector('.loading').style.display = 'none';
+    }, 1500);
+});
 
-// Thêm CSS cho các class mới
-const style = document.createElement('style');
-style.textContent = `
-    .number-set {
-        margin-bottom: 30px;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 20px;
-        border-radius: 10px;
-    }
+document.getElementById('refreshButton').addEventListener('click', () => {
+    location.reload();
+});
 
-    .number-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-        gap: 10px;
-        margin: 15px 0;
-    }
+document.getElementById('resetSpin').addEventListener('click', () => {
+    lotteryManager.clearHistory();
+    showNotification('Đã reset toàn bộ dữ liệu!');
+});
 
-    .number-grid.small {
-        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-    }
-
-    .number-cell {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 10px;
-        border-radius: 5px;
-        text-align: center;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-
-    .hot-number {
-        background: rgba(255, 87, 87, 0.3);
-        color: #fff;
-    }
-
-    .sequence-number {
-        background: rgba(87, 87, 255, 0.3);
-        color: #fff;
-    }
-
-    .pattern-number {
-        background: rgba(87, 255, 87, 0.3);
-        color: #fff;
-    }
-
-    .copy-btn {
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .copy-btn:hover {
-        background: #45a049;
-        transform: translateY(-2px);
-    }
-`;
-
-document.head.appendChild(style);
+// Khởi tạo ban đầu
+updateProvinceDropdown(document.getElementById('region').value);
+</script>
+</body>
+</html>
