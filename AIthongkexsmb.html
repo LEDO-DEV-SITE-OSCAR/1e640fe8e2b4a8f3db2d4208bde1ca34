@@ -3,401 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thuật Toán AI - Xổ Số 3 Miền</title>
+    <title>AI Xổ Số - Phiên Bản Nâng Cao</title>
     <link rel="icon" href="lottery.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: white;
-            border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 800px;
+            min-height: 100vh;
+            color: white;
         }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+
         h1 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
+
         .input-section {
+            margin-bottom: 25px;
+        }
+
+        .input-group {
             margin-bottom: 20px;
         }
-        .input-section label {
+
+        label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        .input-section input, .input-section select {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.1em;
         }
-        .btn {
+
+        select, input {
             width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
+            padding: 12px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
-        .output-section {
-            margin-top: 20px;
-            display: none;
-        }
-        .loading {
-            text-align: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
             font-size: 16px;
-            color: #888;
-        }
-        .result-section {
-            margin-top: 20px;
-        }
-        .result-section h2 {
             color: #333;
+            transition: all 0.3s ease;
         }
-        .result-section p {
-            margin: 5px 0;
-            word-wrap: break-word;
+
+        select:focus, input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
-        #spinNotice {
-            color: red;
-            text-align: center;
-            display: none;
-        }
-        .copy-btn {
-            padding: 5px 10px;
-            background-color: #007bff;
+
+        .btn {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
             color: white;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .copy-btn:hover {
-            background-color: #0056b3;
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .copy-btn:active {
-            background-color: #003f7f;
+
+        .stats-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .stats-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .number-cell {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .number-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hot-number {
+            background: rgba(255, 87, 87, 0.3);
+        }
+
+        .cold-number {
+            background: rgba(87, 87, 255, 0.3);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
-    <div class="input-section">
-       <label for="simulations">Số Phiên Chạy:</label>
-<input type="number" id="simulations" value="50" readonly>
+    <div class="container">
+        <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
+        <div class="input-section">
+            <div class="input-group">
+                <label for="region">Chọn miền:</label>
+                <select id="region">
+                    <option value="Miền Bắc">Xổ Số Miền Bắc</option>
+                    <option value="Miền Trung">Xổ Số Miền Trung</option>
+                    <option value="Miền Nam">Xổ Số Miền Nam</option>
+                    <option value="Lotto Ku">Lotto Ku</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="province">Chọn đài xổ số:</label>
+                <select id="province"></select>
+            </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('simulations').value = 50; // Gán giá trị cố định
-    });
-</script>
+            <button class="btn" id="startSimulation">Phân Tích & Dự Đoán</button>
+            <button class="btn" id="refreshButton">Làm Mới</button>
+            <button class="btn" id="resetSpin">Reset Dữ Liệu</button>
+        </div>
 
-        <label for="region">Chọn miền:</label>
-        <select id="region">
-            <option value="Miền Bắc">Xổ Số Miền Bắc</option>
-            <option value="Miền Trung">Xổ Số Miền Trung</option>
-            <option value="Miền Nam">Xổ Số Miền Nam</option>
-            <option value="Lotto Ku">Lotto Ku</option> 
-        </select>
-        <label for="province">Chọn đài xổ số:</label>
-        <select id="province"></select>
-    <div>
-    <button id="resetSpin" style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; margin-bottom: 10px;">Reset</button>
-    <button class="btn" id="startSimulation" style="margin-bottom: 10px;">Lấy Kết Quả</button>
-        <!-- Nút Fresh -->
-<button class="btn" id="refreshButton" style="margin-bottom: 10px;">Fresh</button>
+        <div id="statistics" class="stats-container" style="display: none;">
+            <div class="stats-title">Thống Kê & Phân Tích</div>
+            <div id="hotNumbers" class="stat-item">
+                <span>Số hay về (Hot):</span>
+                <span id="hotNumbersList"></span>
+            </div>
+            <div id="coldNumbers" class="stat-item">
+                <span>Số lâu chưa về (Cold):</span>
+                <span id="coldNumbersList"></span>
+            </div>
+            <div id="patterns" class="stat-item">
+                <span>Mẫu số thường xuất hiện:</span>
+                <span id="patternsList"></span>
+            </div>
+        </div>
 
-    <div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">
-        Đã reset quay tất cả...!
+        <div id="output" class="result-section" style="display: none;">
+            <div id="loading">Đang phân tích dữ liệu...</div>
+            <div id="result"></div>
+        </div>
     </div>
-    <div id="spinCount" style="display: none;">Số lần quay: 0</div>
-    <div id="spinNotice">Bạn đã quay hôm nay rồi. Hãy quay lại vào ngày mai!</div>
-    <div class="output-section" id="output">
-        <div class="loading" id="loading">Đang chạy mô phỏng, vui lòng chờ...</div>
-        <div class="result-section" id="result"></div>
-    </div>
-    <button class="btn" id="homeButton" style="margin-bottom: 10px;">Trang Chủ</button>
-</div>
 
+    <div id="notification" class="notification"></div>
 
+    <script>
+        // Lớp quản lý dữ liệu lịch sử
+        class HistoryManager {
+            constructor() {
+                this.storage = localStorage;
+                this.KEY_PREFIX = 'lottery_history_';
+            }
 
+            saveResult(gameType, numbers) {
+                const key = this.KEY_PREFIX + gameType;
+                let history = this.getHistory(gameType);
+                history.push({
+                    numbers: numbers,
+                    timestamp: new Date().getTime()
+                });
+                // Giới hạn lịch sử 100 kết quả gần nhất
+                if (history.length > 100) history.shift();
+                this.storage.setItem(key, JSON.stringify(history));
+            }
 
-<script>
-    document.getElementById("refreshButton").addEventListener("click", () => {
-    location.reload(); // Tải lại trang
-});
+            getHistory(gameType) {
+                const key = this.KEY_PREFIX + gameType;
+                const history = this.storage.getItem(key);
+                return history ? JSON.parse(history) : [];
+            }
 
-    // Tạo số ngẫu nhiên
-const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-// Hàm lấy các số với xác suất theo tần suất (không sắp xếp lại mảng mỗi lần)
-const getNumberWithFrequency = (min, max, frequencyMap) => {
-    const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-    
-    // Tính xác suất dựa trên tần suất
-    const totalFrequency = range.reduce((sum, num) => sum + (frequencyMap[num] || 0), 0);
-    
-    // Nếu tổng tần suất là 0 (chưa có số nào xuất hiện), chọn ngẫu nhiên
-    if (totalFrequency === 0) {
-        return range[Math.floor(Math.random() * range.length)];
-    }
-
-    // Nếu tổng tần suất > 0, chọn số với xác suất theo tần suất
-    const random = Math.random() * totalFrequency;
-    let cumulativeFrequency = 0;
-
-    for (let num of range) {
-        cumulativeFrequency += frequencyMap[num] || 0;
-        if (random <= cumulativeFrequency) {
-            return num;
+            clearHistory(gameType) {
+                if (gameType) {
+                    this.storage.removeItem(this.KEY_PREFIX + gameType);
+                } else {
+                    Object.keys(this.storage).forEach(key => {
+                        if (key.startsWith(this.KEY_PREFIX)) {
+                            this.storage.removeItem(key);
+                        }
+                    });
+                }
+            }
         }
-    }
-};
 
-// Hàm điền vào bộ số với xác suất (theo tần suất xuất hiện)
-const fillWithProbability = (set, count, min, max, frequencyMap) => {
-    while (set.size < count) {
-        const number = getNumberWithFrequency(min, max, frequencyMap);
-        set.add(number);
-    }
-    return [...set];
-};
+        // Lớp phân tích số liệu
+        class NumberAnalyzer {
+            constructor(historyManager) {
+                this.historyManager = historyManager;
+            }
 
-// Mô phỏng Monte Carlo với tần suất
-const monteCarloSimulation = (iterations) => {
-    console.log(`Chạy ${iterations} phiên mô phỏng...`);
-    const results = {
-        ghep4D: [],
-        ghep3D: [],
-        dan2D: [],
-        mega6_45: [],
-        power6_55: []
-    };
-    
-    // Tạo đối tượng để lưu trữ tần suất
-    const frequencyMap = {};
+            getHotNumbers(gameType, limit = 5) {
+                const history = this.historyManager.getHistory(gameType);
+                const frequency = {};
+                
+                history.forEach(record => {
+                    record.numbers.forEach(num => {
+                        frequency[num] = (frequency[num] || 0) + 1;
+                    });
+                });
 
-    // Mô phỏng
-    for (let i = 0; i < iterations; i++) {
-        // Ghép 4D và 3D
-        results.ghep4D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
-        results.ghep3D.push(fillWithProbability(new Set(), 7, 0, 9, frequencyMap).sort((a, b) => a - b));
-        
-        // Dàn 2D
-        const dan2D = fillWithProbability(new Set(), 64, 0, 99, frequencyMap)
-            .map(n => n.toString().padStart(2, '0'))
-            .sort((a, b) => a - b);
-        results.dan2D.push(dan2D);
-        
-        // Mega 6/45
-        results.mega6_45.push(fillWithProbability(new Set(), 6, 1, 45, frequencyMap)
-            .map(n => n.toString().padStart(2, '0'))
-            .sort((a, b) => a - b));
-        
-        // Power 6/55
-        results.power6_55.push(fillWithProbability(new Set(), 6, 1, 55, frequencyMap)
-            .map(n => n.toString().padStart(2, '0'))
-            .sort((a, b) => a - b));
-    }
+                return Object.entries(frequency)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, limit)
+                    .map(entry => entry[0]);
+            }
 
-    return results;
-};
+            getColdNumbers(gameType, limit = 5) {
+                const history = this.historyManager.getHistory(gameType);
+                const allPossibleNumbers = this.getAllPossibleNumbers(gameType);
+                const frequency = {};
+                
+                allPossibleNumbers.forEach(num => {
+                    frequency[num] = 0;
+                });
 
-// Hiển thị kết quả (chỉ hiển thị lần quay cuối cùng)
-const displayResults = (results, province) => {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h2>Kết quả Xổ Số: ${province}</h2>`;
+                history.forEach(record => {
+                    record.numbers.forEach(num => {
+                        frequency[num] = (frequency[num] || 0) + 1;
+                    });
+                });
 
-    // Lấy lần quay cuối cùng
-    let lastIndex = results.ghep4D.length - 1;
+                return Object.entries(frequency)
+                    .sort((a, b) => a[1] - b[1])
+                    .slice(0, limit)
+                    .map(entry => entry[0]);
+            }
 
-    resultDiv.innerHTML += `
-        <h3>Lần quay ${lastIndex + 1}:</h3>
-        <p><strong>Ghép 4D:</strong> ${results.ghep4D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep4D[lastIndex].join(',')}')">Copy</button></p>
-        <p><strong>Ghép 3D:</strong> ${results.ghep3D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.ghep3D[lastIndex].join(',')}')">Copy</button></p>
-        <p><strong>Dàn 64s:</strong> ${results.dan2D[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.dan2D[lastIndex].join(',')}')">Copy</button></p>
-        <p><strong>Mega 6/45:</strong> ${results.mega6_45[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.mega6_45[lastIndex].join(',')}')">Copy</button></p>
-        <p><strong>Power 6/55:</strong> ${results.power6_55[lastIndex].join(',')} <button class="copy-btn" onclick="copyText('${results.power6_55[lastIndex].join(',')}')">Copy</button></p>
-        <hr>
-    `;
-};
+            findPatterns(gameType) {
+                const history = this.historyManager.getHistory(gameType);
+                const patterns = [];
+                
+                // Phân tích chuỗi số
+                for (let i = 1; i < history.length; i++) {
+                    const current = history[i].numbers;
+                    const previous = history[i-1].numbers;
+                    
+                    // Tìm các số lặp lại
+                    const repeatedNumbers = current.filter(num => previous.includes(num));
+                    if (repeatedNumbers.length > 0) {
+                        patterns.push({
+                            type: 'repeat',
+                            numbers: repeatedNumbers
+                        });
+                    }
 
+                    // Tìm các chuỗi số liên tiếp
+                    const sortedCurrent = [...current].sort((a, b) => a - b);
+                    for (let j = 0; j < sortedCurrent.length - 1; j++) {
+                        if (parseInt(sortedCurrent[j+1]) - parseInt(sortedCurrent[j]) === 1) {
+                            patterns.push({
+                                type: 'sequence',
+                                numbers: [sortedCurrent[j], sortedCurrent[j+1]]
+                            });
+                        }
+                    }
+                }
 
+                return this.summarizePatterns(patterns);
+            }
 
+            summarizePatterns(patterns) {
+                const summary = {
+                    repeat: new Set(),
+                    sequence: new Set()
+                };
 
+                patterns.forEach(pattern => {
+                    if (pattern.type === 'repeat') {
+                        pattern.numbers.forEach(num => summary.repeat.add(num));
+                    } else if (pattern.type === 'sequence') {
+                        pattern.numbers.forEach(num => summary.sequence.add(num));
+                    }
+                });
 
-    //đã sao chép
-    const copyText = (text) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+                return {
+                    repeatedNumbers: Array.from(summary.repeat),
+                    sequences: Array.from(summary.sequence)
+                };
+            }
 
-    // Tạo thông báo tùy chỉnh
-    const notification = document.createElement('div');
-    notification.innerText = 'Đã sao chép!';
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.right = '20px';
-    notification.style.padding = '10px 20px';
-    notification.style.backgroundColor = '#4caf50';
-    notification.style.color = '#fff';
-    notification.style.borderRadius = '5px';
-    notification.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-    notification.style.zIndex = '1000';
-    notification.style.fontSize = '16px';
-    document.body.appendChild(notification);
+            getAllPossibleNumbers(gameType) {
+                switch(gameType) {
+                    case 'Miền Bắc':
+                        return Array.from({length: 100}, (_, i) => i.toString().padStart(2, '0'));
+                    case 'Mega 6/45':
+                        return Array.from({length: 45}, (_, i) => (i + 1).toString().padStart(2, '0'));
+                    case 'Power 6/55':
+                        return Array.from({length: 55}, (_, i) => (i + 1).toString().padStart(2, '0'));
+                    default:
+                        return Array.from({length: 100}, (_, i) => i.toString().padStart(2, '0'));
+                }
+            }
+        }
 
-    // Tự động xóa thông báo sau 1 giây
-    setTimeout(() => {
-        document.body.removeChild(notification);
-    }, 1000);
-};
-//kết thúc code thông báo
+        // Lớp sinh số
+        class NumberGenerator {
+            constructor(analyzer) {
+                this.analyzer = analyzer;
+            }
 
-    const provinces = {
-    "Miền Bắc": ["Hà Nội"],
-    "Miền Trung": [
-        "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk", 
-        "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai", 
-        "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
-    ],
-    "Miền Nam": [
-        "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau", 
-        "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ", 
-        "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước", 
-        "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
-    ],
-    "Lotto Ku": ["Lotto Win"]
-};
+            generateNumbers(gameType, count) {
+                const hotNumbers = this.analyzer.getHotNumbers(gameType);
+                const coldNumbers = this.analyzer.getColdNumbers(gameType);
+                const patterns = this.analyzer.findPatterns(gameType);
+                
+                const numbers = new Set();
+                const maxAttempts = 1000;
+                let attempts = 0;
 
-// Bộ đếm cho số lần bấm quay
-let spinCount = 0;
+                while (numbers.size < count && attempts < maxAttempts) {
+                    attempts++;
 
-const updateProvinceDropdown = (region) => {
-    const provinceDropdown = document.getElementById("province");
-    provinceDropdown.innerHTML = "";
-    provinces[region].forEach(province => {
-        const option = document.createElement("option");
-        option.value = province;
-        option.textContent = province;
-        provinceDropdown.appendChild(option);
-    });
+                    // 40% cơ hội chọn số nóng
+                    if (Math.random() < 0.4 && hotNumbers.length > 0) {
+                        numbers.add(hotNumbers[Math.floor(Math.random() * hotNumbers.length)]);
+                        continue;
+                    }
 
-    // Hiển thị nút "Reset Quay" chỉ khi chọn Lotto Ku
-    const resetButton = document.getElementById("resetSpin");
-    resetButton.style.display = (region === "Miền Bắc") ? "block" : "none";
+                    // 20% cơ hội chọn số lạnh
+                    if (Math.random() < 0.2 && coldNumbers.length > 0) {
+                        numbers.add(coldNumbers[Math.floor(Math.random() * coldNumbers.length)]);
+                        continue;
+                    }
 
-    // Hiển thị bộ đếm chỉ khi chọn Lotto Ku
-    const countDisplay = document.getElementById("spinCount");
-    countDisplay.style.display = (region === "Lotto Ku") ? "block" : "none";
-    if (region === "Lotto Ku") {
-        countDisplay.textContent = `Số lần quay: ${spinCount}`;
-    }
-};
+                    // 20% cơ hội chọn số từ mẫu
+                    if (Math.random() < 0.2 && patterns.repeatedNumbers.length > 0) {
+                        numbers.add(patterns.repeatedNumbers[Math.floor(Math.random() * patterns.repeatedNumbers.length)]);
+                        continue;
+                    }
 
-const isNewDay = () => {
-    const today = new Date().toLocaleDateString();
-    const lastSpinDate = localStorage.getItem('lastSpinDate');
-    if (lastSpinDate !== today) {
-        localStorage.setItem('lastSpinDate', today);
-        localStorage.removeItem('spinRecords'); // Xóa dữ liệu cũ
-        return true;
-    }
-    return false;
-};
+                    // 20% còn lại là số ngẫu nhiên
+                    const randomNum = Math.floor(Math.random() * this.getMaxNumber(gameType)).toString().padStart(2, '0');
+                    numbers.add(randomNum);
+                }
 
-document.getElementById("region").addEventListener("change", (e) => {
-    const region = e.target.value;
-    updateProvinceDropdown(region);
-});
+                return Array.from(numbers).slice(0, count);
+            }
 
-document.getElementById("startSimulation").addEventListener("click", () => {
-    const region = document.getElementById("region").value;
-    const province = document.getElementById("province").value;
-    const simulations = parseInt(document.getElementById("simulations").value, 10);
+            getMaxNumber(gameType) {
+                switch(gameType) {
+                    case 'Mega 6/45': return 45;
+                    case 'Power 6/55': return 55;
+                    default: return 100;
+                }
+            }
+        }
 
-    if (!simulations || simulations <= 0) {
-        alert("Vui lòng nhập số phiên chạy hợp lệ!");
-        return;
-    }
+        // Khởi tạo các đối tượng
+        const historyManager = new HistoryManager();
+        const numberAnalyzer = new NumberAnalyzer(historyManager);
+        const numberGenerator = new NumberGenerator(numberAnalyzer);
 
-    if (isNewDay()) {
-        console.log("Reset data for a new day.");
-    }
+        // Định nghĩa các tỉnh/thành cho từng miền
+        const provinces = {
+            "Miền Bắc": ["Hà Nội"],
+            "Miền Trung": [
+                "Kon Tum", "Khánh Hòa", "Phú Yên", "Thừa Thiên Huế", "Đắk Lắk",
+                "Quảng Nam", "Bình Định", "Quảng Bình", "Quảng Trị", "Gia Lai",
+                "Ninh Thuận", "Đà Nẵng", "Đắk Nông", "Quảng Ngãi"
+            ],
+            "Miền Nam": [
+                "TP.HCM", "Kiên Giang", "Lâm Đồng", "Tiền Giang", "Cà Mau",
+                "Đồng Tháp", "Bạc Liêu", "Bến Tre", "Vũng Tàu", "Cần Thơ",
+                "Sóc Trăng", "An Giang", "Tây Ninh", "Bình Dương", "Bình Phước",
+                "Hậu Giang", "Long An", "Đồng Nai", "Trà Vinh"
+            ],
+            "Lotto Ku": ["Lotto Win"]
+        };
 
-    const spinData = JSON.parse(localStorage.getItem("spinRecords") || "{}");
-    if (spinData[province] && region !== "Lotto Ku") {
-        document.getElementById("spinNotice").style.display = "block";
-        document.getElementById("output").style.display = "none";
-        return;
-    }
-    spinData[province] = true;
-    localStorage.setItem("spinRecords", JSON.stringify(spinData));
-    document.getElementById("spinNotice").style.display = "none";
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("output").style.display = "block";
-    setTimeout(() => {
-        const results = monteCarloSimulation(simulations);
-        displayResults(results, province);
-        document.getElementById("loading").style.display = "none";
-    }, 2000);
+        // Cập nhật dropdown tỉnh/thành
+        function updateProvinceDropdown(region) {
+            const provinceDropdown = document.getElementById("province");
+            provinceDropdown.innerHTML = "";
+            provinces[region].forEach(province => {
+                const option = document.createElement("option");
+                option.value = province;
+                option.textContent = province;
+                provinceDropdown.appendChild(option);
+            });
+        }
 
-    // Nếu là Lotto Ku, tăng bộ đếm lên 1
-    if (region === "Lotto Ku") {
-        spinCount++;
-        const countDisplay = document.getElementById("spinCount");
-        countDisplay.textContent = `Số lần quay: ${spinCount}`;
-    }
-});
+        // Hiển thị kết quả
+        function displayResults(gameType, numbers) {
+            const resultDiv = document.getElementById('result');
+            const statistics = document.getElementById('statistics');
+            
+            // Hiển thị thống kê
+            statistics.style.display = 'block';
+            document.getElementById('hotNumbersList').textContent = numberAnalyzer.getHotNumbers(gameType).join(', ');
+            document.getElementById('coldNumbersList').textContent = numberAnalyzer.getColdNumbers(gameType).join(', ');
+            
+            const patterns = numberAnalyzer.findPatterns(gameType);
+            document.getElementById('patternsList').textContent = 
+                `Lặp lại: ${patterns.repeatedNumbers.join(', ')} | Dãy số: ${patterns.sequences.join(', ')}`;
 
-// Thêm sự kiện cho nút "Reset Quay"
-document.getElementById("resetSpin").addEventListener("click", () => {
-    const region = document.getElementById("region").value;
-    if (region === "Miền Bắc") {
-        localStorage.removeItem("spinRecords");
-        spinCount = 0;  // Reset bộ đếm về 0
-        const countDisplay = document.getElementById("spinCount");
-        countDisplay.textContent = `Số lần quay: ${spinCount}`;
+            // Hiển thị kết quả dự đoán
+            resultDiv.innerHTML = `
+                <h3>Kết Quả Dự Đoán:</h3>
+                <div class="number-grid">
+                    ${numbers.map(num => `
+                        <div class="number-cell ${numberAnalyzer.getHotNumbers(gameType).includes(num) ? 'hot-number' : 
+                            numberAnalyzer.getColdNumbers(gameType).includes(num) ? 'cold-number' : ''}">
+                            ${num}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
 
-        // Hiển thị thông báo
-        const notification = document.getElementById("notification");
-        notification.style.display = "block";  // Hiển thị thông báo
+            // Lưu kết quả vào lịch sử
+            historyManager.saveResult(gameType, numbers);
+        }
 
-        // Ẩn thông báo sau 1 giây
-        setTimeout(() => {
-            notification.style.display = "none";
-        }, 1000);  // 1000ms = 1 giây
-    }
-});
+        // Xử lý sự kiện
+        document.getElementById("region").addEventListener("change", (e) => {
+            updateProvinceDropdown(e.target.value);
+        });
 
+        document.getElementById("startSimulation").addEventListener("click", () => {
+            const region = document.getElementById("region").value;
+            const province = document.getElementById("province").value;
+            
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output").style.display = "block";
 
+            setTimeout(() => {
+                let numbers;
+                switch(region) {
+                    case "Miền Bắc":
+                        numbers = numberGenerator.generateNumbers(region, 7);
+                        break;
+                    case "Lotto Ku":
+                        numbers = numberGenerator.generateNumbers(region, 7);
+                        break;
+                    default:
+                        numbers = numberGenerator.generateNumbers(region, 6);
+                }
 
+                displayResults(region, numbers);
+                document.getElementById("loading").style.display = "none";
+            }, 1500);
+        });
 
-    updateProvinceDropdown(document.getElementById("region").value);
-</script>
+        document.getElementById("refreshButton").addEventListener("click", () => {
+            location.reload();
+        });
+
+        document.getElementById("resetSpin").addEventListener("click", () => {
+            historyManager.clearHistory();
+            showNotification("Đã reset toàn bộ dữ liệu!");
+        });
+
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.style.display = "block";
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 3000);
+        }
+
+        // Khởi tạo ban đầu
+        updateProvinceDropdown(document.getElementById("region").value);
+    </script>
 </body>
 </html>
