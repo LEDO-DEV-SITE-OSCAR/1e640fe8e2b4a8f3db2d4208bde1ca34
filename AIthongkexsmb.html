@@ -259,6 +259,31 @@
             80% { content: '....'; }
             100% { content: '.....'; }
         }
+
+        .number-result {
+    font-size: 1.2em;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    color: var(--text-primary);
+    letter-spacing: 2px;
+}
+
+.number-set h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.number-set {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
     </style>
 </head>
 <body>
@@ -348,27 +373,41 @@ class LotteryManager {
         this.storage.removeItem(this.historyKey);
     }
 
-    generateNumbers(type, count) {
-        const numbers = new Set();
-        const history = this.getHistory();
-        const recentNumbers = this.getRecentNumbers(history);
-        
+    // Trong class LotteryManager, cập nhật hàm generateNumbers:
+generateNumbers(type, count) {
+    const numbers = new Set();
+    const history = this.getHistory();
+    const recentNumbers = this.getRecentNumbers(history);
+    
+    if (type === 'ghep4D' || type === 'ghep3D') {
+        // Sinh số đơn từ 0-9 cho Ghép 4D và 3D
         while (numbers.size < count) {
             let num;
             if (Math.random() < 0.4 && recentNumbers.hot.length > 0) {
-                // 40% chance to pick a hot number
+                num = parseInt(recentNumbers.hot[Math.floor(Math.random() * recentNumbers.hot.length)]) % 10;
+            } else if (Math.random() < 0.3 && recentNumbers.cold.length > 0) {
+                num = parseInt(recentNumbers.cold[Math.floor(Math.random() * recentNumbers.cold.length)]) % 10;
+            } else {
+                num = Math.floor(Math.random() * 10);
+            }
+            numbers.add(num.toString());
+        }
+    } else {
+        // Giữ nguyên logic cho các loại khác
+        while (numbers.size < count) {
+            let num;
+            if (Math.random() < 0.4 && recentNumbers.hot.length > 0) {
                 num = recentNumbers.hot[Math.floor(Math.random() * recentNumbers.hot.length)];
             } else if (Math.random() < 0.3 && recentNumbers.cold.length > 0) {
-                // 30% chance to pick a cold number
                 num = recentNumbers.cold[Math.floor(Math.random() * recentNumbers.cold.length)];
             } else {
-                // 30% chance for random number
                 num = this.getRandomNumber(type);
             }
             numbers.add(num.toString().padStart(2, '0'));
         }
-        return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
     }
+    return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+}
 
     getRandomNumber(type) {
         switch(type) {
@@ -412,13 +451,13 @@ function updateProvinceDropdown(region) {
     });
 }
 
-// Hiển thị kết quả
+// Cập nhật hàm displayResults:
 function displayResults(region, province) {
     const resultDiv = document.getElementById('result');
     
     // Generate different number sets
-    const ghep4D = lotteryManager.generateNumbers('normal', 7);
-    const ghep3D = lotteryManager.generateNumbers('normal', 7);
+    const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
+    const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
     const dan2D = lotteryManager.generateNumbers('normal', 64);
     const mega645 = lotteryManager.generateNumbers('mega645', 6);
     const power655 = lotteryManager.generateNumbers('power655', 6);
@@ -441,21 +480,13 @@ function displayResults(region, province) {
             
             <div class="number-set">
                 <h3>Ghép 4D:</h3>
-                <div class="number-grid">
-                    ${ghep4D.map(num => `
-                        <div class="number-cell">${num}</div>
-                    `).join('')}
-                </div>
+                <p class="number-result">${ghep4D.join(',')}</p>
                 <button class="copy-btn" onclick="copyText('${ghep4D.join(',')}')">Copy</button>
             </div>
 
             <div class="number-set">
                 <h3>Ghép 3D:</h3>
-                <div class="number-grid">
-                    ${ghep3D.map(num => `
-                        <div class="number-cell">${num}</div>
-                    `).join('')}
-                </div>
+                <p class="number-result">${ghep3D.join(',')}</p>
                 <button class="copy-btn" onclick="copyText('${ghep3D.join(',')}')">Copy</button>
             </div>
 
