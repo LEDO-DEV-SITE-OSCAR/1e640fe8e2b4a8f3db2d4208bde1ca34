@@ -1094,6 +1094,11 @@
                         num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
                     }
 
+                    // 确保是有效的两位数字
+                    if (num === undefined || num === "undefined" || num === "NaN" || isNaN(parseInt(num))) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
                     // 根据位置(前二或后二)进一步优化
                     if (position === 'tien' && this.getHistory().length > 0) {
                         // 前二优化:更多关注最前面的数字
@@ -1125,6 +1130,11 @@
                             const backDigit = backDigitPatterns[Math.floor(Math.random() * backDigitPatterns.length)];
                             num = frontDigit + backDigit;
                         }
+                    }
+
+                    // 最后确认格式正确
+                    if (typeof num !== 'string' || num.length !== 2 || isNaN(parseInt(num))) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
                     }
 
                     numbers.add(num);
@@ -1225,18 +1235,27 @@
             const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
             const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
             const dan2D = lotteryManager.generateNumbers('normal', 64);
-            const xienPairs = lotteryManager.generateNumbers('xien-pairs');
-            const mega645 = lotteryManager.generateNumbers('mega645', 6);
-            const power655 = lotteryManager.generateNumbers('power655', 6);
+
+            // 对于非LIVE BET区域，才生成这些数据
+            let xienPairs, mega645, power655;
+            if (region !== "live-bet") {
+                xienPairs = lotteryManager.generateNumbers('xien-pairs');
+                mega645 = lotteryManager.generateNumbers('mega645', 6);
+                power655 = lotteryManager.generateNumbers('power655', 6);
+            }
 
             const numbers = {
                 ghep4D,
                 ghep3D,
-                dan2D,
-                xienPairs,
-                mega645,
-                power655
+                dan2D
             };
+
+            // 只有非LIVE BET区域才添加这些数据
+            if (region !== "live-bet") {
+                numbers.xienPairs = xienPairs;
+                numbers.mega645 = mega645;
+                numbers.power655 = power655;
+            }
 
             // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"
             if (region === "live-bet") {
@@ -1300,8 +1319,11 @@
                             `).join('')}
                         </div>
                         <button class="copy-btn" onclick="copyText('${dan2D.join(', ')}')">Copy</button>
-                    </div>
-                    
+                    </div>`;
+
+            // 只有非LIVE BET区域才显示这些部分
+            if (region !== "live-bet") {
+                resultHTML += `
                     <div class="number-set">
                         <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
                         <div class="xien-container">
@@ -1333,7 +1355,10 @@
                             `).join('')}
                         </div>
                         <button class="copy-btn" onclick="copyText('${power655.join(', ')}')">Copy</button>
-                    </div>
+                    </div>`;
+            }
+
+            resultHTML += `
                 </div>
             `;
 
