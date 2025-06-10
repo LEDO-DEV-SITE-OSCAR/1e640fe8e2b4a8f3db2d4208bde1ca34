@@ -673,7 +673,11 @@
                 // 计算频率
                 history.forEach(record => {
                     Object.values(record.numbers).flat().forEach(num => {
-                        frequencyCount[num] = (frequencyCount[num] || 0) + 1;
+                        // 确保是有效的两位数字
+                        if (num && !isNaN(parseInt(num))) {
+                            const validNum = parseInt(num).toString().padStart(2, '0');
+                            frequencyCount[validNum] = (frequencyCount[validNum] || 0) + 1;
+                        }
                     });
                 });
 
@@ -727,7 +731,10 @@
 
                 // 计算历史记录中每对数字的共现频率
                 history.forEach(record => {
-                    const numbers = Object.values(record.numbers).flat();
+                    const numbers = Object.values(record.numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
 
                     // 检查每对数字
                     for (let i = 0; i < numbers.length; i++) {
@@ -793,7 +800,9 @@
                 const digits = new Set();
 
                 // 使用热门数字作为基础
-                const hotDigits = numberFrequency.hot.map(num => parseInt(num) % 10);
+                const hotDigits = numberFrequency.hot
+                    .filter(num => num && !isNaN(parseInt(num))) // 过滤无效值
+                    .map(num => parseInt(num) % 10);
 
                 // 使用Fibonacci序列作为权重
                 const weights = this.fibonacciSequence.slice(0, 10).reverse();
@@ -803,7 +812,12 @@
                         // 65%概率使用热门数字的个位数
                         const weightedIndex = this.getWeightedRandomIndex(weights.slice(0, hotDigits.length));
                         const digit = hotDigits[weightedIndex];
-                        digits.add(digit.toString());
+                        if (!isNaN(digit)) {
+                            digits.add(digit.toString());
+                        } else {
+                            // 如果无效，生成随机数字
+                            digits.add(Math.floor(Math.random() * 10).toString());
+                        }
                     } else {
                         // 35%概率随机生成数字
                         const digit = Math.floor(Math.random() * 10);
@@ -811,7 +825,9 @@
                     }
                 }
 
-                return Array.from(digits).sort((a, b) => parseInt(a) - parseInt(b));
+                return Array.from(digits)
+                    .filter(digit => digit !== null && digit !== undefined && !isNaN(parseInt(digit)))
+                    .sort((a, b) => parseInt(a) - parseInt(b));
             }
 
             // 生成Xien连对（使用优化的算法）
@@ -900,13 +916,15 @@
                 const numbers = new Set();
 
                 // 使用热门数字、冷门数字和一般数字的混合策略
-                const hotNumbers = numberFrequency.hot;
-                const coldNumbers = numberFrequency.cold;
-                const averageNumbers = numberFrequency.average;
+                const hotNumbers = numberFrequency.hot.filter(num => num && !isNaN(parseInt(num)));
+                const coldNumbers = numberFrequency.cold.filter(num => num && !isNaN(parseInt(num)));
+                const averageNumbers = numberFrequency.average.filter(num => num && !isNaN(parseInt(num)));
 
                 // 最后一期的数字（如果有）
                 const lastDrawNumbers = this.getHistory().length > 0
-                    ? Object.values(this.getHistory()[this.getHistory().length - 1].numbers).flat()
+                    ? Object.values(this.getHistory()[this.getHistory().length - 1].numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
                     : [];
 
                 // 使用Fibonacci序列作为权重分配
@@ -945,6 +963,14 @@
                     } else {
                         // 10%完全随机
                         num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    // 确保数字有效
+                    if (!num || isNaN(parseInt(num))) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } else {
+                        // 确保是两位数格式
+                        num = parseInt(num).toString().padStart(2, '0');
                     }
 
                     numbers.add(num);
@@ -1022,14 +1048,14 @@
                 const numbers = new Set();
 
                 // 使用更高权重的热门数字和模式识别
-                const hotNumbers = numberFrequency.hot;
-                const coldNumbers = numberFrequency.cold;
+                const hotNumbers = numberFrequency.hot.filter(num => num && !isNaN(parseInt(num)));
+                const coldNumbers = numberFrequency.cold.filter(num => num && !isNaN(parseInt(num)));
 
                 // 最后5期的数字(如果有)
                 const recentHistory = this.getHistory().slice(-5);
-                const recentNumbers = recentHistory.flatMap(record =>
-                    Object.values(record.numbers).flat()
-                );
+                const recentNumbers = recentHistory
+                    .flatMap(record => Object.values(record.numbers).flat())
+                    .filter(num => num && !isNaN(parseInt(num)));
 
                 // 识别模式(如数字循环、相邻数字等)
                 const patterns = this.identifyPatterns(recentNumbers);
@@ -1041,10 +1067,8 @@
                     // LIVE BET专用增强策略
                     if (r < 0.40 && hotNumbers.length > 0) {
                         // 40%概率选择热门数字
-                        const weightedHotIndex = this.getWeightedRandomIndex(
-                            hotNumbers.map((_, i) => this.fibonacciSequence[Math.min(i, this.fibonacciSequence.length - 1)])
-                        );
-                        num = hotNumbers[weightedHotIndex];
+                        const index = Math.floor(Math.random() * hotNumbers.length);
+                        num = hotNumbers[index];
                     } else if (r < 0.50 && patterns.length > 0) {
                         // 10%概率使用检测到的模式
                         const patternIndex = Math.floor(Math.random() * patterns.length);
@@ -1054,14 +1078,18 @@
                         const baseNumber = recentNumbers[Math.floor(Math.random() * recentNumbers.length)];
                         const baseInt = parseInt(baseNumber);
 
-                        // 创建变体(±1, ±10或数字反转)
-                        const variant = Math.random() < 0.33 ?
-                            (baseInt + (Math.random() < 0.5 ? 1 : -1) + 100) % 100 :
-                            Math.random() < 0.66 ?
-                                (baseInt + (Math.random() < 0.5 ? 10 : -10) + 100) % 100 :
-                                parseInt(baseNumber.split('').reverse().join(''));
+                        if (!isNaN(baseInt)) {
+                            // 创建变体(±1, ±10或数字反转)
+                            const variant = Math.random() < 0.33 ?
+                                (baseInt + (Math.random() < 0.5 ? 1 : -1) + 100) % 100 :
+                                Math.random() < 0.66 ?
+                                    (baseInt + (Math.random() < 0.5 ? 10 : -10) + 100) % 100 :
+                                    parseInt(baseNumber.split('').reverse().join(''));
 
-                        num = variant.toString().padStart(2, '0');
+                            num = variant.toString().padStart(2, '0');
+                        } else {
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
                     } else if (r < 0.75 && coldNumbers.length > 0) {
                         // 10%概率选择冷门数字(反弹理论)
                         const index = Math.floor(Math.random() * coldNumbers.length);
@@ -1095,8 +1123,11 @@
                     }
 
                     // 确保是有效的两位数字
-                    if (num === undefined || num === "undefined" || num === "NaN" || isNaN(parseInt(num))) {
+                    if (!num || num === "undefined" || num === "NaN" || isNaN(parseInt(num))) {
                         num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } else {
+                        // 确保是两位数格式
+                        num = parseInt(num).toString().padStart(2, '0');
                     }
 
                     // 根据位置(前二或后二)进一步优化
@@ -1106,13 +1137,14 @@
                             .slice(-10)
                             .map(record => Object.values(record.numbers).flat())
                             .flat()
+                            .filter(num => num && num.length >= 2 && !isNaN(parseInt(num)))
                             .map(num => num[0])
                             .filter((v, i, a) => a.indexOf(v) === i); // 去重
 
                         if (frontDigitPatterns.length > 0 && Math.random() < 0.3) {
                             // 30%概率使用历史前位数字模式
                             const frontDigit = frontDigitPatterns[Math.floor(Math.random() * frontDigitPatterns.length)];
-                            const backDigit = num[1];
+                            const backDigit = num.length >= 2 ? num[1] : Math.floor(Math.random() * 10).toString();
                             num = frontDigit + backDigit;
                         }
                     } else if (position === 'hau' && this.getHistory().length > 0) {
@@ -1121,12 +1153,13 @@
                             .slice(-10)
                             .map(record => Object.values(record.numbers).flat())
                             .flat()
+                            .filter(num => num && num.length >= 2 && !isNaN(parseInt(num)))
                             .map(num => num[1])
                             .filter((v, i, a) => a.indexOf(v) === i); // 去重
 
                         if (backDigitPatterns.length > 0 && Math.random() < 0.3) {
                             // 30%概率使用历史后位数字模式
-                            const frontDigit = num[0];
+                            const frontDigit = num.length >= 1 ? num[0] : Math.floor(Math.random() * 10).toString();
                             const backDigit = backDigitPatterns[Math.floor(Math.random() * backDigitPatterns.length)];
                             num = frontDigit + backDigit;
                         }
@@ -1147,13 +1180,19 @@
             identifyPatterns(numbers) {
                 const patterns = [];
 
-                // 不足以分析
+                // 不足以分析或包含无效值
                 if (numbers.length < 5) return patterns;
 
+                // 过滤有效数字
+                const validNumbers = numbers.filter(num => num && !isNaN(parseInt(num)));
+                if (validNumbers.length < 5) return patterns;
+
                 // 检测连续数字模式
-                for (let i = 0; i < numbers.length - 1; i++) {
-                    const current = parseInt(numbers[i]);
-                    const next = parseInt(numbers[i + 1]);
+                for (let i = 0; i < validNumbers.length - 1; i++) {
+                    const current = parseInt(validNumbers[i]);
+                    const next = parseInt(validNumbers[i + 1]);
+
+                    if (isNaN(current) || isNaN(next)) continue;
 
                     // 检测+1模式
                     if (next === (current + 1) % 100) {
@@ -1172,9 +1211,11 @@
 
                     // 检测反转模式
                     const reversed = parseInt(current.toString().padStart(2, '0').split('').reverse().join(''));
-                    if (next === reversed) {
+                    if (!isNaN(reversed) && next === reversed) {
                         const nextReversed = parseInt(next.toString().padStart(2, '0').split('').reverse().join(''));
-                        patterns.push(nextReversed.toString().padStart(2, '0'));
+                        if (!isNaN(nextReversed)) {
+                            patterns.push(nextReversed.toString().padStart(2, '0'));
+                        }
                     }
                 }
 
@@ -1231,138 +1272,158 @@
         function displayResults(region, province) {
             const resultDiv = document.getElementById('result');
 
-            // 生成不同类型的号码集
-            const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
-            const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
-            const dan2D = lotteryManager.generateNumbers('normal', 64);
+            try {
+                // 生成不同类型的号码集
+                const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
+                const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
+                const dan2D = lotteryManager.generateNumbers('normal', 64);
 
-            // 对于非LIVE BET区域，才生成这些数据
-            let xienPairs, mega645, power655;
-            if (region !== "live-bet") {
-                xienPairs = lotteryManager.generateNumbers('xien-pairs');
-                mega645 = lotteryManager.generateNumbers('mega645', 6);
-                power655 = lotteryManager.generateNumbers('power655', 6);
-            }
+                // 对于非LIVE BET区域，才生成这些数据
+                let xienPairs, mega645, power655;
+                if (region !== "live-bet") {
+                    xienPairs = lotteryManager.generateNumbers('xien-pairs');
+                    mega645 = lotteryManager.generateNumbers('mega645', 6);
+                    power655 = lotteryManager.generateNumbers('power655', 6);
+                }
 
-            const numbers = {
-                ghep4D,
-                ghep3D,
-                dan2D
-            };
+                const numbers = {
+                    ghep4D,
+                    ghep3D,
+                    dan2D
+                };
 
-            // 只有非LIVE BET区域才添加这些数据
-            if (region !== "live-bet") {
-                numbers.xienPairs = xienPairs;
-                numbers.mega645 = mega645;
-                numbers.power655 = power655;
-            }
+                // 只有非LIVE BET区域才添加这些数据
+                if (region !== "live-bet") {
+                    numbers.xienPairs = xienPairs;
+                    numbers.mega645 = mega645;
+                    numbers.power655 = power655;
+                }
 
-            // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"
-            if (region === "live-bet") {
-                const tienNhi = lotteryManager.generateNumbers('tien-nhi', 32);
-                const hauNhi = lotteryManager.generateNumbers('hau-nhi', 32);
+                // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"
+                if (region === "live-bet") {
+                    const tienNhi = lotteryManager.generateNumbers('tien-nhi', 32);
+                    const hauNhi = lotteryManager.generateNumbers('hau-nhi', 32);
 
-                numbers.tienNhi = tienNhi;
-                numbers.hauNhi = hauNhi;
-            }
+                    // 确保数字有效
+                    numbers.tienNhi = tienNhi.filter(num => num && !isNaN(parseInt(num)));
+                    numbers.hauNhi = hauNhi.filter(num => num && !isNaN(parseInt(num)));
+                }
 
-            // 保存结果
-            lotteryManager.saveResult(region, province, numbers);
+                // 保存结果
+                lotteryManager.saveResult(region, province, numbers);
 
-            // 显示结果
-            let resultHTML = `
-                <div class="card result-section">
-                    <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Kết quả Xổ Số: ${province}</h2>
-                    
-                    <div class="number-set">
-                        <h3>Ghép 4D:</h3>
-                        <p class="number-result">${ghep4D.join(', ')}</p>
-                        <button class="copy-btn" onclick="copyText('${ghep4D.join(', ')}')">Copy</button>
-                    </div>
+                // 显示结果
+                let resultHTML = `
+                    <div class="card result-section">
+                        <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Kết quả Xổ Số: ${province}</h2>
+                        
+                        <div class="number-set">
+                            <h3>Ghép 4D:</h3>
+                            <p class="number-result">${ghep4D.join(', ')}</p>
+                            <button class="copy-btn" onclick="copyText('${ghep4D.join(', ')}')">Copy</button>
+                        </div>
 
-                    <div class="number-set">
-                        <h3>Ghép 3D:</h3>
-                        <p class="number-result">${ghep3D.join(', ')}</p>
-                        <button class="copy-btn" onclick="copyText('${ghep3D.join(', ')}')">Copy</button>
-                    </div>`;
+                        <div class="number-set">
+                            <h3>Ghép 3D:</h3>
+                            <p class="number-result">${ghep3D.join(', ')}</p>
+                            <button class="copy-btn" onclick="copyText('${ghep3D.join(', ')}')">Copy</button>
+                        </div>`;
 
-            // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"显示
-            if (region === "live-bet") {
+                // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"显示
+                if (region === "live-bet" && numbers.tienNhi && numbers.tienNhi.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Tiền Nhị:</h3>
+                            <div class="number-grid">
+                                ${numbers.tienNhi.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${numbers.tienNhi.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                if (region === "live-bet" && numbers.hauNhi && numbers.hauNhi.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Hậu Nhị:</h3>
+                            <div class="number-grid">
+                                ${numbers.hauNhi.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${numbers.hauNhi.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
                 resultHTML += `
-                    <div class="number-set">
-                        <h3>Tiền Nhị:</h3>
-                        <div class="number-grid">
-                            ${numbers.tienNhi.map(num => `
-                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${numbers.tienNhi.join(', ')}')">Copy</button>
-                    </div>
-                    
-                    <div class="number-set">
-                        <h3>Hậu Nhị:</h3>
-                        <div class="number-grid">
-                            ${numbers.hauNhi.map(num => `
-                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${numbers.hauNhi.join(', ')}')">Copy</button>
-                    </div>`;
-            }
+                        <div class="number-set">
+                            <h3>Dàn 2D - 64 Số:</h3>
+                            <div class="number-grid">
+                                ${dan2D.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${dan2D.join(', ')}')">Copy</button>
+                        </div>`;
 
-            resultHTML += `
-                    <div class="number-set">
-                        <h3>Dàn 2D - 64 Số:</h3>
-                        <div class="number-grid">
-                            ${dan2D.map(num => `
-                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${dan2D.join(', ')}')">Copy</button>
-                    </div>`;
+                // 只有非LIVE BET区域才显示这些部分
+                if (region !== "live-bet" && xienPairs && xienPairs.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
+                            <div class="xien-container">
+                                ${xienPairs.map(pair => `
+                                    <div class="xien-pair">
+                                        <div class="xien-numbers">${pair.pair ? pair.pair.replace('-', ' - ') : ''}</div>
+                                        <div class="xien-probability">${pair.probability ? pair.probability + '%' : '0%'}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${xienPairs.map(p => p.pair || '').filter(p => p).join(', ')}')">Copy</button>
+                        </div>`;
+                }
 
-            // 只有非LIVE BET区域才显示这些部分
-            if (region !== "live-bet") {
+                if (region !== "live-bet" && mega645 && mega645.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Mega 6/45:</h3>
+                            <div class="number-grid">
+                                ${mega645.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${mega645.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                if (region !== "live-bet" && power655 && power655.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Power 6/55:</h3>
+                            <div class="number-grid">
+                                ${power655.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${power655.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
                 resultHTML += `
-                    <div class="number-set">
-                        <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
-                        <div class="xien-container">
-                            ${xienPairs.map(pair => `
-                                <div class="xien-pair">
-                                    <div class="xien-numbers">${pair.pair.replace('-', ' - ')}</div>
-                                    <div class="xien-probability">${pair.probability}%</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${xienPairs.map(p => p.pair).join(', ')}')">Copy</button>
                     </div>
+                `;
 
-                    <div class="number-set">
-                        <h3>Mega 6/45:</h3>
-                        <div class="number-grid">
-                            ${mega645.map(num => `
-                                <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${mega645.join(', ')}')">Copy</button>
+                resultDiv.innerHTML = resultHTML;
+            } catch (error) {
+                console.error("Error in displayResults:", error);
+                resultDiv.innerHTML = `
+                    <div class="card result-section">
+                        <h2 style="color: #e63946; margin-bottom: 20px; text-align: center;">Có lỗi xảy ra</h2>
+                        <p style="text-align: center;">Vui lòng thử lại hoặc chọn đài khác.</p>
                     </div>
-
-                    <div class="number-set">
-                        <h3>Power 6/55:</h3>
-                        <div class="number-grid">
-                            ${power655.map(num => `
-                                <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
-                            `).join('')}
-                        </div>
-                        <button class="copy-btn" onclick="copyText('${power655.join(', ')}')">Copy</button>
-                    </div>`;
+                `;
             }
-
-            resultHTML += `
-                </div>
-            `;
-
-            resultDiv.innerHTML = resultHTML;
         }
 
         // 复制文本处理
@@ -1401,10 +1462,23 @@
                 document.querySelector('.loading').style.display = 'block';
                 document.getElementById('result').innerHTML = '';
 
+                // 缩短LIVE BET的等待时间，其他保持不变
+                const waitTime = region === 'live-bet' ? 500 : 2000;
+
                 setTimeout(() => {
-                    displayResults(region, province);
+                    try {
+                        displayResults(region, province);
+                    } catch (error) {
+                        console.error("Error generating results:", error);
+                        document.getElementById('result').innerHTML = `
+                            <div class="card result-section">
+                                <h2 style="color: #e63946; margin-bottom: 20px; text-align: center;">Có lỗi xảy ra</h2>
+                                <p style="text-align: center;">Vui lòng thử lại hoặc chọn đài khác.</p>
+                            </div>
+                        `;
+                    }
                     document.querySelector('.loading').style.display = 'none';
-                }, 2000);
+                }, waitTime);
             } else {
                 // 如果今天已经生成过，显示提示信息
                 document.getElementById('blockedMessage').style.display = 'block';
