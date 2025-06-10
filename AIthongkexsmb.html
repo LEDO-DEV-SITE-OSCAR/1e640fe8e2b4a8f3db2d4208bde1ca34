@@ -1146,6 +1146,11 @@
                             const frontDigit = frontDigitPatterns[Math.floor(Math.random() * frontDigitPatterns.length)];
                             const backDigit = num.length >= 2 ? num[1] : Math.floor(Math.random() * 10).toString();
                             num = frontDigit + backDigit;
+
+                            // 检查是否有不是数字的字符
+                            if (!/^\d{2}$/.test(num)) {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
                         }
                     } else if (position === 'hau' && this.getHistory().length > 0) {
                         // 后二优化:更多关注最后面的数字
@@ -1162,11 +1167,16 @@
                             const frontDigit = num.length >= 1 ? num[0] : Math.floor(Math.random() * 10).toString();
                             const backDigit = backDigitPatterns[Math.floor(Math.random() * backDigitPatterns.length)];
                             num = frontDigit + backDigit;
+
+                            // 检查是否有不是数字的字符
+                            if (!/^\d{2}$/.test(num)) {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
                         }
                     }
 
                     // 最后确认格式正确
-                    if (typeof num !== 'string' || num.length !== 2 || isNaN(parseInt(num))) {
+                    if (typeof num !== 'string' || num.length !== 2 || isNaN(parseInt(num)) || !/^\d{2}$/.test(num)) {
                         num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
                     }
 
@@ -1219,8 +1229,8 @@
                     }
                 }
 
-                // 返回不重复的模式
-                return [...new Set(patterns)];
+                // 返回不重复的模式且确保都是有效数字
+                return [...new Set(patterns)].filter(num => /^\d{2}$/.test(num));
             }
 
             // 基于权重数组获取随机索引
@@ -1305,8 +1315,32 @@
                     const hauNhi = lotteryManager.generateNumbers('hau-nhi', 32);
 
                     // 确保数字有效
-                    numbers.tienNhi = tienNhi.filter(num => num && !isNaN(parseInt(num)));
-                    numbers.hauNhi = hauNhi.filter(num => num && !isNaN(parseInt(num)));
+                    numbers.tienNhi = tienNhi
+                        .filter(num => num && !isNaN(parseInt(num)) && /^\d{2}$/.test(num))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    numbers.hauNhi = hauNhi
+                        .filter(num => num && !isNaN(parseInt(num)) && /^\d{2}$/.test(num))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    // 如果过滤后数量不足，补充数字
+                    while (numbers.tienNhi.length < 32) {
+                        const num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        if (!numbers.tienNhi.includes(num)) {
+                            numbers.tienNhi.push(num);
+                        }
+                    }
+
+                    while (numbers.hauNhi.length < 32) {
+                        const num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        if (!numbers.hauNhi.includes(num)) {
+                            numbers.hauNhi.push(num);
+                        }
+                    }
+
+                    // 排序
+                    numbers.tienNhi.sort((a, b) => parseInt(a) - parseInt(b));
+                    numbers.hauNhi.sort((a, b) => parseInt(a) - parseInt(b));
                 }
 
                 // 保存结果
