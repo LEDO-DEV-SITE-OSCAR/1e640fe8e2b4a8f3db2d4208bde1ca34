@@ -908,6 +908,127 @@
                 return sortedPairs;
             }
 
+            // 生成高概率单个数字（替代原来的连对）
+            generateTopSingleNumbers(count) {
+                const history = this.getHistory();
+                const numberFrequency = this.analyzeNumberFrequency(history);
+                const markovMatrix = this.analyzeMarkovPatterns(history);
+
+                // 分析单个数字频率
+                const singleNumberStats = {};
+
+                // 初始化所有可能的数字
+                for (let i = 0; i < 100; i++) {
+                    singleNumberStats[i.toString().padStart(2, '0')] = {
+                        frequency: 0,
+                        hotIndex: 0,
+                        markovScore: 0,
+                        finalScore: 0
+                    };
+                }
+
+                // 计算每个数字的出现频率
+                history.forEach(record => {
+                    const numbers = Object.values(record.numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    numbers.forEach(num => {
+                        if (singleNumberStats[num]) {
+                            singleNumberStats[num].frequency += 1;
+                        }
+                    });
+                });
+
+                // 根据热门/冷门指数赋分
+                if (numberFrequency.hot.length > 0) {
+                    numberFrequency.hot.forEach((num, index) => {
+                        if (singleNumberStats[num]) {
+                            // 热门数字得分递减（排名越高分越高）
+                            singleNumberStats[num].hotIndex = numberFrequency.hot.length - index;
+                        }
+                    });
+                }
+
+                // 计算马尔可夫链得分
+                const lastDrawNumbers = history.length > 0
+                    ? Object.values(history[history.length - 1].numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
+                    : [];
+
+                if (lastDrawNumbers.length > 0) {
+                    lastDrawNumbers.forEach(baseNum => {
+                        if (markovMatrix[baseNum]) {
+                            Object.keys(markovMatrix[baseNum]).forEach(nextNum => {
+                                if (singleNumberStats[nextNum]) {
+                                    // 马尔可夫转移概率作为分数
+                                    singleNumberStats[nextNum].markovScore += markovMatrix[baseNum][nextNum];
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // 计算最终得分（综合频率、热门指数和马尔可夫得分）
+                Object.keys(singleNumberStats).forEach(num => {
+                    const stats = singleNumberStats[num];
+                    const historyWeight = 0.4;
+                    const hotIndexWeight = 0.4;
+                    const markovWeight = 0.2;
+
+                    // 归一化频率
+                    const normalizedFreq = history.length > 0 ? stats.frequency / history.length : 0;
+
+                    // 计算综合得分
+                    stats.finalScore =
+                        (normalizedFreq * historyWeight) +
+                        (stats.hotIndex / (numberFrequency.hot.length || 1) * hotIndexWeight) +
+                        (stats.markovScore * markovWeight);
+
+                    // 添加一些随机性，避免完全一样的模式
+                    stats.finalScore *= (1 + (Math.random() * 0.1 - 0.05));
+                });
+
+                // 根据最终得分排序
+                const sortedNumbers = Object.entries(singleNumberStats)
+                    .sort((a, b) => b[1].finalScore - a[1].finalScore)
+                    .map(([num, stats]) => ({
+                        number: num,
+                        probability: Math.min(99.9, (stats.finalScore * 100).toFixed(1))
+                    }));
+
+                // 选择前count个不同的数字
+                const result = [];
+                let index = 0;
+
+                while (result.length < count && index < sortedNumbers.length) {
+                    const candidate = sortedNumbers[index].number;
+                    // 确保是有效的2位数字并且不重复
+                    if (/^\d{2}$/.test(candidate) && !result.includes(candidate)) {
+                        result.push({
+                            number: candidate,
+                            probability: sortedNumbers[index].probability
+                        });
+                    }
+                    index++;
+                }
+
+                // 如果不足count个，用随机数补齐
+                while (result.length < count) {
+                    const randomNum = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    if (!result.some(item => item.number === randomNum)) {
+                        result.push({
+                            number: randomNum,
+                            probability: (Math.random() * 15 + 5).toFixed(1)
+                        });
+                    }
+                }
+
+                return result;
+            }
+
             // 生成数字
             generateNumbers(type, count) {
                 const history = this.getHistory();
@@ -919,6 +1040,9 @@
                     case 'ghep4D':
                     case 'ghep3D':
                         return this.generateDigits(count, numberFrequency);
+
+                    case 'xien-numbers':
+                        return this.generateTopSingleNumbers(count);
 
                     case 'xien-pairs':
                         return this.generateXienPairs(history);
@@ -1484,9 +1608,9 @@
                 const dan2D = lotteryManager.generateNumbers('normal', 64);
 
                 // 对于非LIVE BET区域，才生成这些数据
-                let xienPairs, mega645, power655;
+                let xienNumbers, xienPairs, mega645, power655;
                 if (region !== "live-bet") {
-                    xienPairs = lotteryManager.generateNumbers('xien-pairs');
+                    xienNumbers = lotteryManager.generateNumbers('xien-numbers', 5);
                     mega645 = lotteryManager.generateNumbers('mega645', 6);
                     power655 = lotteryManager.generateNumbers('power655', 6);
                 }
@@ -1499,7 +1623,7 @@
 
                 // 只有非LIVE BET区域才添加这些数据
                 if (region !== "live-bet") {
-                    numbers.xienPairs = xienPairs;
+                    numbers.xienNumbers = xienNumbers;
                     numbers.mega645 = mega645;
                     numbers.power655 = power655;
                 }
@@ -1597,19 +1721,19 @@
                         </div>`;
 
                 // 只有非LIVE BET区域才显示这些部分
-                if (region !== "live-bet" && xienPairs && xienPairs.length > 0) {
+                if (region !== "live-bet" && xienNumbers && xienNumbers.length > 0) {
                     resultHTML += `
                         <div class="number-set">
-                            <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
+                            <h3>Dàn Lô Xiên (Số Xác Suất Cao):</h3>
                             <div class="xien-container">
-                                ${xienPairs.map(pair => `
+                                ${xienNumbers.map(item => `
                                     <div class="xien-pair">
-                                        <div class="xien-numbers">${pair.pair ? pair.pair.replace('-', ' - ') : ''}</div>
-                                        <div class="xien-probability">${pair.probability ? pair.probability + '%' : '0%'}</div>
+                                        <div class="xien-numbers">${item.number}</div>
+                                        <div class="xien-probability">${item.probability}%</div>
                                     </div>
                                 `).join('')}
                             </div>
-                            <button class="copy-btn" onclick="copyText('${xienPairs.map(p => p.pair || '').filter(p => p).join(', ')}')">Copy</button>
+                            <button class="copy-btn" onclick="copyText('${xienNumbers.map(item => item.number).join(', ')}')">Copy</button>
                         </div>`;
                 }
 
