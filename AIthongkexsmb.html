@@ -447,7 +447,7 @@
                     <option value="mien-bac">Xổ Số Miền Bắc</option>
                     <option value="mien-trung">Xổ Số Miền Trung</option>
                     <option value="mien-nam">Xổ Số Miền Nam</option>
-                    <option value="lotto-ku">Lotto Ku</option>
+                    <option value="live-bet">LIVE BET</option>
                 </select>
             </div>
 
@@ -497,7 +497,7 @@
                 "Bình Dương", "Trà Vinh", "Đồng Nai", "Cà Mau",
                 "Kiên Giang", "Tiền Giang"
             ],
-            "lotto-ku": ["Lotto Win"]
+            "live-bet": ["LIVE BET - A", "LIVE BET - B"]
         };
 
         // 高级彩票管理和预测系统
@@ -546,6 +546,10 @@
 
             // 检查今天是否已经为指定省份生成过号码
             canGenerateToday(province) {
+                // 对于LIVE BET,总是允许生成
+                if (province.includes("LIVE BET")) {
+                    return true;
+                }
                 const limits = this.getDailyLimits();
                 return !limits.provinces[province];
             }
@@ -772,6 +776,12 @@
 
                     case 'power655':
                         return this.generateLottoNumbers(55, count);
+
+                    case 'tien-nhi':
+                        return this.generateAdvancedNumbers(count, numberFrequency, markovMatrix, 'tien');
+
+                    case 'hau-nhi':
+                        return this.generateAdvancedNumbers(count, numberFrequency, markovMatrix, 'hau');
 
                     default:
                         return this.generate2DNumbers(count, numberFrequency, markovMatrix);
@@ -1007,6 +1017,161 @@
                 return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
             }
 
+            // 为前二和后二生成高级数字
+            generateAdvancedNumbers(count, numberFrequency, markovMatrix, position) {
+                const numbers = new Set();
+
+                // 使用更高权重的热门数字和模式识别
+                const hotNumbers = numberFrequency.hot;
+                const coldNumbers = numberFrequency.cold;
+
+                // 最后5期的数字(如果有)
+                const recentHistory = this.getHistory().slice(-5);
+                const recentNumbers = recentHistory.flatMap(record =>
+                    Object.values(record.numbers).flat()
+                );
+
+                // 识别模式(如数字循环、相邻数字等)
+                const patterns = this.identifyPatterns(recentNumbers);
+
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    // LIVE BET专用增强策略
+                    if (r < 0.40 && hotNumbers.length > 0) {
+                        // 40%概率选择热门数字
+                        const weightedHotIndex = this.getWeightedRandomIndex(
+                            hotNumbers.map((_, i) => this.fibonacciSequence[Math.min(i, this.fibonacciSequence.length - 1)])
+                        );
+                        num = hotNumbers[weightedHotIndex];
+                    } else if (r < 0.50 && patterns.length > 0) {
+                        // 10%概率使用检测到的模式
+                        const patternIndex = Math.floor(Math.random() * patterns.length);
+                        num = patterns[patternIndex];
+                    } else if (r < 0.65 && recentNumbers.length > 0) {
+                        // 15%概率使用最近出现的数字的变体
+                        const baseNumber = recentNumbers[Math.floor(Math.random() * recentNumbers.length)];
+                        const baseInt = parseInt(baseNumber);
+
+                        // 创建变体(±1, ±10或数字反转)
+                        const variant = Math.random() < 0.33 ?
+                            (baseInt + (Math.random() < 0.5 ? 1 : -1) + 100) % 100 :
+                            Math.random() < 0.66 ?
+                                (baseInt + (Math.random() < 0.5 ? 10 : -10) + 100) % 100 :
+                                parseInt(baseNumber.split('').reverse().join(''));
+
+                        num = variant.toString().padStart(2, '0');
+                    } else if (r < 0.75 && coldNumbers.length > 0) {
+                        // 10%概率选择冷门数字(反弹理论)
+                        const index = Math.floor(Math.random() * coldNumbers.length);
+                        num = coldNumbers[index];
+                    } else if (r < 0.85 && Object.keys(markovMatrix).length > 0) {
+                        // 10%概率使用马尔可夫链预测
+                        const baseStates = Object.keys(markovMatrix);
+                        if (baseStates.length > 0) {
+                            const baseState = baseStates[Math.floor(Math.random() * baseStates.length)];
+
+                            const transitions = markovMatrix[baseState];
+                            if (transitions) {
+                                const nextStates = Object.keys(transitions);
+                                const weights = nextStates.map(state => transitions[state]);
+
+                                if (weights.length > 0 && weights.some(w => w > 0)) {
+                                    const selectedIndex = this.getWeightedRandomIndex(weights);
+                                    num = nextStates[selectedIndex];
+                                } else {
+                                    num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                                }
+                            } else {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
+                        } else {
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
+                    } else {
+                        // 15%完全随机
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    // 根据位置(前二或后二)进一步优化
+                    if (position === 'tien' && this.getHistory().length > 0) {
+                        // 前二优化:更多关注最前面的数字
+                        const frontDigitPatterns = this.getHistory()
+                            .slice(-10)
+                            .map(record => Object.values(record.numbers).flat())
+                            .flat()
+                            .map(num => num[0])
+                            .filter((v, i, a) => a.indexOf(v) === i); // 去重
+
+                        if (frontDigitPatterns.length > 0 && Math.random() < 0.3) {
+                            // 30%概率使用历史前位数字模式
+                            const frontDigit = frontDigitPatterns[Math.floor(Math.random() * frontDigitPatterns.length)];
+                            const backDigit = num[1];
+                            num = frontDigit + backDigit;
+                        }
+                    } else if (position === 'hau' && this.getHistory().length > 0) {
+                        // 后二优化:更多关注最后面的数字
+                        const backDigitPatterns = this.getHistory()
+                            .slice(-10)
+                            .map(record => Object.values(record.numbers).flat())
+                            .flat()
+                            .map(num => num[1])
+                            .filter((v, i, a) => a.indexOf(v) === i); // 去重
+
+                        if (backDigitPatterns.length > 0 && Math.random() < 0.3) {
+                            // 30%概率使用历史后位数字模式
+                            const frontDigit = num[0];
+                            const backDigit = backDigitPatterns[Math.floor(Math.random() * backDigitPatterns.length)];
+                            num = frontDigit + backDigit;
+                        }
+                    }
+
+                    numbers.add(num);
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 识别数字模式
+            identifyPatterns(numbers) {
+                const patterns = [];
+
+                // 不足以分析
+                if (numbers.length < 5) return patterns;
+
+                // 检测连续数字模式
+                for (let i = 0; i < numbers.length - 1; i++) {
+                    const current = parseInt(numbers[i]);
+                    const next = parseInt(numbers[i + 1]);
+
+                    // 检测+1模式
+                    if (next === (current + 1) % 100) {
+                        patterns.push(((next + 1) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测-1模式
+                    if (next === (current - 1 + 100) % 100) {
+                        patterns.push(((next - 1 + 100) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测+10模式
+                    if (next === (current + 10) % 100) {
+                        patterns.push(((next + 10) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测反转模式
+                    const reversed = parseInt(current.toString().padStart(2, '0').split('').reverse().join(''));
+                    if (next === reversed) {
+                        const nextReversed = parseInt(next.toString().padStart(2, '0').split('').reverse().join(''));
+                        patterns.push(nextReversed.toString().padStart(2, '0'));
+                    }
+                }
+
+                // 返回不重复的模式
+                return [...new Set(patterns)];
+            }
+
             // 基于权重数组获取随机索引
             getWeightedRandomIndex(weights) {
                 const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
@@ -1073,11 +1238,20 @@
                 power655
             };
 
+            // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"
+            if (region === "live-bet") {
+                const tienNhi = lotteryManager.generateNumbers('tien-nhi', 32);
+                const hauNhi = lotteryManager.generateNumbers('hau-nhi', 32);
+
+                numbers.tienNhi = tienNhi;
+                numbers.hauNhi = hauNhi;
+            }
+
             // 保存结果
             lotteryManager.saveResult(region, province, numbers);
 
             // 显示结果
-            resultDiv.innerHTML = `
+            let resultHTML = `
                 <div class="card result-section">
                     <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Kết quả Xổ Số: ${province}</h2>
                     
@@ -1091,8 +1265,33 @@
                         <h3>Ghép 3D:</h3>
                         <p class="number-result">${ghep3D.join(', ')}</p>
                         <button class="copy-btn" onclick="copyText('${ghep3D.join(', ')}')">Copy</button>
-                    </div>
+                    </div>`;
 
+            // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"显示
+            if (region === "live-bet") {
+                resultHTML += `
+                    <div class="number-set">
+                        <h3>Tiền Nhị:</h3>
+                        <div class="number-grid">
+                            ${numbers.tienNhi.map(num => `
+                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${numbers.tienNhi.join(', ')}')">Copy</button>
+                    </div>
+                    
+                    <div class="number-set">
+                        <h3>Hậu Nhị:</h3>
+                        <div class="number-grid">
+                            ${numbers.hauNhi.map(num => `
+                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${numbers.hauNhi.join(', ')}')">Copy</button>
+                    </div>`;
+            }
+
+            resultHTML += `
                     <div class="number-set">
                         <h3>Dàn 2D - 64 Số:</h3>
                         <div class="number-grid">
@@ -1137,6 +1336,8 @@
                     </div>
                 </div>
             `;
+
+            resultDiv.innerHTML = resultHTML;
         }
 
         // 复制文本处理
