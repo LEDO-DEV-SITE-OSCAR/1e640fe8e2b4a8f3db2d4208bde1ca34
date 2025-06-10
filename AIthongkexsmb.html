@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Xổ Số - Phiên Bản RGB</title>
+    <title>AI Xổ Số - Phiên Bản Cao Cấp</title>
     <link rel="icon" href="lottery.png" type="image/png">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
-            --primary-color: #ff0055;
-            --secondary-color: #00ff88;
-            --accent-color: #0088ff;
-            --background: #1a1a1a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #4361ee, #3a0ca3, #7209b7);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4cc9f0;
+            --secondary-color: #4895ef;
+            --accent-color: #560bad;
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', 'Roboto', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
@@ -33,28 +48,31 @@
             overflow-x: hidden;
         }
 
-        /* RGB Background Animation */
-        body::before {
-            content: '';
+        /* Background Animation */
+        .bg-animation {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, 
-                rgba(255, 0, 85, 0.1), 
-                rgba(0, 255, 136, 0.1), 
-                rgba(0, 136, 255, 0.1));
-            animation: rgbFlow 15s linear infinite;
             z-index: -1;
+            opacity: 0.05;
+            background-size: 300% 300%;
+            background-image: var(--gradient);
+            animation: gradientBG 15s ease infinite;
         }
 
-        @keyframes rgbFlow {
+        @keyframes gradientBG {
             0% {
-                filter: hue-rotate(0deg);
+                background-position: 0% 50%;
             }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
             100% {
-                filter: hue-rotate(360deg);
+                background-position: 0% 50%;
             }
         }
 
@@ -73,23 +91,37 @@
 
         .header h1 {
             font-size: 2.5em;
-            color: var(--text-primary);
+            color: var(--primary-color);
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 10px;
-            text-shadow: 0 0 10px var(--primary-color),
-                         0 0 20px var(--primary-color),
-                         0 0 30px var(--primary-color);
         }
 
-        .input-section {
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background: var(--card-bg);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            padding: 5px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle span {
+            margin-left: 5px;
+        }
+
+        .card {
+            background: var(--card-bg);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
         }
 
         .select-group {
@@ -101,67 +133,122 @@
             font-size: 1.1em;
             margin-bottom: 10px;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         select {
             width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            background: var(--background);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         select:hover {
-            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
         }
 
         select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(255, 0, 85, 0.2);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .btn {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background: var(--primary-color);
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 100%;
-            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            background-size: 200% auto;
+            animation: gradientShift 5s infinite;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background: #e63946;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .result-section {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
 
         .number-set {
             margin-bottom: 25px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .number-set:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .number-set h3 {
-            color: var(--text-primary);
+            color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 1.3em;
-            text-shadow: 0 0 5px var(--accent-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .number-set h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
         }
 
         .number-grid {
@@ -172,8 +259,8 @@
         }
 
         .number-cell {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--background);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             padding: 10px;
             border-radius: 8px;
             text-align: center;
@@ -182,18 +269,29 @@
         }
 
         .hot-number {
-            background: linear-gradient(45deg, #ff0055, #ff0088);
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
             color: white;
         }
 
         .cold-number {
-            background: linear-gradient(45deg, #0088ff, #00ffcc);
+            background: linear-gradient(45deg, #4cc9f0, #4895ef);
             color: white;
         }
 
         .pattern-number {
-            background: linear-gradient(45deg, #00ff88, #88ff00);
+            background: linear-gradient(45deg, #7209b7, #560bad);
             color: white;
+        }
+
+        .number-result {
+            font-size: 1.2em;
+            background: var(--background);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-align: center;
         }
 
         .copy-btn {
@@ -208,21 +306,22 @@
         }
 
         .copy-btn:hover {
-            background: #0066cc;
             transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         .notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient);
             color: white;
             padding: 15px 25px;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: none;
             animation: slideIn 0.3s ease;
+            z-index: 1000;
         }
 
         @keyframes slideIn {
@@ -230,6 +329,7 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -243,335 +343,867 @@
             margin: 20px 0;
         }
 
-        .loading-dots {
-            display: inline-block;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
 
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(5, end) infinite;
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80% { content: '....'; }
-            100% { content: '.....'; }
+        .loading-text {
+            margin-top: 10px;
+            color: var(--text-secondary);
         }
 
-        .number-result {
-    font-size: 1.2em;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 8px;
-    margin: 10px 0;
-    color: var(--text-primary);
-    letter-spacing: 2px;
-}
+        /* Xiên Pair Section */
+        .xien-pair {
+            display: flex;
+            justify-content: space-between;
+            background: var(--background);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
 
-.number-set h3 {
-    color: var(--text-primary);
-    margin-bottom: 15px;
-    font-size: 1.3em;
-    text-shadow: 0 0 5px var(--accent-color);
-}
+        .xien-pair:hover {
+            transform: translateX(5px);
+            box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.1);
+        }
 
-.number-set {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
+        .xien-numbers {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .xien-probability {
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .xien-container {
+            margin-top: 15px;
+        }
+
+        .blocked-message {
+            color: #e63946;
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #e63946;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+        }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="header">
-        <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
-    </div>
-
-    <div class="input-section">
-        <div class="select-group">
-            <label for="region">Chọn miền:</label>
-            <select id="region">
-                <option value="mien-bac">Xổ Số Miền Bắc</option>
-                <option value="mien-trung">Xổ Số Miền Trung</option>
-                <option value="mien-nam">Xổ Số Miền Nam</option>
-                <option value="lotto-ku">Lotto Ku</option>
-            </select>
+    <div class="bg-animation"></div>
+    <div class="container">
+        <div class="header">
+            <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
+            <div class="theme-toggle" id="themeToggle">
+                <span>🌙</span>
+            </div>
         </div>
 
-        <div class="select-group">
-            <label for="province">Chọn đài xổ số:</label>
-            <select id="province"></select>
+        <div class="card input-section">
+            <div class="select-group">
+                <label for="region">Chọn miền:</label>
+                <select id="region">
+                    <option value="mien-bac">Xổ Số Miền Bắc</option>
+                    <option value="mien-trung">Xổ Số Miền Trung</option>
+                    <option value="mien-nam">Xổ Số Miền Nam</option>
+                    <option value="lotto-ku">Lotto Ku</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label for="province">Chọn đài xổ số:</label>
+                <select id="province"></select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="startSimulation">Phân Tích & Dự Đoán</button>
+                <button class="btn btn-secondary" id="refreshButton">Làm Mới</button>
+                <button class="btn btn-danger" id="resetSpin">Reset Dữ Liệu</button>
+            </div>
+
+            <div class="blocked-message" id="blockedMessage">
+                Đài này đã được quay trong ngày hôm nay. Vui lòng thử lại vào ngày mai hoặc chọn đài khác.
+            </div>
         </div>
 
-        <button class="btn" id="startSimulation">Phân Tích & Dự Đoán</button>
-        <button class="btn" id="refreshButton" style="background: linear-gradient(45deg, #00ff88, #0088ff);">Làm Mới</button>
-        <button class="btn" id="resetSpin" style="background: linear-gradient(45deg, #ff0055, #ff8800);">Reset Dữ Liệu</button>
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Đang phân tích dữ liệu và tính toán xác suất...</div>
+        </div>
+
+        <div id="result"></div>
     </div>
 
-    <div class="loading">
-        <span class="loading-dots">Đang phân tích dữ liệu</span>
-    </div>
+    <div class="notification" id="notification"></div>
 
-    <div id="result"></div>
-</div>
-
-<div class="notification" id="notification"></div>
-
-<script>
-// Định nghĩa các tỉnh/thành cho từng miền
-const provinces = {
-    "mien-bac": [
-        "Hà Nội", "Quảng Ninh", "Bắc Ninh", "Hải Phòng", 
-        "Nam Định", "Thái Bình", "Hà Nam", "Ninh Bình"
-    ],
-    "mien-trung": [
-        "Đà Nẵng", "Quảng Nam", "Quảng Ngãi", "Bình Định", 
-        "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
-        "Kon Tum", "Gia Lai", "Đắk Lắk", "Đắk Nông",
-        "Quảng Bình", "Quảng Trị", "Thừa Thiên Huế"
-    ],
-    "mien-nam": [
-        "TP.HCM", "Long An", "Bến Tre", "Vũng Tàu",
-        "Bạc Liêu", "Đồng Tháp", "Cần Thơ", "Sóc Trăng",
-        "Tây Ninh", "An Giang", "Bình Thuận", "Vĩnh Long",
-        "Bình Dương", "Trà Vinh", "Đồng Nai", "Cà Mau",
-        "Kiên Giang", "Tiền Giang"
-    ],
-    "lotto-ku": ["Lotto Win"]
-};
-
-// Khởi tạo class quản lý dữ liệu
-class LotteryManager {
-    constructor() {
-        this.storage = localStorage;
-        this.historyKey = 'lottery_history';
-    }
-
-    saveResult(region, province, numbers) {
-        let history = this.getHistory();
-        history.push({
-            region,
-            province,
-            numbers,
-            timestamp: new Date().toISOString()
-        });
-        if (history.length > 100) history.shift();
-        this.storage.setItem(this.historyKey, JSON.stringify(history));
-    }
-
-    getHistory() {
-        const history = this.storage.getItem(this.historyKey);
-        return history ? JSON.parse(history) : [];
-    }
-
-    clearHistory() {
-        this.storage.removeItem(this.historyKey);
-    }
-
-    // Trong class LotteryManager, cập nhật hàm generateNumbers:
-generateNumbers(type, count) {
-    const numbers = new Set();
-    const history = this.getHistory();
-    const recentNumbers = this.getRecentNumbers(history);
-    
-    if (type === 'ghep4D' || type === 'ghep3D') {
-        // Sinh số đơn từ 0-9 cho Ghép 4D và 3D
-        while (numbers.size < count) {
-            let num;
-            if (Math.random() < 0.4 && recentNumbers.hot.length > 0) {
-                num = parseInt(recentNumbers.hot[Math.floor(Math.random() * recentNumbers.hot.length)]) % 10;
-            } else if (Math.random() < 0.3 && recentNumbers.cold.length > 0) {
-                num = parseInt(recentNumbers.cold[Math.floor(Math.random() * recentNumbers.cold.length)]) % 10;
-            } else {
-                num = Math.floor(Math.random() * 10);
-            }
-            numbers.add(num.toString());
-        }
-    } else {
-        // Giữ nguyên logic cho các loại khác
-        while (numbers.size < count) {
-            let num;
-            if (Math.random() < 0.4 && recentNumbers.hot.length > 0) {
-                num = recentNumbers.hot[Math.floor(Math.random() * recentNumbers.hot.length)];
-            } else if (Math.random() < 0.3 && recentNumbers.cold.length > 0) {
-                num = recentNumbers.cold[Math.floor(Math.random() * recentNumbers.cold.length)];
-            } else {
-                num = this.getRandomNumber(type);
-            }
-            numbers.add(num.toString().padStart(2, '0'));
-        }
-    }
-    return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
-}
-
-    getRandomNumber(type) {
-        switch(type) {
-            case 'mega645': return Math.floor(Math.random() * 45) + 1;
-            case 'power655': return Math.floor(Math.random() * 55) + 1;
-            default: return Math.floor(Math.random() * 100);
-        }
-    }
-
-    getRecentNumbers(history) {
-        const numberFrequency = {};
-        history.forEach(record => {
-            Object.values(record.numbers).flat().forEach(num => {
-                numberFrequency[num] = (numberFrequency[num] || 0) + 1;
-            });
-        });
-
-        const entries = Object.entries(numberFrequency);
-        entries.sort((a, b) => b[1] - a[1]);
-
-        return {
-            hot: entries.slice(0, 10).map(entry => entry[0]),
-            cold: entries.slice(-10).map(entry => entry[0])
+    <script>
+        // Định nghĩa các tỉnh/thành cho từng miền
+        const provinces = {
+            "mien-bac": [
+                "Hà Nội", "Quảng Ninh", "Bắc Ninh", "Hải Phòng",
+                "Nam Định", "Thái Bình", "Hà Nam", "Ninh Bình"
+            ],
+            "mien-trung": [
+                "Đà Nẵng", "Quảng Nam", "Quảng Ngãi", "Bình Định",
+                "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
+                "Kon Tum", "Gia Lai", "Đắk Lắk", "Đắk Nông",
+                "Quảng Bình", "Quảng Trị", "Thừa Thiên Huế"
+            ],
+            "mien-nam": [
+                "TP.HCM", "Long An", "Bến Tre", "Vũng Tàu",
+                "Bạc Liêu", "Đồng Tháp", "Cần Thơ", "Sóc Trăng",
+                "Tây Ninh", "An Giang", "Bình Thuận", "Vĩnh Long",
+                "Bình Dương", "Trà Vinh", "Đồng Nai", "Cà Mau",
+                "Kiên Giang", "Tiền Giang"
+            ],
+            "lotto-ku": ["Lotto Win"]
         };
-    }
-}
 
-// Khởi tạo
-const lotteryManager = new LotteryManager();
+        // 高级彩票管理和预测系统
+        class AdvancedLotteryManager {
+            constructor() {
+                this.storage = localStorage;
+                this.historyKey = 'lottery_history';
+                this.dailyLimitsKey = 'daily_limits';
 
-// Cập nhật danh sách tỉnh/thành
-function updateProvinceDropdown(region) {
-    const provinceSelect = document.getElementById('province');
-    provinceSelect.innerHTML = '';
-    
-    provinces[region].forEach(province => {
-        const option = document.createElement('option');
-        option.value = province;
-        option.textContent = province;
-        provinceSelect.appendChild(option);
-    });
-}
+                // 斐波那契序列用于模式识别
+                this.fibonacciSequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
 
-// Cập nhật hàm displayResults:
-function displayResults(region, province) {
-    const resultDiv = document.getElementById('result');
-    
-    // Generate different number sets
-    const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
-    const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
-    const dan2D = lotteryManager.generateNumbers('normal', 64);
-    const mega645 = lotteryManager.generateNumbers('mega645', 6);
-    const power655 = lotteryManager.generateNumbers('power655', 6);
+                // 梅森素数用于Prime Pattern算法
+                this.mersenneNumbers = [3, 7, 31, 127];
 
-    const numbers = {
-        ghep4D,
-        ghep3D,
-        dan2D,
-        mega645,
-        power655
-    };
+                // 贝叶斯系数用于概率计算
+                this.bayesianFactor = 0.73;
 
-    // Save results
-    lotteryManager.saveResult(region, province, numbers);
+                // 马尔可夫链参数
+                this.markovDepth = 3;
 
-    // Display results
-    resultDiv.innerHTML = `
-        <div class="result-section">
-            <h2>Kết quả Xổ Số: ${province}</h2>
-            
-            <div class="number-set">
-                <h3>Ghép 4D:</h3>
-                <p class="number-result">${ghep4D.join(',')}</p>
-                <button class="copy-btn" onclick="copyText('${ghep4D.join(',')}')">Copy</button>
-            </div>
+                // 初始化日期检查
+                this.initializeDailyLimits();
+            }
 
-            <div class="number-set">
-                <h3>Ghép 3D:</h3>
-                <p class="number-result">${ghep3D.join(',')}</p>
-                <button class="copy-btn" onclick="copyText('${ghep3D.join(',')}')">Copy</button>
-            </div>
+            // 初始化或重置每日限制
+            initializeDailyLimits() {
+                const today = new Date().toLocaleDateString();
+                let limits = this.getDailyLimits();
 
-            <div class="number-set">
-                <h3>Dàn 2D - 64 Số:</h3>
-                <div class="number-grid">
-                    ${dan2D.map(num => `
-                        <div class="number-cell">${num}</div>
-                    `).join('')}
+                // 检查是否是新的一天，如果是则重置限制
+                if (!limits.date || limits.date !== today) {
+                    limits = {
+                        date: today,
+                        provinces: {}
+                    };
+                    this.storage.setItem(this.dailyLimitsKey, JSON.stringify(limits));
+                }
+            }
+
+            // 获取每日限制记录
+            getDailyLimits() {
+                const limits = this.storage.getItem(this.dailyLimitsKey);
+                return limits ? JSON.parse(limits) : { date: null, provinces: {} };
+            }
+
+            // 检查今天是否已经为指定省份生成过号码
+            canGenerateToday(province) {
+                const limits = this.getDailyLimits();
+                return !limits.provinces[province];
+            }
+
+            // 记录今天已经为该省份生成过号码
+            recordGeneration(province) {
+                const limits = this.getDailyLimits();
+                limits.provinces[province] = true;
+                this.storage.setItem(this.dailyLimitsKey, JSON.stringify(limits));
+            }
+
+            // 保存结果到历史记录
+            saveResult(region, province, numbers) {
+                let history = this.getHistory();
+                history.push({
+                    region,
+                    province,
+                    numbers,
+                    timestamp: new Date().toISOString()
+                });
+
+                // 限制历史记录大小，保留最近的200条记录
+                if (history.length > 200) history.shift();
+                this.storage.setItem(this.historyKey, JSON.stringify(history));
+
+                // 记录今天已经为该省份生成过
+                this.recordGeneration(province);
+            }
+
+            // 获取历史记录
+            getHistory() {
+                const history = this.storage.getItem(this.historyKey);
+                return history ? JSON.parse(history) : [];
+            }
+
+            // 清除所有历史记录
+            clearHistory() {
+                this.storage.removeItem(this.historyKey);
+                this.storage.removeItem(this.dailyLimitsKey);
+            }
+
+            // 贝叶斯概率计算
+            calculateBayesianProbability(num, history) {
+                const priorProb = 1 / 100; // 先验概率，每个数字的基础概率相同
+
+                // 计算条件概率 P(Evidence|Number)
+                let occurrences = 0;
+                let totalRecords = 0;
+
+                history.forEach(record => {
+                    totalRecords++;
+                    Object.values(record.numbers).flat().forEach(historyNum => {
+                        if (historyNum === num.toString().padStart(2, '0')) {
+                            occurrences++;
+                        }
+                    });
+                });
+
+                // 避免除以零
+                if (totalRecords === 0) return priorProb;
+
+                // 计算似然度
+                const likelihood = occurrences / totalRecords;
+
+                // 贝叶斯公式：后验概率 ∝ 似然度 × 先验概率
+                return likelihood * priorProb * this.bayesianFactor;
+            }
+
+            // 马尔可夫链分析
+            analyzeMarkovPatterns(history) {
+                // 创建状态转移矩阵
+                const transitionMatrix = {};
+
+                // 为每个可能的数字组合初始化
+                for (let i = 0; i < 100; i++) {
+                    const numStr = i.toString().padStart(2, '0');
+                    transitionMatrix[numStr] = {};
+
+                    for (let j = 0; j < 100; j++) {
+                        const nextNumStr = j.toString().padStart(2, '0');
+                        transitionMatrix[numStr][nextNumStr] = 0;
+                    }
+                }
+
+                // 从历史记录中构建转移概率
+                for (let i = 0; i < history.length - 1; i++) {
+                    const currentNums = Object.values(history[i].numbers).flat();
+                    const nextNums = Object.values(history[i + 1].numbers).flat();
+
+                    currentNums.forEach(current => {
+                        nextNums.forEach(next => {
+                            if (transitionMatrix[current] && transitionMatrix[current][next] !== undefined) {
+                                transitionMatrix[current][next]++;
+                            }
+                        });
+                    });
+                }
+
+                // 计算转移概率
+                Object.keys(transitionMatrix).forEach(from => {
+                    const total = Object.values(transitionMatrix[from]).reduce((sum, count) => sum + count, 0);
+                    if (total > 0) {
+                        Object.keys(transitionMatrix[from]).forEach(to => {
+                            transitionMatrix[from][to] /= total;
+                        });
+                    }
+                });
+
+                return transitionMatrix;
+            }
+
+            // 使用Z-Score标准化检测异常值和热/冷数字
+            analyzeNumberFrequency(history) {
+                const frequencyCount = {};
+
+                // 初始化所有可能的数字
+                for (let i = 0; i < 100; i++) {
+                    frequencyCount[i.toString().padStart(2, '0')] = 0;
+                }
+
+                // 计算频率
+                history.forEach(record => {
+                    Object.values(record.numbers).flat().forEach(num => {
+                        frequencyCount[num] = (frequencyCount[num] || 0) + 1;
+                    });
+                });
+
+                // 计算平均值和标准差
+                const frequencies = Object.values(frequencyCount);
+                const mean = frequencies.reduce((sum, freq) => sum + freq, 0) / frequencies.length;
+                const variance = frequencies.reduce((sum, freq) => sum + Math.pow(freq - mean, 2), 0) / frequencies.length;
+                const stdDev = Math.sqrt(variance);
+
+                // 计算每个数字的Z-Score
+                const zScores = {};
+                Object.keys(frequencyCount).forEach(num => {
+                    zScores[num] = stdDev > 0 ? (frequencyCount[num] - mean) / stdDev : 0;
+                });
+
+                // 根据Z-Score分类
+                const result = {
+                    hot: [],
+                    cold: [],
+                    average: []
+                };
+
+                Object.keys(zScores).forEach(num => {
+                    if (zScores[num] > 1.0) {
+                        result.hot.push(num);
+                    } else if (zScores[num] < -1.0) {
+                        result.cold.push(num);
+                    } else {
+                        result.average.push(num);
+                    }
+                });
+
+                // 按Z-Score排序
+                result.hot.sort((a, b) => zScores[b] - zScores[a]);
+                result.cold.sort((a, b) => zScores[a] - zScores[b]);
+
+                return result;
+            }
+
+            // 分析数字对（用于生成连对）
+            analyzeNumberPairs(history) {
+                const pairFrequency = {};
+
+                // 初始化所有可能的数字对
+                for (let i = 0; i < 100; i++) {
+                    for (let j = i + 1; j < 100; j++) {
+                        const pair = `${i.toString().padStart(2, '0')}-${j.toString().padStart(2, '0')}`;
+                        pairFrequency[pair] = 0;
+                    }
+                }
+
+                // 计算历史记录中每对数字的共现频率
+                history.forEach(record => {
+                    const numbers = Object.values(record.numbers).flat();
+
+                    // 检查每对数字
+                    for (let i = 0; i < numbers.length; i++) {
+                        for (let j = i + 1; j < numbers.length; j++) {
+                            // 确保数字对是按顺序排列的
+                            const [a, b] = [numbers[i], numbers[j]].sort((a, b) => parseInt(a) - parseInt(b));
+                            const pair = `${a}-${b}`;
+
+                            if (pairFrequency[pair] !== undefined) {
+                                pairFrequency[pair]++;
+                            }
+                        }
+                    }
+                });
+
+                // 将数字对按频率排序
+                const sortedPairs = Object.entries(pairFrequency)
+                    .filter(([_, freq]) => freq > 0)  // 只考虑至少出现过一次的对
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([pair, freq]) => ({
+                        pair,
+                        frequency: freq,
+                        probability: history.length > 0 ? freq / history.length : 0
+                    }));
+
+                return sortedPairs;
+            }
+
+            // 生成数字
+            generateNumbers(type, count) {
+                const history = this.getHistory();
+                const numberFrequency = this.analyzeNumberFrequency(history);
+                const markovMatrix = this.analyzeMarkovPatterns(history);
+
+                // 根据不同类型使用不同策略
+                switch (type) {
+                    case 'ghep4D':
+                    case 'ghep3D':
+                        return this.generateDigits(count, numberFrequency);
+
+                    case 'xien-pairs':
+                        return this.generateXienPairs(history);
+
+                    case 'mega645':
+                        return this.generateLottoNumbers(45, count);
+
+                    case 'power655':
+                        return this.generateLottoNumbers(55, count);
+
+                    default:
+                        return this.generate2DNumbers(count, numberFrequency, markovMatrix);
+                }
+            }
+
+            // 生成单个数字（用于3D和4D）
+            generateDigits(count, numberFrequency) {
+                const digits = new Set();
+
+                // 使用热门数字作为基础
+                const hotDigits = numberFrequency.hot.map(num => parseInt(num) % 10);
+
+                // 使用Fibonacci序列作为权重
+                const weights = this.fibonacciSequence.slice(0, 10).reverse();
+
+                while (digits.size < count) {
+                    if (Math.random() < 0.65 && hotDigits.length > 0) {
+                        // 65%概率使用热门数字的个位数
+                        const weightedIndex = this.getWeightedRandomIndex(weights.slice(0, hotDigits.length));
+                        const digit = hotDigits[weightedIndex];
+                        digits.add(digit.toString());
+                    } else {
+                        // 35%概率随机生成数字
+                        const digit = Math.floor(Math.random() * 10);
+                        digits.add(digit.toString());
+                    }
+                }
+
+                return Array.from(digits).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 生成Xien连对（使用优化的算法）
+            generateXienPairs(history) {
+                const pairsAnalysis = this.analyzeNumberPairs(history);
+                const numberFrequency = this.analyzeNumberFrequency(history);
+
+                // 选择前20个最频繁的对作为候选
+                const candidatePairs = pairsAnalysis.slice(0, 20);
+
+                // 如果历史数据不足，则混合一些基于热门数字的新对
+                if (candidatePairs.length < 10) {
+                    const hotNumbers = numberFrequency.hot.slice(0, 10);
+
+                    for (let i = 0; i < hotNumbers.length && candidatePairs.length < 20; i++) {
+                        for (let j = i + 1; j < hotNumbers.length && candidatePairs.length < 20; j++) {
+                            const pair = `${hotNumbers[i]}-${hotNumbers[j]}`;
+                            if (!candidatePairs.some(p => p.pair === pair)) {
+                                candidatePairs.push({
+                                    pair,
+                                    frequency: 1,
+                                    probability: 0.1 // 假设概率
+                                });
+                            }
+                        }
+                    }
+                }
+
+                // 使用加权随机选择5个连对
+                const selectedPairs = [];
+                const weights = candidatePairs.map(p => p.frequency);
+
+                // 确保不重复选择
+                const selectedIndices = new Set();
+                while (selectedPairs.length < 5 && selectedIndices.size < candidatePairs.length) {
+                    const availableWeights = weights.filter((_, i) => !selectedIndices.has(i));
+                    const availableCandidates = candidatePairs.filter((_, i) => !selectedIndices.has(i));
+
+                    if (availableCandidates.length === 0) break;
+
+                    const index = this.getWeightedRandomIndex(availableWeights);
+                    selectedIndices.add(index);
+
+                    // 计算这个对的改进概率（融合贝叶斯因子）
+                    const pairInfo = candidatePairs[index];
+                    const [num1, num2] = pairInfo.pair.split('-');
+
+                    // 使用贝叶斯计算每个数字的概率
+                    const prob1 = this.calculateBayesianProbability(parseInt(num1), history);
+                    const prob2 = this.calculateBayesianProbability(parseInt(num2), history);
+
+                    // 计算联合概率，添加一些随机性
+                    const jointProb = Math.min(0.99, (prob1 * prob2 * 100) * (1 + (Math.random() * 0.2 - 0.1)));
+
+                    selectedPairs.push({
+                        pair: pairInfo.pair,
+                        probability: (jointProb * 100).toFixed(1)
+                    });
+                }
+
+                // 如果不够5对，随机生成剩余的
+                while (selectedPairs.length < 5) {
+                    const num1 = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    let num2;
+                    do {
+                        num2 = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } while (num1 === num2);
+
+                    const [a, b] = [num1, num2].sort((a, b) => parseInt(a) - parseInt(b));
+                    const pair = `${a}-${b}`;
+
+                    // 确保不重复
+                    if (!selectedPairs.some(p => p.pair === pair)) {
+                        selectedPairs.push({
+                            pair,
+                            probability: (Math.random() * 15 + 5).toFixed(1) // 随机概率5%-20%
+                        });
+                    }
+                }
+
+                return selectedPairs;
+            }
+
+            // 生成2D号码（使用多种策略的组合）
+            generate2DNumbers(count, numberFrequency, markovMatrix) {
+                const numbers = new Set();
+
+                // 使用热门数字、冷门数字和一般数字的混合策略
+                const hotNumbers = numberFrequency.hot;
+                const coldNumbers = numberFrequency.cold;
+                const averageNumbers = numberFrequency.average;
+
+                // 最后一期的数字（如果有）
+                const lastDrawNumbers = this.getHistory().length > 0
+                    ? Object.values(this.getHistory()[this.getHistory().length - 1].numbers).flat()
+                    : [];
+
+                // 使用Fibonacci序列作为权重分配
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    if (r < 0.45 && hotNumbers.length > 0) {
+                        // 45%概率选择热门数字
+                        const index = Math.floor(Math.random() * hotNumbers.length);
+                        num = hotNumbers[index];
+                    } else if (r < 0.60 && coldNumbers.length > 0) {
+                        // 15%概率选择冷门数字（可能出现反弹）
+                        const index = Math.floor(Math.random() * coldNumbers.length);
+                        num = coldNumbers[index];
+                    } else if (r < 0.80 && averageNumbers.length > 0) {
+                        // 20%概率选择普通数字
+                        const index = Math.floor(Math.random() * averageNumbers.length);
+                        num = averageNumbers[index];
+                    } else if (r < 0.90 && lastDrawNumbers.length > 0) {
+                        // 10%概率使用马尔可夫链预测
+                        const baseNumber = lastDrawNumbers[Math.floor(Math.random() * lastDrawNumbers.length)];
+
+                        if (markovMatrix[baseNumber]) {
+                            // 将转移概率转换为权重
+                            const nextStates = Object.keys(markovMatrix[baseNumber]);
+                            const weights = nextStates.map(state => markovMatrix[baseNumber][state]);
+
+                            // 使用加权随机选择
+                            const selectedIndex = this.getWeightedRandomIndex(weights);
+                            num = nextStates[selectedIndex];
+                        } else {
+                            // 如果没有马尔可夫数据，随机生成
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
+                    } else {
+                        // 10%完全随机
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    numbers.add(num);
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 生成Lotto类型号码（Mega645/Power655）
+            generateLottoNumbers(maxNumber, count) {
+                const numbers = new Set();
+                const history = this.getHistory();
+
+                // 查找历史记录中的高频数字
+                const lottoFrequency = {};
+                for (let i = 1; i <= maxNumber; i++) {
+                    lottoFrequency[i] = 0;
+                }
+
+                history.forEach(record => {
+                    const lottoKey = maxNumber === 45 ? 'mega645' : 'power655';
+                    if (record.numbers[lottoKey]) {
+                        record.numbers[lottoKey].forEach(num => {
+                            const number = parseInt(num);
+                            if (!isNaN(number) && number >= 1 && number <= maxNumber) {
+                                lottoFrequency[number]++;
+                            }
+                        });
+                    }
+                });
+
+                // 将数字按频率排序
+                const sortedNumbers = Object.entries(lottoFrequency)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(entry => parseInt(entry[0]));
+
+                // 使用混合策略生成号码
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    if (r < 0.4 && sortedNumbers.length > 0) {
+                        // 40%概率使用历史高频数字
+                        num = sortedNumbers[Math.floor(Math.random() * Math.min(10, sortedNumbers.length))];
+                    } else if (r < 0.6) {
+                        // 20%概率使用黄金分割点附近的数字
+                        const goldenRatio = 0.618033988749895;
+                        num = Math.floor(goldenRatio * maxNumber) + 1;
+
+                        // 添加一些随机性
+                        const deviation = Math.floor(Math.random() * 11) - 5; // -5到5的偏差
+                        num = Math.max(1, Math.min(maxNumber, num + deviation));
+                    } else if (r < 0.75) {
+                        // 15%概率使用梅森素数附近的数字
+                        const mersenne = this.mersenneNumbers[Math.floor(Math.random() * this.mersenneNumbers.length)];
+                        if (mersenne <= maxNumber) {
+                            num = mersenne;
+                        } else {
+                            // 如果梅森数太大，使用其余数
+                            num = mersenne % maxNumber + 1;
+                        }
+                    } else {
+                        // 25%概率完全随机
+                        num = Math.floor(Math.random() * maxNumber) + 1;
+                    }
+
+                    numbers.add(num.toString().padStart(2, '0'));
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 基于权重数组获取随机索引
+            getWeightedRandomIndex(weights) {
+                const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+                let random = Math.random() * totalWeight;
+
+                for (let i = 0; i < weights.length; i++) {
+                    random -= weights[i];
+                    if (random <= 0) {
+                        return i;
+                    }
+                }
+
+                // 默认返回最后一个索引
+                return weights.length - 1;
+            }
+        }
+
+        // 初始化高级彩票管理器
+        const lotteryManager = new AdvancedLotteryManager();
+
+        // 添加明暗主题切换功能
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                document.getElementById('themeToggle').innerHTML = '<span>🌙</span>';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<span>☀️</span>';
+            }
+        });
+
+        // 更新省份下拉列表
+        function updateProvinceDropdown(region) {
+            const provinceSelect = document.getElementById('province');
+            provinceSelect.innerHTML = '';
+
+            provinces[region].forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+
+        // 更新显示结果函数
+        function displayResults(region, province) {
+            const resultDiv = document.getElementById('result');
+
+            // 生成不同类型的号码集
+            const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
+            const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
+            const dan2D = lotteryManager.generateNumbers('normal', 64);
+            const xienPairs = lotteryManager.generateNumbers('xien-pairs');
+            const mega645 = lotteryManager.generateNumbers('mega645', 6);
+            const power655 = lotteryManager.generateNumbers('power655', 6);
+
+            const numbers = {
+                ghep4D,
+                ghep3D,
+                dan2D,
+                xienPairs,
+                mega645,
+                power655
+            };
+
+            // 保存结果
+            lotteryManager.saveResult(region, province, numbers);
+
+            // 显示结果
+            resultDiv.innerHTML = `
+                <div class="card result-section">
+                    <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Kết quả Xổ Số: ${province}</h2>
+                    
+                    <div class="number-set">
+                        <h3>Ghép 4D:</h3>
+                        <p class="number-result">${ghep4D.join(', ')}</p>
+                        <button class="copy-btn" onclick="copyText('${ghep4D.join(', ')}')">Copy</button>
+                    </div>
+
+                    <div class="number-set">
+                        <h3>Ghép 3D:</h3>
+                        <p class="number-result">${ghep3D.join(', ')}</p>
+                        <button class="copy-btn" onclick="copyText('${ghep3D.join(', ')}')">Copy</button>
+                    </div>
+
+                    <div class="number-set">
+                        <h3>Dàn 2D - 64 Số:</h3>
+                        <div class="number-grid">
+                            ${dan2D.map(num => `
+                                <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${dan2D.join(', ')}')">Copy</button>
+                    </div>
+                    
+                    <div class="number-set">
+                        <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
+                        <div class="xien-container">
+                            ${xienPairs.map(pair => `
+                                <div class="xien-pair">
+                                    <div class="xien-numbers">${pair.pair.replace('-', ' - ')}</div>
+                                    <div class="xien-probability">${pair.probability}%</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${xienPairs.map(p => p.pair).join(', ')}')">Copy</button>
+                    </div>
+
+                    <div class="number-set">
+                        <h3>Mega 6/45:</h3>
+                        <div class="number-grid">
+                            ${mega645.map(num => `
+                                <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${mega645.join(', ')}')">Copy</button>
+                    </div>
+
+                    <div class="number-set">
+                        <h3>Power 6/55:</h3>
+                        <div class="number-grid">
+                            ${power655.map(num => `
+                                <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                            `).join('')}
+                        </div>
+                        <button class="copy-btn" onclick="copyText('${power655.join(', ')}')">Copy</button>
+                    </div>
                 </div>
-                <button class="copy-btn" onclick="copyText('${dan2D.join(',')}')">Copy</button>
-            </div>
+            `;
+        }
 
-            <div class="number-set">
-                <h3>Mega 6/45:</h3>
-                <div class="number-grid">
-                    ${mega645.map(num => `
-                        <div class="number-cell">${num}</div>
-                    `).join('')}
-                </div>
-                <button class="copy-btn" onclick="copyText('${mega645.join(',')}')">Copy</button>
-            </div>
+        // 复制文本处理
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Đã sao chép!');
+            }).catch(err => {
+                showNotification('Không thể sao chép: ' + err);
+            });
+        }
 
-            <div class="number-set">
-                <h3>Power 6/55:</h3>
-                <div class="number-grid">
-                    ${power655.map(num => `
-                        <div class="number-cell">${num}</div>
-                    `).join('')}
-                </div>
-                <button class="copy-btn" onclick="copyText('${power655.join(',')}')">Copy</button>
-            </div>
-        </div>
-    `;
-}
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
 
-// Xử lý sự kiện copy
-function copyText(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showNotification('Đã sao chép!');
-    }).catch(err => {
-        showNotification('Không thể sao chép: ' + err);
-    });
-}
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
 
-// Hiển thị thông báo
-function showNotification(message) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.style.display = 'block';
-    
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 2000);
-}
+        // 事件监听
+        document.getElementById('region').addEventListener('change', (e) => {
+            updateProvinceDropdown(e.target.value);
+            document.getElementById('blockedMessage').style.display = 'none';
+        });
 
-// Khởi tạo sự kiện
-document.getElementById('region').addEventListener('change', (e) => {
-    updateProvinceDropdown(e.target.value);
-});
+        document.getElementById('startSimulation').addEventListener('click', () => {
+            const region = document.getElementById('region').value;
+            const province = document.getElementById('province').value;
 
-document.getElementById('startSimulation').addEventListener('click', () => {
-    const region = document.getElementById('region').value;
-    const province = document.getElementById('province').value;
-    
-    document.querySelector('.loading').style.display = 'block';
-    document.getElementById('result').innerHTML = '';
+            // 检查今天是否已经为该省份生成过
+            if (lotteryManager.canGenerateToday(province)) {
+                document.getElementById('blockedMessage').style.display = 'none';
+                document.querySelector('.loading').style.display = 'block';
+                document.getElementById('result').innerHTML = '';
 
-    setTimeout(() => {
-        displayResults(region, province);
-        document.querySelector('.loading').style.display = 'none';
-    }, 1500);
-});
+                setTimeout(() => {
+                    displayResults(region, province);
+                    document.querySelector('.loading').style.display = 'none';
+                }, 2000);
+            } else {
+                // 如果今天已经生成过，显示提示信息
+                document.getElementById('blockedMessage').style.display = 'block';
+            }
+        });
 
-document.getElementById('refreshButton').addEventListener('click', () => {
-    location.reload();
-});
+        document.getElementById('refreshButton').addEventListener('click', () => {
+            location.reload();
+        });
 
-document.getElementById('resetSpin').addEventListener('click', () => {
-    lotteryManager.clearHistory();
-    showNotification('Đã reset toàn bộ dữ liệu!');
-});
+        document.getElementById('resetSpin').addEventListener('click', () => {
+            lotteryManager.clearHistory();
+            showNotification('Đã reset toàn bộ dữ liệu!');
+            document.getElementById('blockedMessage').style.display = 'none';
+        });
 
-// Khởi tạo ban đầu
-updateProvinceDropdown(document.getElementById('region').value);
-</script>
+        // 初始化
+        updateProvinceDropdown(document.getElementById('region').value);
+
+        // 检查是否是深色模式偏好
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeToggle').innerHTML = '<span>☀️</span>';
+        }
+    </script>
 </body>
+
 </html>
