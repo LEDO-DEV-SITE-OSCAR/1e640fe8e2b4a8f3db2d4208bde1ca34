@@ -1857,6 +1857,141 @@
             document.body.setAttribute('data-theme', 'dark');
             document.getElementById('themeToggle').innerHTML = '<span>☀️</span>';
         }
+
+
+    (function() {
+    let isProtected = true;
+    let debugAttempts = 0;
+    const MAX_ATTEMPTS = 3;
+
+    // 🚫 Chặn chuột phải
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        silentBlock();
+    });
+
+    // ✅ Đảm bảo chuột trái (button === 0) hoàn toàn tự do
+    document.addEventListener('mousedown', function(e) {
+        if (e.button === 0) { // Chuột trái
+            return true; // Không chặn gì cả
+        }
+    });
+
+    // 🚫 Chặn phím tắt DevTools
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || 
+            (e.ctrlKey && ['U', 'S', 'P', 'K'].includes(e.key.toUpperCase()))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDebugAttempt();
+        }
+    });
+
+    // 🚫 Chặn copy/paste
+    // document.addEventListener('copy', function(e) {
+    //     e.preventDefault();
+    //     silentBlock();
+    // });
+
+    document.addEventListener('paste', function(e) {
+        e.preventDefault();
+        silentBlock();
+    });
+
+    // 📏 Phát hiện DevTools qua resize
+    function detectDevToolsResize() {
+        const threshold = 300;
+        if (!navigator.userAgent.includes('Mobi')) {
+            if (
+                window.outerWidth - window.innerWidth > threshold || 
+                window.outerHeight - window.innerHeight > threshold
+            ) {
+                handleDebugAttempt();
+            }
+        }
+    }
+
+    // 🔥 Chống debug bằng debugger
+    setInterval(function() {
+        debugger;
+    }, 100);
+
+    // 🚨 Hàm tăng debugAttempts và kiểm tra giới hạn
+    function silentBlock() {
+        debugAttempts++;
+        if (debugAttempts >= MAX_ATTEMPTS) {
+            crashTab();
+        }
+    }
+
+    // 🛡️ Xử lý khi phát hiện debug
+    function handleDebugAttempt() {
+        if (isProtected) {
+            console.clear();
+            silentBlock();
+        }
+    }
+
+    // 💥 Crash tab
+    function crashTab() {
+        isProtected = false;
+        let count = 0;
+        const interval = setInterval(function() {
+            count++;
+            if (count > 100) {
+                clearInterval(interval);
+                window.location.href = 'about:blank';
+            }
+            let waste = '';
+            for (let i = 0; i < 100000; i++) {
+                waste += i.toString() + 'x'.repeat(100);
+            }
+        }, 5);
+
+        setTimeout(function() {
+            window.location.href = 'about:blank';
+        }, 200);
+    }
+
+    // 🪟 Khởi tạo listeners
+    window.addEventListener('resize', detectDevToolsResize);
+
+    // ✅ Cho phép select text bằng chuột trái
+    document.addEventListener('selectstart', function(e) {
+        if (e.button === 2) { // Chỉ chặn nếu là chuột phải
+            e.preventDefault();
+            silentBlock();
+        }
+    });
+
+    // ✅ Cho phép drag bằng chuột trái
+    document.addEventListener('dragstart', function(e) {
+        if (e.button === 2) { // Chỉ chặn nếu là chuột phải
+            e.preventDefault();
+            silentBlock();
+        }
+    });
+
+    // 🚫 Vô hiệu hóa Print Screen
+    window.addEventListener('keyup', function(e) {
+        if (e.key === 'PrintScreen') {
+            navigator.clipboard.writeText('');
+            silentBlock();
+        }
+    });
+
+    // 🚀 Watermark ẩn
+    const encodedWatermark = btoa('Copyright ' + new Date().getFullYear() + ' LE VAN DO');
+    const watermark = document.createElement('div');
+    watermark.style.cssText = 'display:none!important';
+    watermark.setAttribute('data-protected', encodedWatermark);
+    document.body.appendChild(watermark);
+
+})();
+        
     </script>
 </body>
 
