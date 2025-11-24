@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy Đổi Số - Lấy Từ Chủ Nhật Mỗi Tuần</title>
+    <link rel="icon" href="lottery.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6C5CE7;
+            --primary-hover: #5A49D6;
+            --secondary-color: #00B894;
+            --secondary-hover: #00A885;
+            --accent-color: #FFA502;
+            --accent-hover: #FF9801;
+            --bg-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-light: #636e72;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: var(--card-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 360px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin-bottom: 25px;
+            color: var(--text-light);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: var(--transition);
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .main-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .home-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: var(--secondary-hover);
+            transform: translateY(-2px);
+        }
+
+        .new-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .new-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 25px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            color: var(--text-color);
+            background-color: rgba(108, 92, 231, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .button-group {
+            margin-top: 15px;
+        }
+
+        .divider {
+            margin: 20px 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Quy Đổi Số</h1>
+        <h2>Lấy cầu lô ở chủ nhật đánh cho thứ 3 và thứ 6 bao win</h2>
+
+        <div class="input-group">
+            <label for="ttgSodacbiet">Trung Tâm Giải Số Đặc Biệt (0-9):</label>
+            <input type="number" id="ttgSodacbiet" min="0" max="9" placeholder="Nhập số từ 0-9">
+        </div>
+
+        <div class="input-group">
+            <label for="ttSogiaihat">Trung Tâm Số Giải Nhất (0-9):</label>
+            <input type="number" id="ttSogiaihat" min="0" max="9" placeholder="Nhập số từ 0-9">
+        </div>
+
+        <button class="main-btn" onclick="getConversion()">Lấy Số</button>
+
+        <div class="result" id="result">Kết quả sẽ hiển thị ở đây</div>
+
+        <button class="home-btn" onclick="goHome()">Trang Chủ</button>
+
+        <div class="divider"></div>
+
+        <div class="button-group">
+            <button class="new-btn"
+                onclick="goToUrl('https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34/C%E1%BA%A7u%20%C4%90%E1%BB%81%202%20Ch%E1%BA%A1m%20Nu%C3%B4i%20Tu%E1%BA%A7n%20-%20Ch%E1%BB%A7%20Nh%E1%BA%ADt.png')">Cầu
+                Đề 2 Chạm Nuôi Tuần - Chủ Nhật</button>
+
+            <button class="new-btn"
+                onclick="goToUrl('https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34/C%E1%BA%A6U%20%C4%90%E1%BB%98C%20TH%E1%BB%A6%20-%20%C4%90%E1%BA%A7u%20L%C3%B4%20-%20D%C3%A0n%20%C4%90%E1%BB%81%201%20Ch%E1%BA%A1m.png')">Độc
+                Thủ Đề 1 Chạm - Đầu Lô</button>
+        </div>
+    </div>
+
+    <script>
+        function getConversion() {
+            // Lấy giá trị từ các ô nhập liệu và chuyển sang kiểu số
+            var sodacbiet = parseInt(document.getElementById("ttgSodacbiet").value);
+            var sogiaihat = parseInt(document.getElementById("ttSogiaihat").value);
+
+            // Kiểm tra giá trị hợp lệ (chỉ từ 0-9)
+            if (isNaN(sodacbiet) || isNaN(sogiaihat) || sodacbiet < 0 || sodacbiet > 9 || sogiaihat < 0 || sogiaihat > 9) {
+                document.getElementById("result").innerHTML = "Vui lòng nhập số trong khoảng từ 0 đến 9!";
+                return;
+            }
+
+            // Mảng quy đổi Bóng âm
+            const bongAm = {
+                1: 4,
+                2: 9,
+                3: 6,
+                5: 8,
+                0: 7
+            };
+
+            // Mảng quy đổi Bóng dương
+            const bongDuong = {
+                1: 6,
+                2: 7,
+                3: 8,
+                4: 9,
+                5: 0
+            };
+
+            // Tìm "lộn ngược" của số trong Bóng âm
+            var resultAm = getReverseMatch(sodacbiet, bongAm);
+            var resultDuong = getReverseMatch(sogiaihat, bongDuong);
+
+            // Hiển thị kết quả
+            document.getElementById("result").innerHTML =
+                `Chạm 1 của số ${sodacbiet} là: ${resultAm}<br>
+                Chạm 2 của số ${sogiaihat} là: ${resultDuong}`;
+        }
+
+        // Hàm tìm giá trị ngược lại từ bảng quy đổi
+        function getReverseMatch(input, lookup) {
+            // Nếu giá trị có trong bảng, trả kết quả bình thường
+            if (lookup[input] !== undefined) {
+                return lookup[input];
+            }
+            // Nếu không có, tìm ngược lại (lộn số theo quy tắc)
+            for (let key in lookup) {
+                if (lookup[key] === input) {
+                    return key; // Trả về số ngược lại
+                }
+            }
+            return "Không có quy đổi"; // Trường hợp không tìm thấy
+        }
+
+        // Hàm chuyển hướng về trang chủ
+        function goHome() {
+            window.location.href = "https://ledo-dev-site-oscar.github.io/1e640fe8e2b4a8f3db2d4208bde1ca34";
+        }
+
+        // Hàm chuyển hướng đến URL
+        function goToUrl(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Xổ Số - Phiên Bản Cao Cấp</title>
+    <link rel="icon" href="lottery.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #4361ee, #3a0ca3, #7209b7);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4cc9f0;
+            --secondary-color: #4895ef;
+            --accent-color: #560bad;
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', 'Roboto', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            background-size: 300% 300%;
+            background-image: var(--gradient);
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            padding: 5px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle span {
+            margin-left: 5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
+        }
+
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        .select-group label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--background);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        select:hover {
+            border-color: var(--primary-color);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            background-size: 200% auto;
+            animation: gradientShift 5s infinite;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background: #e63946;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .result-section {
+            transition: all 0.3s ease;
+        }
+
+        .number-set {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .number-set:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .number-set h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .number-set h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .number-cell {
+            background: var(--background);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .hot-number {
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+
+        .cold-number {
+            background: linear-gradient(45deg, #4cc9f0, #4895ef);
+            color: white;
+        }
+
+        .pattern-number {
+            background: linear-gradient(45deg, #7209b7, #560bad);
+            color: white;
+        }
+
+        .number-result {
+            font-size: 1.2em;
+            background: var(--background);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .copy-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gradient);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 10px;
+            color: var(--text-secondary);
+        }
+
+        /* Xiên Pair Section */
+        .xien-pair {
+            display: flex;
+            justify-content: space-between;
+            background: var(--background);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .xien-pair:hover {
+            transform: translateX(5px);
+            box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .xien-numbers {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .xien-probability {
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .xien-container {
+            margin-top: 15px;
+        }
+
+        .blocked-message {
+            color: #e63946;
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #e63946;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+
+        /* 每周最佳投注建议样式 */
+        .weekly-tips {
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+
+        .weekly-tips h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .weekly-tips h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        .weekly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .day-card {
+            background: var(--background);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-name {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.1em;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .region-tip {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .region-name {
+            font-weight: 500;
+        }
+
+        .win-rate {
+            color: white;
+            background: var(--accent-color);
+            border-radius: 15px;
+            padding: 2px 10px;
+            font-size: 0.9em;
+        }
+
+        .high-rate {
+            background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+        }
+
+        .medium-rate {
+            background: linear-gradient(45deg, #ffd166, #ef476f);
+        }
+
+        .low-rate {
+            background: linear-gradient(45deg, #ef476f, #073b4c);
+        }
+
+        .optimal-day {
+            border: 2px solid #06d6a0;
+            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+
+            .weekly-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="container">
+        <div class="header">
+            <h1>AI Xổ Số Miền Bắc Trung Nam</h1>
+            <div class="theme-toggle" id="themeToggle">
+                <span>🌙</span>
+            </div>
+        </div>
+
+        <div class="card input-section">
+            <div class="weekly-tips">
+                <h3>Tỉ lệ thắng theo ngày trong tuần:</h3>
+                <div class="weekly-grid" id="weeklyTips">
+                    <!-- 这里将由JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="select-group">
+                <label for="region">Chọn miền:</label>
+                <select id="region">
+                    <option value="mien-bac">Xổ Số Miền Bắc</option>
+                    <option value="mien-trung">Xổ Số Miền Trung</option>
+                    <option value="mien-nam">Xổ Số Miền Nam</option>
+                    <option value="live-bet">LIVE BET</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label for="province">Chọn đài xổ số:</label>
+                <select id="province"></select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="startSimulation">Phân Tích & Dự Đoán</button>
+                <button class="btn btn-secondary" id="refreshButton">Làm Mới</button>
+                <button class="btn btn-danger" id="resetSpin">Reset Dữ Liệu</button>
+            </div>
+
+            <div class="blocked-message" id="blockedMessage">
+                Đài này đã được quay trong ngày hôm nay. Vui lòng thử lại vào ngày mai hoặc chọn đài khác.
+            </div>
+        </div>
+
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Đang phân tích dữ liệu và tính toán xác suất...</div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // 定义各个区域的省份
+        const provinces = {
+            "mien-bac": [
+                "Hà Nội", "Quảng Ninh", "Bắc Ninh", "Hải Phòng",
+                "Nam Định", "Thái Bình", "Hà Nam", "Ninh Bình"
+            ],
+            "mien-trung": [
+                "Đà Nẵng", "Quảng Nam", "Quảng Ngãi", "Bình Định",
+                "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
+                "Kon Tum", "Gia Lai", "Đắk Lắk", "Đắk Nông",
+                "Quảng Bình", "Quảng Trị", "Thừa Thiên Huế"
+            ],
+            "mien-nam": [
+                "TP.HCM", "Long An", "Bến Tre", "Vũng Tàu",
+                "Bạc Liêu", "Đồng Tháp", "Cần Thơ", "Sóc Trăng",
+                "Tây Ninh", "An Giang", "Bình Thuận", "Vĩnh Long",
+                "Bình Dương", "Trà Vinh", "Đồng Nai", "Cà Mau",
+                "Kiên Giang", "Tiền Giang"
+            ],
+            "live-bet": ["LIVE BET - A", "LIVE BET - B"]
+        };
+
+        // 每周各天的最佳投注建议
+        const weeklyTips = {
+            monday: [
+                { region: "Miền Bắc", provinces: ["Hà Nội", "Quảng Ninh"], rate: "65%" },
+                { region: "Miền Trung", provinces: ["Phú Yên", "Thừa Thiên Huế"], rate: "58%" },
+                { region: "Miền Nam", provinces: ["TP.HCM"], rate: "52%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - A"], rate: "70%" }
+            ],
+            tuesday: [
+                { region: "Miền Bắc", provinces: ["Quảng Ninh", "Nam Định"], rate: "63%" },
+                { region: "Miền Trung", provinces: ["Đắk Lắk", "Quảng Nam"], rate: "75%" },
+                { region: "Miền Nam", provinces: ["Vũng Tàu", "Bến Tre"], rate: "68%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - B"], rate: "76%" }
+            ],
+            wednesday: [
+                { region: "Miền Bắc", provinces: ["Bắc Ninh", "Hải Phòng"], rate: "69%" },
+                { region: "Miền Trung", provinces: ["Đà Nẵng", "Khánh Hòa"], rate: "67%" },
+                { region: "Miền Nam", provinces: ["Đồng Nai", "Cần Thơ"], rate: "71%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - A"], rate: "75%" }
+            ],
+            thursday: [
+                { region: "Miền Bắc", provinces: ["Nam Định"], rate: "72%" },
+                { region: "Miền Trung", provinces: ["Quảng Bình", "Bình Định"], rate: "79%" },
+                { region: "Miền Nam", provinces: ["An Giang", "Bình Thuận"], rate: "70%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - A", "LIVE BET - B"], rate: "82%" }
+            ],
+            friday: [
+                { region: "Miền Bắc", provinces: ["Hải Phòng"], rate: "60%" },
+                { region: "Miền Trung", provinces: ["Gia Lai", "Ninh Thuận"], rate: "65%" },
+                { region: "Miền Nam", provinces: ["Vĩnh Long", "Bình Dương"], rate: "59%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - B"], rate: "71%" }
+            ],
+            saturday: [
+                { region: "Miền Bắc", provinces: ["Thái Bình", "Hà Nam"], rate: "75%" },
+                { region: "Miền Trung", provinces: ["Đắk Nông", "Quảng Ngãi"], rate: "73%" },
+                { region: "Miền Nam", provinces: ["TP.HCM", "Long An", "Hậu Giang"], rate: "69%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - A"], rate: "74%" }
+            ],
+            sunday: [
+                { region: "Miền Bắc", provinces: ["Hà Nội", "Ninh Bình"], rate: "77%" },
+                { region: "Miền Trung", provinces: ["Khánh Hòa", "Quảng Trị"], rate: "76%" },
+                { region: "Miền Nam", provinces: ["Tiền Giang", "Kiên Giang", "Đà Lạt"], rate: "81%" },
+                { region: "LIVE BET", provinces: ["LIVE BET - A", "LIVE BET - B"], rate: "80%" }
+            ]
+        };
+
+        // 高级彩票管理和预测系统
+        class AdvancedLotteryManager {
+            constructor() {
+                this.storage = localStorage;
+                this.historyKey = 'lottery_history';
+                this.dailyLimitsKey = 'daily_limits';
+
+                // 斐波那契序列用于模式识别
+                this.fibonacciSequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+
+                // 梅森素数用于Prime Pattern算法
+                this.mersenneNumbers = [3, 7, 31, 127];
+
+                // 贝叶斯系数用于概率计算
+                this.bayesianFactor = 0.73;
+
+                // 马尔可夫链参数
+                this.markovDepth = 3;
+
+                // 初始化日期检查
+                this.initializeDailyLimits();
+            }
+
+            // 初始化或重置每日限制
+            initializeDailyLimits() {
+                const today = new Date().toLocaleDateString();
+                let limits = this.getDailyLimits();
+
+                // 检查是否是新的一天，如果是则重置限制
+                if (!limits.date || limits.date !== today) {
+                    limits = {
+                        date: today,
+                        provinces: {}
+                    };
+                    this.storage.setItem(this.dailyLimitsKey, JSON.stringify(limits));
+                }
+            }
+
+            // 获取每日限制记录
+            getDailyLimits() {
+                const limits = this.storage.getItem(this.dailyLimitsKey);
+                return limits ? JSON.parse(limits) : { date: null, provinces: {} };
+            }
+
+            // 检查今天是否已经为指定省份生成过号码
+            canGenerateToday(province) {
+                // 对于LIVE BET,总是允许生成
+                if (province.includes("LIVE BET")) {
+                    return true;
+                }
+                const limits = this.getDailyLimits();
+                return !limits.provinces[province];
+            }
+
+            // 记录今天已经为该省份生成过号码
+            recordGeneration(province) {
+                const limits = this.getDailyLimits();
+                limits.provinces[province] = true;
+                this.storage.setItem(this.dailyLimitsKey, JSON.stringify(limits));
+            }
+
+            // 保存结果到历史记录
+            saveResult(region, province, numbers) {
+                let history = this.getHistory();
+                history.push({
+                    region,
+                    province,
+                    numbers,
+                    timestamp: new Date().toISOString()
+                });
+
+                // 限制历史记录大小，保留最近的200条记录
+                if (history.length > 200) history.shift();
+                this.storage.setItem(this.historyKey, JSON.stringify(history));
+
+                // 记录今天已经为该省份生成过
+                this.recordGeneration(province);
+            }
+
+            // 获取历史记录
+            getHistory() {
+                const history = this.storage.getItem(this.historyKey);
+                return history ? JSON.parse(history) : [];
+            }
+
+            // 清除所有历史记录
+            clearHistory() {
+                this.storage.removeItem(this.historyKey);
+                this.storage.removeItem(this.dailyLimitsKey);
+            }
+
+            // 贝叶斯概率计算
+            calculateBayesianProbability(num, history) {
+                const priorProb = 1 / 100; // 先验概率，每个数字的基础概率相同
+
+                // 计算条件概率 P(Evidence|Number)
+                let occurrences = 0;
+                let totalRecords = 0;
+
+                history.forEach(record => {
+                    totalRecords++;
+                    Object.values(record.numbers).flat().forEach(historyNum => {
+                        if (historyNum === num.toString().padStart(2, '0')) {
+                            occurrences++;
+                        }
+                    });
+                });
+
+                // 避免除以零
+                if (totalRecords === 0) return priorProb;
+
+                // 计算似然度
+                const likelihood = occurrences / totalRecords;
+
+                // 贝叶斯公式：后验概率 ∝ 似然度 × 先验概率
+                return likelihood * priorProb * this.bayesianFactor;
+            }
+
+            // 马尔可夫链分析
+            analyzeMarkovPatterns(history) {
+                // 创建状态转移矩阵
+                const transitionMatrix = {};
+
+                // 为每个可能的数字组合初始化
+                for (let i = 0; i < 100; i++) {
+                    const numStr = i.toString().padStart(2, '0');
+                    transitionMatrix[numStr] = {};
+
+                    for (let j = 0; j < 100; j++) {
+                        const nextNumStr = j.toString().padStart(2, '0');
+                        transitionMatrix[numStr][nextNumStr] = 0;
+                    }
+                }
+
+                // 从历史记录中构建转移概率
+                for (let i = 0; i < history.length - 1; i++) {
+                    const currentNums = Object.values(history[i].numbers).flat();
+                    const nextNums = Object.values(history[i + 1].numbers).flat();
+
+                    currentNums.forEach(current => {
+                        nextNums.forEach(next => {
+                            if (transitionMatrix[current] && transitionMatrix[current][next] !== undefined) {
+                                transitionMatrix[current][next]++;
+                            }
+                        });
+                    });
+                }
+
+                // 计算转移概率
+                Object.keys(transitionMatrix).forEach(from => {
+                    const total = Object.values(transitionMatrix[from]).reduce((sum, count) => sum + count, 0);
+                    if (total > 0) {
+                        Object.keys(transitionMatrix[from]).forEach(to => {
+                            transitionMatrix[from][to] /= total;
+                        });
+                    }
+                });
+
+                return transitionMatrix;
+            }
+
+            // 使用Z-Score标准化检测异常值和热/冷数字
+            analyzeNumberFrequency(history) {
+                const frequencyCount = {};
+
+                // 初始化所有可能的数字
+                for (let i = 0; i < 100; i++) {
+                    frequencyCount[i.toString().padStart(2, '0')] = 0;
+                }
+
+                // 计算频率
+                history.forEach(record => {
+                    Object.values(record.numbers).flat().forEach(num => {
+                        // 确保是有效的两位数字
+                        if (num && !isNaN(parseInt(num))) {
+                            const validNum = parseInt(num).toString().padStart(2, '0');
+                            frequencyCount[validNum] = (frequencyCount[validNum] || 0) + 1;
+                        }
+                    });
+                });
+
+                // 计算平均值和标准差
+                const frequencies = Object.values(frequencyCount);
+                const mean = frequencies.reduce((sum, freq) => sum + freq, 0) / frequencies.length;
+                const variance = frequencies.reduce((sum, freq) => sum + Math.pow(freq - mean, 2), 0) / frequencies.length;
+                const stdDev = Math.sqrt(variance);
+
+                // 计算每个数字的Z-Score
+                const zScores = {};
+                Object.keys(frequencyCount).forEach(num => {
+                    zScores[num] = stdDev > 0 ? (frequencyCount[num] - mean) / stdDev : 0;
+                });
+
+                // 根据Z-Score分类
+                const result = {
+                    hot: [],
+                    cold: [],
+                    average: []
+                };
+
+                Object.keys(zScores).forEach(num => {
+                    if (zScores[num] > 1.0) {
+                        result.hot.push(num);
+                    } else if (zScores[num] < -1.0) {
+                        result.cold.push(num);
+                    } else {
+                        result.average.push(num);
+                    }
+                });
+
+                // 按Z-Score排序
+                result.hot.sort((a, b) => zScores[b] - zScores[a]);
+                result.cold.sort((a, b) => zScores[a] - zScores[b]);
+
+                return result;
+            }
+
+            // 分析数字对（用于生成连对）
+            analyzeNumberPairs(history) {
+                const pairFrequency = {};
+
+                // 初始化所有可能的数字对
+                for (let i = 0; i < 100; i++) {
+                    for (let j = i + 1; j < 100; j++) {
+                        const pair = `${i.toString().padStart(2, '0')}-${j.toString().padStart(2, '0')}`;
+                        pairFrequency[pair] = 0;
+                    }
+                }
+
+                // 计算历史记录中每对数字的共现频率
+                history.forEach(record => {
+                    const numbers = Object.values(record.numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    // 检查每对数字
+                    for (let i = 0; i < numbers.length; i++) {
+                        for (let j = i + 1; j < numbers.length; j++) {
+                            // 确保数字对是按顺序排列的
+                            const [a, b] = [numbers[i], numbers[j]].sort((a, b) => parseInt(a) - parseInt(b));
+                            const pair = `${a}-${b}`;
+
+                            if (pairFrequency[pair] !== undefined) {
+                                pairFrequency[pair]++;
+                            }
+                        }
+                    }
+                });
+
+                // 将数字对按频率排序
+                const sortedPairs = Object.entries(pairFrequency)
+                    .filter(([_, freq]) => freq > 0)  // 只考虑至少出现过一次的对
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([pair, freq]) => ({
+                        pair,
+                        frequency: freq,
+                        probability: history.length > 0 ? freq / history.length : 0
+                    }));
+
+                return sortedPairs;
+            }
+
+            // 生成数字
+            generateNumbers(type, count) {
+                const history = this.getHistory();
+                const numberFrequency = this.analyzeNumberFrequency(history);
+                const markovMatrix = this.analyzeMarkovPatterns(history);
+
+                // 根据不同类型使用不同策略
+                switch (type) {
+                    case 'ghep4D':
+                    case 'ghep3D':
+                        return this.generateDigits(count, numberFrequency);
+
+                    case 'xien-pairs':
+                        return this.generateXienPairs(history);
+
+                    case 'mega645':
+                        return this.generateLottoNumbers(45, count);
+
+                    case 'power655':
+                        return this.generateLottoNumbers(55, count);
+
+                    case 'tien-nhi':
+                        return this.generateAdvancedNumbers(count, numberFrequency, markovMatrix, 'tien');
+
+                    case 'hau-nhi':
+                        return this.generateAdvancedNumbers(count, numberFrequency, markovMatrix, 'hau');
+
+                    default:
+                        return this.generate2DNumbers(count, numberFrequency, markovMatrix);
+                }
+            }
+
+            // 生成单个数字（用于3D和4D）
+            generateDigits(count, numberFrequency) {
+                const digits = new Set();
+
+                // 使用热门数字作为基础
+                const hotDigits = numberFrequency.hot
+                    .filter(num => num && !isNaN(parseInt(num))) // 过滤无效值
+                    .map(num => parseInt(num) % 10);
+
+                // 使用Fibonacci序列作为权重
+                const weights = this.fibonacciSequence.slice(0, 10).reverse();
+
+                while (digits.size < count) {
+                    if (Math.random() < 0.65 && hotDigits.length > 0) {
+                        // 65%概率使用热门数字的个位数
+                        const weightedIndex = this.getWeightedRandomIndex(weights.slice(0, hotDigits.length));
+                        const digit = hotDigits[weightedIndex];
+                        if (!isNaN(digit)) {
+                            digits.add(digit.toString());
+                        } else {
+                            // 如果无效，生成随机数字
+                            digits.add(Math.floor(Math.random() * 10).toString());
+                        }
+                    } else {
+                        // 35%概率随机生成数字
+                        const digit = Math.floor(Math.random() * 10);
+                        digits.add(digit.toString());
+                    }
+                }
+
+                return Array.from(digits)
+                    .filter(digit => digit !== null && digit !== undefined && !isNaN(parseInt(digit)))
+                    .sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 生成Xien连对（使用优化的算法）
+            generateXienPairs(history) {
+                const pairsAnalysis = this.analyzeNumberPairs(history);
+                const numberFrequency = this.analyzeNumberFrequency(history);
+
+                // 选择前20个最频繁的对作为候选
+                const candidatePairs = pairsAnalysis.slice(0, 20);
+
+                // 如果历史数据不足，则混合一些基于热门数字的新对
+                if (candidatePairs.length < 10) {
+                    const hotNumbers = numberFrequency.hot.slice(0, 10);
+
+                    for (let i = 0; i < hotNumbers.length && candidatePairs.length < 20; i++) {
+                        for (let j = i + 1; j < hotNumbers.length && candidatePairs.length < 20; j++) {
+                            const pair = `${hotNumbers[i]}-${hotNumbers[j]}`;
+                            if (!candidatePairs.some(p => p.pair === pair)) {
+                                candidatePairs.push({
+                                    pair,
+                                    frequency: 1,
+                                    probability: 0.1 // 假设概率
+                                });
+                            }
+                        }
+                    }
+                }
+
+                // 使用加权随机选择5个连对
+                const selectedPairs = [];
+                const weights = candidatePairs.map(p => p.frequency);
+
+                // 确保不重复选择
+                const selectedIndices = new Set();
+                while (selectedPairs.length < 5 && selectedIndices.size < candidatePairs.length) {
+                    const availableWeights = weights.filter((_, i) => !selectedIndices.has(i));
+                    const availableCandidates = candidatePairs.filter((_, i) => !selectedIndices.has(i));
+
+                    if (availableCandidates.length === 0) break;
+
+                    const index = this.getWeightedRandomIndex(availableWeights);
+                    selectedIndices.add(index);
+
+                    // 计算这个对的改进概率（融合贝叶斯因子）
+                    const pairInfo = candidatePairs[index];
+                    const [num1, num2] = pairInfo.pair.split('-');
+
+                    // 使用贝叶斯计算每个数字的概率
+                    const prob1 = this.calculateBayesianProbability(parseInt(num1), history);
+                    const prob2 = this.calculateBayesianProbability(parseInt(num2), history);
+
+                    // 计算联合概率，添加一些随机性
+                    const jointProb = Math.min(0.99, (prob1 * prob2 * 100) * (1 + (Math.random() * 0.2 - 0.1)));
+
+                    selectedPairs.push({
+                        pair: pairInfo.pair,
+                        probability: (jointProb * 100).toFixed(1)
+                    });
+                }
+
+                // 如果不够5对，随机生成剩余的
+                while (selectedPairs.length < 5) {
+                    const num1 = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    let num2;
+                    do {
+                        num2 = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } while (num1 === num2);
+
+                    const [a, b] = [num1, num2].sort((a, b) => parseInt(a) - parseInt(b));
+                    const pair = `${a}-${b}`;
+
+                    // 确保不重复
+                    if (!selectedPairs.some(p => p.pair === pair)) {
+                        selectedPairs.push({
+                            pair,
+                            probability: (Math.random() * 15 + 5).toFixed(1) // 随机概率5%-20%
+                        });
+                    }
+                }
+
+                return selectedPairs;
+            }
+
+            // 生成2D号码（使用多种策略的组合）
+            generate2DNumbers(count, numberFrequency, markovMatrix) {
+                const numbers = new Set();
+
+                // 使用热门数字、冷门数字和一般数字的混合策略
+                const hotNumbers = numberFrequency.hot.filter(num => num && !isNaN(parseInt(num)));
+                const coldNumbers = numberFrequency.cold.filter(num => num && !isNaN(parseInt(num)));
+                const averageNumbers = numberFrequency.average.filter(num => num && !isNaN(parseInt(num)));
+
+                // 最后一期的数字（如果有）
+                const lastDrawNumbers = this.getHistory().length > 0
+                    ? Object.values(this.getHistory()[this.getHistory().length - 1].numbers)
+                        .flat()
+                        .filter(num => num && !isNaN(parseInt(num)))
+                    : [];
+
+                // 使用Fibonacci序列作为权重分配
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    if (r < 0.45 && hotNumbers.length > 0) {
+                        // 45%概率选择热门数字
+                        const index = Math.floor(Math.random() * hotNumbers.length);
+                        num = hotNumbers[index];
+                    } else if (r < 0.60 && coldNumbers.length > 0) {
+                        // 15%概率选择冷门数字（可能出现反弹）
+                        const index = Math.floor(Math.random() * coldNumbers.length);
+                        num = coldNumbers[index];
+                    } else if (r < 0.80 && averageNumbers.length > 0) {
+                        // 20%概率选择普通数字
+                        const index = Math.floor(Math.random() * averageNumbers.length);
+                        num = averageNumbers[index];
+                    } else if (r < 0.90 && lastDrawNumbers.length > 0) {
+                        // 10%概率使用马尔可夫链预测
+                        const baseNumber = lastDrawNumbers[Math.floor(Math.random() * lastDrawNumbers.length)];
+
+                        if (markovMatrix[baseNumber]) {
+                            // 将转移概率转换为权重
+                            const nextStates = Object.keys(markovMatrix[baseNumber]);
+                            const weights = nextStates.map(state => markovMatrix[baseNumber][state]);
+
+                            // 使用加权随机选择
+                            const selectedIndex = this.getWeightedRandomIndex(weights);
+                            num = nextStates[selectedIndex];
+                        } else {
+                            // 如果没有马尔可夫数据，随机生成
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
+                    } else {
+                        // 10%完全随机
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    // 确保数字有效
+                    if (!num || isNaN(parseInt(num))) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } else {
+                        // 确保是两位数格式
+                        num = parseInt(num).toString().padStart(2, '0');
+                    }
+
+                    numbers.add(num);
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 生成Lotto类型号码（Mega645/Power655）
+            generateLottoNumbers(maxNumber, count) {
+                const numbers = new Set();
+                const history = this.getHistory();
+
+                // 查找历史记录中的高频数字
+                const lottoFrequency = {};
+                for (let i = 1; i <= maxNumber; i++) {
+                    lottoFrequency[i] = 0;
+                }
+
+                history.forEach(record => {
+                    const lottoKey = maxNumber === 45 ? 'mega645' : 'power655';
+                    if (record.numbers[lottoKey]) {
+                        record.numbers[lottoKey].forEach(num => {
+                            const number = parseInt(num);
+                            if (!isNaN(number) && number >= 1 && number <= maxNumber) {
+                                lottoFrequency[number]++;
+                            }
+                        });
+                    }
+                });
+
+                // 将数字按频率排序
+                const sortedNumbers = Object.entries(lottoFrequency)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(entry => parseInt(entry[0]));
+
+                // 使用混合策略生成号码
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    if (r < 0.4 && sortedNumbers.length > 0) {
+                        // 40%概率使用历史高频数字
+                        num = sortedNumbers[Math.floor(Math.random() * Math.min(10, sortedNumbers.length))];
+                    } else if (r < 0.6) {
+                        // 20%概率使用黄金分割点附近的数字
+                        const goldenRatio = 0.618033988749895;
+                        num = Math.floor(goldenRatio * maxNumber) + 1;
+
+                        // 添加一些随机性
+                        const deviation = Math.floor(Math.random() * 11) - 5; // -5到5的偏差
+                        num = Math.max(1, Math.min(maxNumber, num + deviation));
+                    } else if (r < 0.75) {
+                        // 15%概率使用梅森素数附近的数字
+                        const mersenne = this.mersenneNumbers[Math.floor(Math.random() * this.mersenneNumbers.length)];
+                        if (mersenne <= maxNumber) {
+                            num = mersenne;
+                        } else {
+                            // 如果梅森数太大，使用其余数
+                            num = mersenne % maxNumber + 1;
+                        }
+                    } else {
+                        // 25%概率完全随机
+                        num = Math.floor(Math.random() * maxNumber) + 1;
+                    }
+
+                    numbers.add(num.toString().padStart(2, '0'));
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 为前二和后二生成高级数字
+            generateAdvancedNumbers(count, numberFrequency, markovMatrix, position) {
+                const numbers = new Set();
+
+                // 使用更高权重的热门数字和模式识别
+                const hotNumbers = numberFrequency.hot.filter(num => num && !isNaN(parseInt(num)));
+                const coldNumbers = numberFrequency.cold.filter(num => num && !isNaN(parseInt(num)));
+
+                // 最后5期的数字(如果有)
+                const recentHistory = this.getHistory().slice(-5);
+                const recentNumbers = recentHistory
+                    .flatMap(record => Object.values(record.numbers).flat())
+                    .filter(num => num && !isNaN(parseInt(num)));
+
+                // 识别模式(如数字循环、相邻数字等)
+                const patterns = this.identifyPatterns(recentNumbers);
+
+                while (numbers.size < count) {
+                    const r = Math.random();
+                    let num;
+
+                    // LIVE BET专用增强策略
+                    if (r < 0.40 && hotNumbers.length > 0) {
+                        // 40%概率选择热门数字
+                        const index = Math.floor(Math.random() * hotNumbers.length);
+                        num = hotNumbers[index];
+                    } else if (r < 0.50 && patterns.length > 0) {
+                        // 10%概率使用检测到的模式
+                        const patternIndex = Math.floor(Math.random() * patterns.length);
+                        num = patterns[patternIndex];
+                    } else if (r < 0.65 && recentNumbers.length > 0) {
+                        // 15%概率使用最近出现的数字的变体
+                        const baseNumber = recentNumbers[Math.floor(Math.random() * recentNumbers.length)];
+                        const baseInt = parseInt(baseNumber);
+
+                        if (!isNaN(baseInt)) {
+                            // 创建变体(±1, ±10或数字反转)
+                            const variant = Math.random() < 0.33 ?
+                                (baseInt + (Math.random() < 0.5 ? 1 : -1) + 100) % 100 :
+                                Math.random() < 0.66 ?
+                                    (baseInt + (Math.random() < 0.5 ? 10 : -10) + 100) % 100 :
+                                    parseInt(baseNumber.split('').reverse().join(''));
+
+                            num = variant.toString().padStart(2, '0');
+                        } else {
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
+                    } else if (r < 0.75 && coldNumbers.length > 0) {
+                        // 10%概率选择冷门数字(反弹理论)
+                        const index = Math.floor(Math.random() * coldNumbers.length);
+                        num = coldNumbers[index];
+                    } else if (r < 0.85 && Object.keys(markovMatrix).length > 0) {
+                        // 10%概率使用马尔可夫链预测
+                        const baseStates = Object.keys(markovMatrix);
+                        if (baseStates.length > 0) {
+                            const baseState = baseStates[Math.floor(Math.random() * baseStates.length)];
+
+                            const transitions = markovMatrix[baseState];
+                            if (transitions) {
+                                const nextStates = Object.keys(transitions);
+                                const weights = nextStates.map(state => transitions[state]);
+
+                                if (weights.length > 0 && weights.some(w => w > 0)) {
+                                    const selectedIndex = this.getWeightedRandomIndex(weights);
+                                    num = nextStates[selectedIndex];
+                                } else {
+                                    num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                                }
+                            } else {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
+                        } else {
+                            num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        }
+                    } else {
+                        // 15%完全随机
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    // 确保是有效的两位数字
+                    if (!num || num === "undefined" || num === "NaN" || isNaN(parseInt(num))) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    } else {
+                        // 确保是两位数格式
+                        num = parseInt(num).toString().padStart(2, '0');
+                    }
+
+                    // 根据位置(前二或后二)进一步优化
+                    if (position === 'tien' && this.getHistory().length > 0) {
+                        // 前二优化:更多关注最前面的数字
+                        const frontDigitPatterns = this.getHistory()
+                            .slice(-10)
+                            .map(record => Object.values(record.numbers).flat())
+                            .flat()
+                            .filter(num => num && num.length >= 2 && !isNaN(parseInt(num)))
+                            .map(num => num[0])
+                            .filter((v, i, a) => a.indexOf(v) === i); // 去重
+
+                        if (frontDigitPatterns.length > 0 && Math.random() < 0.3) {
+                            // 30%概率使用历史前位数字模式
+                            const frontDigit = frontDigitPatterns[Math.floor(Math.random() * frontDigitPatterns.length)];
+                            const backDigit = num.length >= 2 ? num[1] : Math.floor(Math.random() * 10).toString();
+                            num = frontDigit + backDigit;
+
+                            // 检查是否有不是数字的字符
+                            if (!/^\d{2}$/.test(num)) {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
+                        }
+                    } else if (position === 'hau' && this.getHistory().length > 0) {
+                        // 后二优化:更多关注最后面的数字
+                        const backDigitPatterns = this.getHistory()
+                            .slice(-10)
+                            .map(record => Object.values(record.numbers).flat())
+                            .flat()
+                            .filter(num => num && num.length >= 2 && !isNaN(parseInt(num)))
+                            .map(num => num[1])
+                            .filter((v, i, a) => a.indexOf(v) === i); // 去重
+
+                        if (backDigitPatterns.length > 0 && Math.random() < 0.3) {
+                            // 30%概率使用历史后位数字模式
+                            const frontDigit = num.length >= 1 ? num[0] : Math.floor(Math.random() * 10).toString();
+                            const backDigit = backDigitPatterns[Math.floor(Math.random() * backDigitPatterns.length)];
+                            num = frontDigit + backDigit;
+
+                            // 检查是否有不是数字的字符
+                            if (!/^\d{2}$/.test(num)) {
+                                num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                            }
+                        }
+                    }
+
+                    // 最后确认格式正确
+                    if (typeof num !== 'string' || num.length !== 2 || isNaN(parseInt(num)) || !/^\d{2}$/.test(num)) {
+                        num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    }
+
+                    numbers.add(num);
+                }
+
+                return Array.from(numbers).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            // 识别数字模式
+            identifyPatterns(numbers) {
+                const patterns = [];
+
+                // 不足以分析或包含无效值
+                if (numbers.length < 5) return patterns;
+
+                // 过滤有效数字
+                const validNumbers = numbers.filter(num => num && !isNaN(parseInt(num)));
+                if (validNumbers.length < 5) return patterns;
+
+                // 检测连续数字模式
+                for (let i = 0; i < validNumbers.length - 1; i++) {
+                    const current = parseInt(validNumbers[i]);
+                    const next = parseInt(validNumbers[i + 1]);
+
+                    if (isNaN(current) || isNaN(next)) continue;
+
+                    // 检测+1模式
+                    if (next === (current + 1) % 100) {
+                        patterns.push(((next + 1) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测-1模式
+                    if (next === (current - 1 + 100) % 100) {
+                        patterns.push(((next - 1 + 100) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测+10模式
+                    if (next === (current + 10) % 100) {
+                        patterns.push(((next + 10) % 100).toString().padStart(2, '0'));
+                    }
+
+                    // 检测反转模式
+                    const reversed = parseInt(current.toString().padStart(2, '0').split('').reverse().join(''));
+                    if (!isNaN(reversed) && next === reversed) {
+                        const nextReversed = parseInt(next.toString().padStart(2, '0').split('').reverse().join(''));
+                        if (!isNaN(nextReversed)) {
+                            patterns.push(nextReversed.toString().padStart(2, '0'));
+                        }
+                    }
+                }
+
+                // 返回不重复的模式且确保都是有效数字
+                return [...new Set(patterns)].filter(num => /^\d{2}$/.test(num));
+            }
+
+            // 基于权重数组获取随机索引
+            getWeightedRandomIndex(weights) {
+                const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+                let random = Math.random() * totalWeight;
+
+                for (let i = 0; i < weights.length; i++) {
+                    random -= weights[i];
+                    if (random <= 0) {
+                        return i;
+                    }
+                }
+
+                // 默认返回最后一个索引
+                return weights.length - 1;
+            }
+        }
+
+        // 初始化高级彩票管理器
+        const lotteryManager = new AdvancedLotteryManager();
+
+        // 添加明暗主题切换功能
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                document.getElementById('themeToggle').innerHTML = '<span>🌙</span>';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<span>☀️</span>';
+            }
+        });
+
+        // 更新省份下拉列表
+        function updateProvinceDropdown(region) {
+            const provinceSelect = document.getElementById('province');
+            provinceSelect.innerHTML = '';
+
+            provinces[region].forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+
+        // 生成每周投注建议
+        function generateWeeklyTips() {
+            const weeklyTipsContainer = document.getElementById('weeklyTips');
+            weeklyTipsContainer.innerHTML = '';
+
+            const days = [
+                { name: 'Thứ Hai', key: 'monday' },
+                { name: 'Thứ Ba', key: 'tuesday' },
+                { name: 'Thứ Tư', key: 'wednesday' },
+                { name: 'Thứ Năm', key: 'thursday' },
+                { name: 'Thứ Sáu', key: 'friday' },
+                { name: 'Thứ Bảy', key: 'saturday' },
+                { name: 'Chủ Nhật', key: 'sunday' }
+            ];
+
+            // 获取当前是星期几
+            const today = new Date().getDay(); // 0 是周日, 1-6 是周一到周六
+            const todayIndex = today === 0 ? 6 : today - 1; // 调整为我们的数组索引
+
+            days.forEach((day, index) => {
+                const dayTips = weeklyTips[day.key];
+                const isToday = index === todayIndex;
+
+                // 找出当天最高胜率
+                let highestRate = 0;
+                dayTips.forEach(tip => {
+                    const rate = parseInt(tip.rate);
+                    if (rate > highestRate) highestRate = rate;
+                });
+
+                // 检查是否为最佳日
+                const isOptimalDay = highestRate >= 80;
+
+                const dayCard = document.createElement('div');
+                dayCard.className = `day-card ${isToday ? 'optimal-day' : ''}`;
+
+                dayCard.innerHTML = `
+                    <div class="day-name">${day.name}${isToday ? ' (Hôm nay)' : ''}</div>
+                    ${dayTips.map(tip => `
+                        <div class="region-tip">
+                            <span class="region-name">${tip.region} (${tip.provinces.join(', ')})</span>
+                            <span class="win-rate ${parseInt(tip.rate) >= 75 ? 'high-rate' : (parseInt(tip.rate) >= 65 ? 'medium-rate' : 'low-rate')}">${tip.rate}</span>
+                        </div>
+                    `).join('')}
+                `;
+
+                weeklyTipsContainer.appendChild(dayCard);
+            });
+        }
+
+        // 更新显示结果函数
+        function displayResults(region, province) {
+            const resultDiv = document.getElementById('result');
+
+            try {
+                // 生成不同类型的号码集
+                const ghep4D = lotteryManager.generateNumbers('ghep4D', 7);
+                const ghep3D = lotteryManager.generateNumbers('ghep3D', 7);
+                const dan2D = lotteryManager.generateNumbers('normal', 64);
+
+                // 对于非LIVE BET区域，才生成这些数据
+                let xienPairs, mega645, power655;
+                if (region !== "live-bet") {
+                    xienPairs = lotteryManager.generateNumbers('xien-pairs');
+                    mega645 = lotteryManager.generateNumbers('mega645', 6);
+                    power655 = lotteryManager.generateNumbers('power655', 6);
+                }
+
+                const numbers = {
+                    ghep4D,
+                    ghep3D,
+                    dan2D
+                };
+
+                // 只有非LIVE BET区域才添加这些数据
+                if (region !== "live-bet") {
+                    numbers.xienPairs = xienPairs;
+                    numbers.mega645 = mega645;
+                    numbers.power655 = power655;
+                }
+
+                // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"
+                if (region === "live-bet") {
+                    const tienNhi = lotteryManager.generateNumbers('tien-nhi', 32);
+                    const hauNhi = lotteryManager.generateNumbers('hau-nhi', 32);
+
+                    // 确保数字有效
+                    numbers.tienNhi = tienNhi
+                        .filter(num => num && !isNaN(parseInt(num)) && /^\d{2}$/.test(num))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    numbers.hauNhi = hauNhi
+                        .filter(num => num && !isNaN(parseInt(num)) && /^\d{2}$/.test(num))
+                        .map(num => parseInt(num).toString().padStart(2, '0'));
+
+                    // 如果过滤后数量不足，补充数字
+                    while (numbers.tienNhi.length < 32) {
+                        const num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        if (!numbers.tienNhi.includes(num)) {
+                            numbers.tienNhi.push(num);
+                        }
+                    }
+
+                    while (numbers.hauNhi.length < 32) {
+                        const num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                        if (!numbers.hauNhi.includes(num)) {
+                            numbers.hauNhi.push(num);
+                        }
+                    }
+
+                    // 排序
+                    numbers.tienNhi.sort((a, b) => parseInt(a) - parseInt(b));
+                    numbers.hauNhi.sort((a, b) => parseInt(a) - parseInt(b));
+                }
+
+                // 保存结果
+                lotteryManager.saveResult(region, province, numbers);
+
+                // 显示结果
+                let resultHTML = `
+                    <div class="card result-section">
+                        <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Kết quả Xổ Số: ${province}</h2>
+                        
+                        <div class="number-set">
+                            <h3>Ghép 4D:</h3>
+                            <p class="number-result">${ghep4D.join(', ')}</p>
+                            <button class="copy-btn" onclick="copyText('${ghep4D.join(', ')}')">Copy</button>
+                        </div>
+
+                        <div class="number-set">
+                            <h3>Ghép 3D:</h3>
+                            <p class="number-result">${ghep3D.join(', ')}</p>
+                            <button class="copy-btn" onclick="copyText('${ghep3D.join(', ')}')">Copy</button>
+                        </div>`;
+
+                // 为LIVE BET添加"Tiền Nhị"和"Hậu Nhị"显示
+                if (region === "live-bet" && numbers.tienNhi && numbers.tienNhi.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Tiền Nhị:</h3>
+                            <div class="number-grid">
+                                ${numbers.tienNhi.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${numbers.tienNhi.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                if (region === "live-bet" && numbers.hauNhi && numbers.hauNhi.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Hậu Nhị:</h3>
+                            <div class="number-grid">
+                                ${numbers.hauNhi.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${numbers.hauNhi.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                resultHTML += `
+                        <div class="number-set">
+                            <h3>Dàn 2D - 64 Số:</h3>
+                            <div class="number-grid">
+                                ${dan2D.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'hot-number' : Math.random() > 0.7 ? 'cold-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${dan2D.join(', ')}')">Copy</button>
+                        </div>`;
+
+                // 只有非LIVE BET区域才显示这些部分
+                if (region !== "live-bet" && xienPairs && xienPairs.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Dàn Lô Xiên (Cặp số xác suất cao):</h3>
+                            <div class="xien-container">
+                                ${xienPairs.map(pair => `
+                                    <div class="xien-pair">
+                                        <div class="xien-numbers">${pair.pair ? pair.pair.replace('-', ' - ') : ''}</div>
+                                        <div class="xien-probability">${pair.probability ? pair.probability + '%' : '0%'}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${xienPairs.map(p => p.pair || '').filter(p => p).join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                if (region !== "live-bet" && mega645 && mega645.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Mega 6/45:</h3>
+                            <div class="number-grid">
+                                ${mega645.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${mega645.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                if (region !== "live-bet" && power655 && power655.length > 0) {
+                    resultHTML += `
+                        <div class="number-set">
+                            <h3>Power 6/55:</h3>
+                            <div class="number-grid">
+                                ${power655.map(num => `
+                                    <div class="number-cell ${Math.random() > 0.8 ? 'pattern-number' : ''}">${num}</div>
+                                `).join('')}
+                            </div>
+                            <button class="copy-btn" onclick="copyText('${power655.join(', ')}')">Copy</button>
+                        </div>`;
+                }
+
+                resultHTML += `
+                    </div>
+                `;
+
+                resultDiv.innerHTML = resultHTML;
+            } catch (error) {
+                console.error("Error in displayResults:", error);
+                resultDiv.innerHTML = `
+                    <div class="card result-section">
+                        <h2 style="color: #e63946; margin-bottom: 20px; text-align: center;">Có lỗi xảy ra</h2>
+                        <p style="text-align: center;">Vui lòng thử lại hoặc chọn đài khác.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 复制文本处理
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Đã sao chép!');
+            }).catch(err => {
+                showNotification('Không thể sao chép: ' + err);
+            });
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        // 事件监听
+        document.getElementById('region').addEventListener('change', (e) => {
+            updateProvinceDropdown(e.target.value);
+            document.getElementById('blockedMessage').style.display = 'none';
+        });
+
+        document.getElementById('startSimulation').addEventListener('click', () => {
+            const region = document.getElementById('region').value;
+            const province = document.getElementById('province').value;
+
+            // 检查今天是否已经为该省份生成过
+            if (lotteryManager.canGenerateToday(province)) {
+                document.getElementById('blockedMessage').style.display = 'none';
+                document.querySelector('.loading').style.display = 'block';
+                document.getElementById('result').innerHTML = '';
+
+                // 缩短LIVE BET的等待时间，其他保持不变
+                const waitTime = region === 'live-bet' ? 500 : 2000;
+
+                setTimeout(() => {
+                    try {
+                        displayResults(region, province);
+                    } catch (error) {
+                        console.error("Error generating results:", error);
+                        document.getElementById('result').innerHTML = `
+                            <div class="card result-section">
+                                <h2 style="color: #e63946; margin-bottom: 20px; text-align: center;">Có lỗi xảy ra</h2>
+                                <p style="text-align: center;">Vui lòng thử lại hoặc chọn đài khác.</p>
+                            </div>
+                        `;
+                    }
+                    document.querySelector('.loading').style.display = 'none';
+                }, waitTime);
+            } else {
+                // 如果今天已经生成过，显示提示信息
+                document.getElementById('blockedMessage').style.display = 'block';
+            }
+        });
+
+        document.getElementById('refreshButton').addEventListener('click', () => {
+            location.reload();
+        });
+
+        document.getElementById('resetSpin').addEventListener('click', () => {
+            lotteryManager.clearHistory();
+            showNotification('Đã reset toàn bộ dữ liệu!');
+            document.getElementById('blockedMessage').style.display = 'none';
+        });
+
+        // 初始化
+        updateProvinceDropdown(document.getElementById('region').value);
+        generateWeeklyTips();
+
+        // 检查是否是深色模式偏好
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeToggle').innerHTML = '<span>☀️</span>';
+        }
+    </script>
+</body>
+
+</html>

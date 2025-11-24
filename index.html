@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOTTERY</title>
+    <link rel="icon" href="lottery.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(to right, #3a7bd5, #00d2ff);
+            --secondary-color: #f5f7fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fd;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        .navbar {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .navbar img {
+            height: 40px;
+            margin-left: 10px;
+            transition: var(--transition);
+        }
+
+        .navbar img:hover {
+            transform: scale(1.05);
+        }
+
+        .user-info {
+            position: absolute;
+            right: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 14px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            transition: var(--transition);
+        }
+
+        .container:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            background: var(--secondary-color);
+        }
+
+        .utc-time {
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .button-container {
+            margin-top: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .button-container button {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(58, 123, 213, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .button-container button:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #00d2ff, #3a7bd5);
+            z-index: -1;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .button-container button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(58, 123, 213, 0.3);
+        }
+
+        .button-container button:hover:before {
+            opacity: 1;
+        }
+
+        .button-container button:active {
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin: 35px 0 20px;
+            color: var(--primary-color);
+            text-align: center;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+
+        .result-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .lottery-table,
+        .loto-table {
+            flex: 1;
+            min-width: 280px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .lottery-table:hover,
+        .loto-table:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+
+            .lottery-table,
+            .loto-table {
+                width: 100%;
+            }
+        }
+
+        .lottery-table table,
+        .loto-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+
+        .lottery-table th,
+        .lottery-table td,
+        .loto-table th,
+        .loto-table td {
+            border: none;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .lottery-table tr,
+        .loto-table tr {
+            border-bottom: 1px solid #eef0f5;
+        }
+
+        .lottery-table tr:last-child,
+        .loto-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .lottery-table th,
+        .loto-table th {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding: 15px;
+        }
+
+        .lottery-table tr:nth-child(even),
+        .loto-table tr:nth-child(even) {
+            background-color: #f8f9fd;
+        }
+
+        .table-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+            background: #f8f9fd;
+            border-bottom: 1px solid #eef0f5;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-light);
+            font-style: italic;
+            padding: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 新增动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .container:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* 增加响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .button-container button {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                padding: 12px 15px;
+            }
+
+            .navbar h1 {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 15px auto;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .table-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>LOTTERY</h1>
+        <img src="lottery.png" alt="Lottery Logo">
+    </div>
+
+    <div class="container">
+        <div id="utcTime" class="utc-time"></div>
+        <div id="timeDisplay" class="time-display"></div>
+
+        <h1 class="section-title">Chọn Hạng Mục</h1>
+        <div class="button-container">
+            <button id="AIXOSOButton">AI - Xổ Số (Bắc - Trung - Nam)</button>
+            <button id="DanDe2ChamButton">Quy Đổi Chạm</button>
+            <button id="KuBetButton">Kubet</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Kết Quả Xổ Số Miền Bắc: <span id="latest-date"></span></h2>
+        <div class="result-container">
+            <div class="lottery-table">
+                <div class="table-title">Lottery (Xổ số)</div>
+                <table id="lottery-results">
+                    <tr>
+                        <th>Giải</th>
+                        <th>Số trúng</th>
+                    </tr>
+                </table>
+                <div id="lottery-loading" class="loading">Đang tải kết quả...</div>
+            </div>
+            <div class="loto-table">
+                <div class="table-title">Loto (Lô tô)</div>
+                <table id="loto-results">
+                    <tr>
+                        <th>First (Đầu)</th>
+                        <th>Last (Đuôi)</th>
+                    </tr>
+                </table>
+                <div id="loto-loading" class="loading">Đang tải kết quả...</div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="pageAudio" src="Twindle.mp3" preload="auto"></audio>
+
+    <script>
+        // Chức năng phát âm thanh
+        function playAudioOnce() {
+            const audio = document.getElementById('pageAudio');
+            if (audio.paused) {
+                audio.play().then(() => {
+                    console.log("Âm thanh đã được phát.");
+                }).catch(err => {
+                    console.error("Lỗi phát âm thanh:", err);
+                });
+            }
+        }
+
+        // Lắng nghe sự kiện người dùng
+        document.addEventListener('click', playAudioOnce, { once: true });
+        document.addEventListener('touchstart', playAudioOnce, { once: true });
+
+        // Xử lý chuyển trang
+        document.getElementById('AIXOSOButton').addEventListener('click', () => {
+            window.location.href = 'AIthongkexsmb.html';
+        });
+        document.getElementById('DanDe2ChamButton').addEventListener('click', () => {
+            window.location.href = 'DanDe2Cham.html';
+        });
+        document.getElementById('KuBetButton').addEventListener('click', () => {
+            window.location.href = 'https://giaimasohoc.net/pages/THA-KUBET/';
+        });
+
+        // Hiển thị thời gian UTC
+        function updateUTCTime() {
+            const now = new Date();
+            const utcYear = now.getUTCFullYear();
+            const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const utcDay = String(now.getUTCDate()).padStart(2, '0');
+            const utcHours = String(now.getUTCHours()).padStart(2, '0');
+            const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+            document.getElementById('utcTime').innerText = `${utcYear}-${utcMonth}-${utcDay} ${utcHours}:${utcMinutes}:${utcSeconds}`;
+        }
+
+        // Hiển thị thời gian địa phương
+        function updateLocalTime() {
+            const timeDisplay = document.getElementById('timeDisplay');
+            const now = new Date();
+
+            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const dayName = days[now.getDay()];
+
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = now.getFullYear();
+
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            timeDisplay.innerText = `${dayName} - ${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Cập nhật thời gian mỗi giây
+        setInterval(() => {
+            updateUTCTime();
+            updateLocalTime();
+        }, 1000);
+
+        // Khởi tạo thời gian
+        updateUTCTime();
+        updateLocalTime();
+
+        // Kết quả xổ số mới nhất
+        const currentLotteryResults = {
+            date: "2025-03-17",
+            special: "97404",
+            prize1: "05695",
+            prize2_1: "20901",
+            prize2_2: "29614",
+            prize3_1: "33004",
+            prize3_2: "41163",
+            prize3_3: "55522",
+            prize3_4: "84785",
+            prize3_5: "06810",
+            prize3_6: "41485",
+            prize4_1: "5911",
+            prize4_2: "9682",
+            prize4_3: "1161",
+            prize4_4: "5011",
+            prize5_1: "7879",
+            prize5_2: "1673",
+            prize5_3: "8599",
+            prize5_4: "0379",
+            prize5_5: "5099",
+            prize5_6: "1649",
+            prize6_1: "674",
+            prize6_2: "062",
+            prize6_3: "957",
+            prize7_1: "60",
+            prize7_2: "32",
+            prize7_3: "13",
+            prize7_4: "77"
+        };
+
+        // Xử lý và hiển thị kết quả xổ số
+        function displayResults(data) {
+            // Hiển thị ngày
+            document.getElementById('latest-date').textContent = formatDate(new Date(data.date));
+
+            // Hiển thị kết quả xổ số
+            const prizes = [
+                { name: 'Giải đặc biệt', value: data.special },
+                { name: 'Giải nhất', value: data.prize1 },
+                { name: 'Giải nhì', value: [data.prize2_1, data.prize2_2].filter(Boolean).join(', ') },
+                {
+                    name: 'Giải ba', value: [data.prize3_1, data.prize3_2, data.prize3_3,
+                    data.prize3_4, data.prize3_5, data.prize3_6].filter(Boolean).join(', ')
+                },
+                {
+                    name: 'Giải tư', value: [data.prize4_1, data.prize4_2, data.prize4_3,
+                    data.prize4_4].filter(Boolean).join(', ')
+                },
+                {
+                    name: 'Giải năm', value: [data.prize5_1, data.prize5_2, data.prize5_3,
+                    data.prize5_4, data.prize5_5, data.prize5_6].filter(Boolean).join(', ')
+                },
+                { name: 'Giải sáu', value: [data.prize6_1, data.prize6_2, data.prize6_3].filter(Boolean).join(', ') },
+                {
+                    name: 'Giải bảy', value: [data.prize7_1, data.prize7_2, data.prize7_3,
+                    data.prize7_4].filter(Boolean).join(', ')
+                }
+            ];
+
+            const lotteryTable = document.getElementById('lottery-results');
+            // Xóa các hàng cũ
+            while (lotteryTable.rows.length > 1) {
+                lotteryTable.deleteRow(1);
+            }
+
+            // Thêm các kết quả mới
+            prizes.forEach(prize => {
+                const row = lotteryTable.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.textContent = prize.name;
+                cell2.textContent = prize.value;
+            });
+
+            // Tạo bảng lô tô
+            const lotoResults = {};
+            // Gộp tất cả các số trúng
+            const allNumbers = Object.entries(data)
+                .filter(([key, value]) => key.startsWith('prize') || key === 'special')
+                .map(([_, value]) => value)
+                .filter(Boolean)
+                .join(', ')
+                .split(', ');
+
+            // Tạo map đầu-đuôi
+            allNumbers.forEach(number => {
+                const lastDigit = number.slice(-2);
+                const firstDigit = lastDigit[0];
+                if (!lotoResults[firstDigit]) {
+                    lotoResults[firstDigit] = new Set();
+                }
+                lotoResults[firstDigit].add(lastDigit[1]);
+            });
+
+            // Hiển thị kết quả lô tô
+            const lotoTable = document.getElementById('loto-results');
+            // Xóa các hàng cũ
+            while (lotoTable.rows.length > 1) {
+                lotoTable.deleteRow(1);
+            }
+
+            // Thêm các kết quả mới
+            for (let i = 0; i < 10; i++) {
+                const row = lotoTable.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.textContent = i;
+                cell2.textContent = lotoResults[i] ? Array.from(lotoResults[i]).sort().join(', ') : '';
+            }
+
+            // Ẩn loading indicators
+            document.getElementById('lottery-loading').style.display = 'none';
+            document.getElementById('loto-loading').style.display = 'none';
+        }
+        // Hàm định dạng ngày
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        // Function để lấy kết quả xổ số mới nhất
+        async function fetchCurrentResults() {
+            try {
+                // Hiện loading indicators
+                document.getElementById('lottery-loading').style.display = 'block';
+                document.getElementById('loto-loading').style.display = 'block';
+
+                // Gọi API của bạn
+                const apiUrl = 'https://raw.githubusercontent.com/LEDO-DEV/API_XSMB_0x687/refs/heads/main/data/xsmb.json';
+
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const jsonData = await response.json();
+                // Lấy kết quả mới nhất (phần tử cuối cùng của mảng)
+                const latestResult = jsonData[jsonData.length - 1];
+
+                // Chuyển đổi định dạng date
+                const formattedData = {
+                    ...latestResult,
+                    date: latestResult.date.split('T')[0], // Lấy phần ngày từ ISO string
+                    // Chuyển đổi các số thành chuỗi và đảm bảo độ dài phù hợp
+                    special: String(latestResult.special).padStart(5, '0'),
+                    prize1: String(latestResult.prize1).padStart(5, '0'),
+                    prize2_1: String(latestResult.prize2_1).padStart(5, '0'),
+                    prize2_2: String(latestResult.prize2_2).padStart(5, '0'),
+                    prize3_1: String(latestResult.prize3_1).padStart(5, '0'),
+                    prize3_2: String(latestResult.prize3_2).padStart(5, '0'),
+                    prize3_3: String(latestResult.prize3_3).padStart(5, '0'),
+                    prize3_4: String(latestResult.prize3_4).padStart(5, '0'),
+                    prize3_5: String(latestResult.prize3_5).padStart(5, '0'),
+                    prize3_6: String(latestResult.prize3_6).padStart(5, '0'),
+                    prize4_1: String(latestResult.prize4_1).padStart(4, '0'),
+                    prize4_2: String(latestResult.prize4_2).padStart(4, '0'),
+                    prize4_3: String(latestResult.prize4_3).padStart(4, '0'),
+                    prize4_4: String(latestResult.prize4_4).padStart(4, '0'),
+                    prize5_1: String(latestResult.prize5_1).padStart(4, '0'),
+                    prize5_2: String(latestResult.prize5_2).padStart(4, '0'),
+                    prize5_3: String(latestResult.prize5_3).padStart(4, '0'),
+                    prize5_4: String(latestResult.prize5_4).padStart(4, '0'),
+                    prize5_5: String(latestResult.prize5_5).padStart(4, '0'),
+                    prize5_6: String(latestResult.prize5_6).padStart(4, '0'),
+                    prize6_1: String(latestResult.prize6_1).padStart(3, '0'),
+                    prize6_2: String(latestResult.prize6_2).padStart(3, '0'),
+                    prize6_3: String(latestResult.prize6_3).padStart(3, '0'),
+                    prize7_1: String(latestResult.prize7_1).padStart(2, '0'),
+                    prize7_2: String(latestResult.prize7_2).padStart(2, '0'),
+                    prize7_3: String(latestResult.prize7_3).padStart(2, '0'),
+                    prize7_4: String(latestResult.prize7_4).padStart(2, '0')
+                };
+
+                // Hiển thị kết quả
+                displayResults(formattedData);
+
+            } catch (error) {
+                console.error('Error fetching lottery results:', error);
+                document.getElementById('lottery-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+                document.getElementById('loto-loading').textContent = 'Không thể tải kết quả. Vui lòng thử lại sau.';
+            }
+        }
+
+        // Auto-refresh kết quả mỗi 5 phút
+        const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 phút
+        let refreshTimer = setInterval(fetchCurrentResults, REFRESH_INTERVAL);
+
+        // Hàm để reset timer
+        function resetRefreshTimer() {
+            clearInterval(refreshTimer);
+            refreshTimer = setInterval(fetchCurrentResults, REFRESH_INTERVAL);
+        }
+
+        // Thêm sự kiện để reset timer khi tab được focus lại
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                fetchCurrentResults();
+                resetRefreshTimer();
+            }
+        });
+
+        // Thêm nút refresh thủ công
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r')) {
+                event.preventDefault();
+                fetchCurrentResults();
+                resetRefreshTimer();
+            }
+        });
+
+        // Khởi tạo khi trang load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCurrentResults();
+
+            // Thêm hiệu ứng khi hover vào bảng kết quả
+            document.querySelectorAll('.lottery-table, .loto-table').forEach(table => {
+                table.addEventListener('mouseenter', () => {
+                    table.style.transform = 'translateY(-5px)';
+                });
+                table.addEventListener('mouseleave', () => {
+                    table.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // Thêm xử lý lỗi toàn cục
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            console.error('Global error:', {
+                message: msg,
+                url: url,
+                lineNo: lineNo,
+                columnNo: columnNo,
+                error: error
+            });
+            return false;
+        };
+
+        // Thêm xử lý promise rejection không được bắt
+        window.onunhandledrejection = function (event) {
+            console.error('Unhandled promise rejection:', event.reason);
+        };
+    </script>
+</body>
+
+</html>
